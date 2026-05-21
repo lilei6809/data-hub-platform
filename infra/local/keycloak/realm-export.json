@@ -1,0 +1,86 @@
+{
+  "realm": "data-hub-local",
+  "enabled": true,
+  "displayName": "Data Hub Local",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "platform-admin",
+        "description": "Local platform operator role"
+      },
+      {
+        "name": "tenant-operator",
+        "description": "Local tenant operator role"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "data-hub-admin-ui",
+      "name": "Data Hub Admin UI",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "http://localhost:*/*"
+      ],
+      "webOrigins": [
+        "+"
+      ]
+    },
+    {
+      "clientId": "data-hub-control-plane",
+      "name": "Data Hub Control Plane",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "local-control-plane-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "platform-admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Platform",
+      "lastName": "Admin",
+      "email": "platform-admin@local.test",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "platform-admin"
+      ]
+    },
+    {
+      "username": "tenant-operator",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Tenant",
+      "lastName": "Operator",
+      "email": "tenant-operator@local.test",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "operator123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "tenant-operator"
+      ]
+    }
+  ]
+}

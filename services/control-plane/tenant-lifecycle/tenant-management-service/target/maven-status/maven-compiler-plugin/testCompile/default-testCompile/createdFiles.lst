@@ -1,0 +1,4 @@
+io/datahub/platform/tenantmanagement/application/TenantApplicationServiceTest.class
+io/datahub/platform/tenantmanagement/TenantManagementServiceIntegrationTest.class
+io/datahub/platform/tenantmanagement/infrastructure/TenantJdbcStoreTest.class
+io/datahub/platform/tenantmanagement/interfaces/http/TenantControllerTest.class
