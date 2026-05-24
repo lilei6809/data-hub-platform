@@ -1,0 +1,1279 @@
+{
+  "last_sync": "2026-05-23T06:24:29.692490701Z",
+  "account_id": "a0c9b9f9-7122-4332-ab99-035b7a3f8075",
+  "account_name": "lei li's Team",
+  "account_slug": "lei-lis-team",
+  "entities": {
+    "briefs": {
+      "092e4d88-b9b5-4137-b557-de7ec1048ff4": {
+        "updated_at": "2026-05-23T05:44:42.423341Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/brief.md",
+        "slug": "tenant-iam-onboarding-for-multi-tenant-cdp-platform",
+        "document_id": "94bc3678-bc1a-49eb-a62d-646da8282083",
+        "title": "Tenant IAM Onboarding for Multi-Tenant CDP Platform"
+      },
+      "828bbf1d-5fa1-47c1-9062-4c56769c42e1": {
+        "updated_at": "2026-03-27T11:38:45.015461Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/brief.md",
+        "slug": "datasource-control-plane-v1-durable-tenant-lifecycle-management",
+        "document_id": "4619150c-0cff-4c5a-8e4f-bbb0f845af4f",
+        "title": "Datasource Control Plane V1: Durable Tenant Lifecycle Management"
+      }
+    },
+    "tasks": {
+      "02ab5dcf-3f05-4f2a-890b-432c17d83037": {
+        "updated_at": "2026-05-23T06:18:19.130775Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-171-enforcemfapolicystep-mfa-notes.md",
+        "slug": "enforcemfapolicystep-mfa-notes",
+        "document_id": "df465930-e63f-4d7b-a0b4-0dfa90f7df32",
+        "title": "实现 EnforceMfaPolicyStep 扩展点以承接租户 MFA 策略 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-171"
+      },
+      "043b9bfd-3df0-401c-954b-53abc55d85ad": {
+        "updated_at": "2026-05-23T06:19:25.730411Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-178-keycloak-adapter-testcontainers-onboarding-notes.md",
+        "slug": "keycloak-adapter-testcontainers-onboarding-notes",
+        "document_id": "bdeddbeb-0493-4831-99b4-aac3fdddae17",
+        "title": "真实 Keycloak Adapter 集成测试（Testcontainers 验证生产 onboarding 幂等） - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-178"
+      },
+      "051ec468-f17a-423a-bfeb-e38bf7cb7095": {
+        "updated_at": "2026-05-23T05:56:55.740485Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-81-kafka-consumer-adapter-tenantinfrastructureprovisionedevent-onboarding-notes.md",
+        "slug": "kafka-consumer-adapter-tenantinfrastructureprovisionedevent-onboarding-notes",
+        "document_id": "2d8174e3-748b-48ce-be93-bfb3a1d8a30d",
+        "title": "实现 Kafka Consumer Adapter 接收 TenantInfrastructureProvisionedEvent 并触发 onboarding - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-81"
+      },
+      "061dc56b-a3fe-4ba0-8e33-5ed25ff5661d": {
+        "updated_at": "2026-05-23T06:17:28.154391Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-162-correlationid-kafka-mdc-notes.md",
+        "slug": "correlationid-kafka-mdc-notes",
+        "document_id": "d7ad8373-1dd3-45ff-90e9-21161f86c21b",
+        "title": "CorrelationId 在 Kafka 消费/发布与日志 MDC 中端到端贯穿 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-162"
+      },
+      "0627db3d-6f46-44f4-adf9-873de3a7066f": {
+        "updated_at": "2026-05-23T06:16:52.734378Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-152-keycloakadminport-byo-idpprotocol-mapper-mfa-notes.md",
+        "slug": "keycloakadminport-byo-idpprotocol-mapper-mfa-notes",
+        "document_id": "8caf945f-a642-48d3-bbe5-2c7b3fee1f0e",
+        "title": "扩展 KeycloakAdminPort 以承载 BYO IdP、Protocol Mapper 与 MFA 意图方法 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-152"
+      },
+      "07096cfa-4daa-4b67-8a8a-5aeee81678bc": {
+        "updated_at": "2026-05-23T05:58:05.351881Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-103-kafka-notes.md",
+        "slug": "kafka-notes",
+        "document_id": "0f1e9635-623c-4262-992d-038f9d76c2db",
+        "title": "建立 Kafka 重复事件去重与幂等消费策略 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-103"
+      },
+      "0730d918-196a-444a-8c2e-38e92b99e591": {
+        "updated_at": "2026-05-23T06:15:54.046344Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-138-keycloakadminport-notes.md",
+        "slug": "keycloakadminport-notes",
+        "document_id": "172d4340-8355-431e-8d50-d3cf96254a91",
+        "title": "定义 KeycloakAdminPort 意图型接口与端口契约 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-138"
+      },
+      "07da4f7b-7528-4e1e-b8f1-bcacc0e0c822": {
+        "updated_at": "2026-05-23T05:57:44.587998Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-99-keycloakadminport-byo-idpmfa-protocolmapper-notes.md",
+        "slug": "keycloakadminport-byo-idpmfa-protocolmapper-notes",
+        "document_id": "b60b6106-c00d-4f6e-b473-54d895917cb8",
+        "title": "扩展 KeycloakAdminPort 承接 BYO IdP、MFA 与 ProtocolMapper 方法签名 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-99"
+      },
+      "082a15b8-2525-470b-a3b4-acc6d8b0be3b": {
+        "updated_at": "2026-05-23T05:53:18.36739Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-75-keycloak-admin-api-adapter-onboarding-notes.md",
+        "slug": "keycloak-admin-api-adapter-onboarding-notes",
+        "document_id": "9e17509e-d400-45bd-84f7-ac6ae65cea50",
+        "title": "真实 Keycloak Admin API Adapter 可承接生产 onboarding - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-75"
+      },
+      "0987ae93-a673-4b94-8d0f-0cd13cc41fb5": {
+        "updated_at": "2026-05-23T05:57:40.282148Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-97-tenantcontextfilter-envoy-header-securitycontext-notes.md",
+        "slug": "tenantcontextfilter-envoy-header-securitycontext-notes",
+        "document_id": "ce415ac7-58e1-49ba-b38f-75fb8109f3ad",
+        "title": "实现 TenantContextFilter 消费 Envoy 注入 Header 并构建 SecurityContext - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-97"
+      },
+      "0e38966f-11e5-450a-9eec-992eef9051a6": {
+        "updated_at": "2026-05-23T05:58:17.569023Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-108-tenantiamdesiredstate-byo-idpmfa-dedicated-realm-notes.md",
+        "slug": "tenantiamdesiredstate-byo-idpmfa-dedicated-realm-notes",
+        "document_id": "e44a284e-3df1-4e8b-9578-475af63a1485",
+        "title": "扩展 TenantIamDesiredState 模型承载 BYO IdP、MFA 与 Dedicated Realm 配置 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-108"
+      },
+      "0ef937c0-3066-4ef9-8799-6ea32411f839": {
+        "updated_at": "2026-05-23T06:19:18.996567Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-177-desired-state-provisioning-state-notes.md",
+        "slug": "desired-state-provisioning-state-notes",
+        "document_id": "0c685185-41a6-475b-b769-22c195eefc0d",
+        "title": "为 Desired State 与 Provisioning State 领域模型补充不变量与扩展性单元测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-177"
+      },
+      "102d7d9b-23d9-4dbf-928f-d65f79e73d38": {
+        "updated_at": "2026-03-27T11:44:09.225895Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-22-integrate-upstream-routing-inputs-as-projection-update-inputs-notes.md",
+        "slug": "integrate-upstream-routing-inputs-as-projection-update-inputs-notes",
+        "document_id": "03fe2410-c641-4ee7-a101-fc32cb511dab",
+        "title": "Integrate upstream routing inputs as projection update inputs - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-22"
+      },
+      "143db2d9-61cc-4068-b884-050827fe5b4b": {
+        "updated_at": "2026-03-27T11:40:12.691216Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-2-tenant-lifecycle-actions-can-be-orchestrated-as-durable-commands-with-execution.md",
+        "slug": "tenant-lifecycle-actions-can-be-orchestrated-as-durable-commands-with-execution",
+        "document_id": "fdd9ce5f-d328-4ff7-9fe7-5bc0f7f4e800",
+        "title": "Tenant lifecycle actions can be orchestrated as durable commands with execution feedback - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-2"
+      },
+      "171f5973-69da-4ff2-b87a-9986294b6b26": {
+        "updated_at": "2026-05-23T05:59:25.463052Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-126-notes-2.md",
+        "slug": "notes-2",
+        "document_id": "374cd6b0-6ddb-49dd-b831-d304627e8d11",
+        "title": "实现授权决策可观察性与安全日志规范 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-126"
+      },
+      "18f2b09f-9c07-40f0-b120-87aebf24a8ff": {
+        "updated_at": "2026-05-23T05:57:41.767359Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-98-organization-ensure-notes.md",
+        "slug": "organization-ensure-notes",
+        "document_id": "2215217c-2bd1-4a0f-bdd6-003818f954d1",
+        "title": "实现 Organization 的 ensure 与属性校正 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-98"
+      },
+      "1d598927-27bd-4384-ab4a-837a1f31cf36": {
+        "updated_at": "2026-05-23T06:17:38.750274Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-164-configureidentityproviderstep-byo-idp-notes.md",
+        "slug": "configureidentityproviderstep-byo-idp-notes",
+        "document_id": "cb1d7002-5b6c-4460-84d9-e9c8f7233f5e",
+        "title": "实现 ConfigureIdentityProviderStep 扩展点以承接 BYO IdP 场景 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-164"
+      },
+      "1e26ecbe-e719-4454-b4c2-1db84719b722": {
+        "updated_at": "2026-05-23T05:57:01.522112Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-85-keycloakadminport-notes-2.md",
+        "slug": "keycloakadminport-notes-2",
+        "document_id": "9bec8fe2-86f2-4478-8baf-1fc010a8708e",
+        "title": "定义 KeycloakAdminPort 意图型接口与领域错误类型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-85"
+      },
+      "20bbf70c-0891-4704-9312-b6a6f5c1871f": {
+        "updated_at": "2026-05-23T05:58:44.023Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-116-ensuretenantadminrolestep-ensure-notes-2.md",
+        "slug": "ensuretenantadminrolestep-ensure-notes-2",
+        "document_id": "024d063f-71e0-4591-bb8d-ff86b7094825",
+        "title": "实现 EnsureTenantAdminRoleStep 完成角色 ensure 与用户绑定 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-116"
+      },
+      "20d14149-4b55-4c8a-87b3-9fbddbf87287": {
+        "updated_at": "2026-05-23T05:57:09.555529Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-89-keycloak-admin-client-notes-2.md",
+        "slug": "keycloak-admin-client-notes-2",
+        "document_id": "72eeabbd-0e4d-4de9-9fb9-7e22ace210bd",
+        "title": "配置 Keycloak Admin Client 与连接管理 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-89"
+      },
+      "20ed6a29-eb18-44b3-b14c-83e022b6fb9b": {
+        "updated_at": "2026-03-27T11:43:25.012785Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-14-implement-drain-progress-polling-that-tracks-and-persists-observed-drain-status.md",
+        "slug": "implement-drain-progress-polling-that-tracks-and-persists-observed-drain-status",
+        "document_id": "3e664f81-6081-4baa-83f4-b762c38cd989",
+        "title": "Implement drain progress polling that tracks and persists observed drain status during DRAINING - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-14"
+      },
+      "24b45668-5441-423d-8477-e2c74aa7d837": {
+        "updated_at": "2026-05-23T05:57:08.2408Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-88-tenantiamprovisioningstep-stepexecutioncontext-notes-2.md",
+        "slug": "tenantiamprovisioningstep-stepexecutioncontext-notes-2",
+        "document_id": "d4f4a504-dbf8-4cdf-9c34-6afdc5cb4786",
+        "title": "定义 TenantIamProvisioningStep 接口与 StepExecutionContext - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-88"
+      },
+      "25e8f42f-7d28-42da-b7a7-4ea1fa95b37e": {
+        "updated_at": "2026-05-23T06:17:18.41653Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-159-markiamprovisionedstep-publishtenantiamprovisionedeventstep-notes.md",
+        "slug": "markiamprovisionedstep-publishtenantiamprovisionedeventstep-notes",
+        "document_id": "ceeebad6-f972-4c54-a957-2e5ca8ffdaa8",
+        "title": "实现 MarkIamProvisionedStep 与 PublishTenantIamProvisionedEventStep - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-159"
+      },
+      "264011ba-4a24-4b3f-9a91-19c192cf7040": {
+        "updated_at": "2026-03-27T11:44:08.091363Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-21-implement-the-status-query-operation-with-observable-runtime-metadata-notes.md",
+        "slug": "implement-the-status-query-operation-with-observable-runtime-metadata-notes",
+        "document_id": "9b5e4765-ccb2-4195-8ff2-ddf971d1f280",
+        "title": "Implement the status query operation with observable runtime metadata - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-21"
+      },
+      "270da484-b7da-44d4-ae70-74304a35840d": {
+        "updated_at": "2026-05-23T06:00:02.165218Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-132-testcontainers-keycloak-adapter-notes.md",
+        "slug": "testcontainers-keycloak-adapter-notes",
+        "document_id": "e6807eb2-f7c6-4c27-bdfc-9ac77f94b62c",
+        "title": "基于 Testcontainers 验证真实 Keycloak Adapter 幂等语义 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-132"
+      },
+      "2b2b236f-21bc-43a0-8b0b-2de960ff0f4c": {
+        "updated_at": "2026-05-23T05:58:22.472727Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-112-tenantiamprovisioningservice-notes-2.md",
+        "slug": "tenantiamprovisioningservice-notes-2",
+        "document_id": "bc616007-024c-4e40-9305-25376167da49",
+        "title": "实现 TenantIamProvisioningService 端到端编排与失败记录 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-112"
+      },
+      "2be1a6e2-71f0-4f9b-b753-9101a4142d89": {
+        "updated_at": "2026-05-23T05:58:40.949865Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-115-organization-membership-realm-role-ensure-notes.md",
+        "slug": "organization-membership-realm-role-ensure-notes",
+        "document_id": "5e212530-a3da-4640-b86e-bc7fc239e22e",
+        "title": "实现 Organization Membership 与 Realm Role 的 ensure 操作 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-115"
+      },
+      "2c8ae65c-5831-420b-86e8-ec075c94b8a7": {
+        "updated_at": "2026-05-23T05:57:35.173511Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-94-tenantiamstaterepository-port-notes.md",
+        "slug": "tenantiamstaterepository-port-notes",
+        "document_id": "52b7e372-a7e3-4e1a-822c-f5a833e64db6",
+        "title": "定义 TenantIamStateRepository Port 并提供内存实现 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-94"
+      },
+      "2d58d1df-62c2-4059-bd83-39f85243ce83": {
+        "updated_at": "2026-05-23T05:57:31.945413Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-92-identitymoderealmstrategy-notes.md",
+        "slug": "identitymoderealmstrategy-notes",
+        "document_id": "b08fecbf-c839-482e-9608-13d59810a048",
+        "title": "定义 IdentityMode、RealmStrategy 枚举与扩展字段占位类型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-92"
+      },
+      "2f73c5b4-7935-47e2-9381-6eb21af2e682": {
+        "updated_at": "2026-05-23T05:57:00.818594Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-83-tenantawareauthentication-tenantcontextholder-notes.md",
+        "slug": "tenantawareauthentication-tenantcontextholder-notes",
+        "document_id": "a99aa7dd-0080-42ae-86d3-b3c6c507839e",
+        "title": "建立 TenantAwareAuthentication 与 TenantContextHolder 基础模型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-83"
+      },
+      "2fd58091-55ec-4da5-b865-1b1ddae4931a": {
+        "updated_at": "2026-03-27T11:43:47.413524Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-18-implement-the-lifecyclecommandservice-to-accept-validate-and-dispatch-incoming-l.md",
+        "slug": "implement-the-lifecyclecommandservice-to-accept-validate-and-dispatch-incoming-l",
+        "document_id": "232c1ae6-1701-44d3-b687-86d41924d0bf",
+        "title": "Implement the LifecycleCommandService to accept, validate, and dispatch incoming lifecycle commands - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-18"
+      },
+      "31100ba2-1f6e-4cb1-9c86-eb586039ee64": {
+        "updated_at": "2026-05-23T06:17:16.816057Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-158-eventpublisher-port-notes.md",
+        "slug": "eventpublisher-port-notes",
+        "document_id": "b14fea85-dbbb-4840-8ac9-f4f28d5f1fa8",
+        "title": "定义 EventPublisher Port 抽象隔离事件基础设施 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-158"
+      },
+      "330e85c2-f6ff-484b-ab0e-d747b9c4ab2a": {
+        "updated_at": "2026-05-23T06:18:13.44996Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-170-step-pipeline-notes-2.md",
+        "slug": "step-pipeline-notes-2",
+        "document_id": "a4f5bd42-ee6b-40d9-adad-7b90010ccd93",
+        "title": "实现 Step Pipeline 顺序组合与执行器 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-170"
+      },
+      "333f26f4-77ce-4e0b-87aa-bff8d7945b7e": {
+        "updated_at": "2026-05-23T05:59:26.410858Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-127-dedicated-realm-strategy-realm-notes.md",
+        "slug": "dedicated-realm-strategy-realm-notes",
+        "document_id": "aef247cf-298a-4792-9886-3d4ecd718408",
+        "title": "为 Dedicated Realm Strategy 设计 Realm 解析扩展点 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-127"
+      },
+      "33a33f40-3af4-452c-b6ca-1a51ac6e7837": {
+        "updated_at": "2026-03-27T11:42:57.288576Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-7-define-the-explicit-command-interface-and-result-contract-for-dynamic-datasource.md",
+        "slug": "define-the-explicit-command-interface-and-result-contract-for-dynamic-datasource",
+        "document_id": "6a275e4a-a45e-4471-9ce3-5847b1844858",
+        "title": "Define the explicit command interface and result contract for dynamic-datasource - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-7"
+      },
+      "343cab7a-8d53-4549-8dc5-4f4f15361496": {
+        "updated_at": "2026-05-23T05:54:31.534908Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-78-tenant-context-spring-boot-notes.md",
+        "slug": "tenant-context-spring-boot-notes",
+        "document_id": "13f2b44a-e78f-4829-947d-0754e569031a",
+        "title": "可信 Tenant Context 传播链可在 Spring Boot 服务中安全使用 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-78"
+      },
+      "34b66095-3526-46b4-94f9-429be6d32b48": {
+        "updated_at": "2026-05-23T06:15:46.205629Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-135-tenantiamprovisioningstep-stepexecutioncontext-notes.md",
+        "slug": "tenantiamprovisioningstep-stepexecutioncontext-notes",
+        "document_id": "326533a4-f50d-4eea-9d83-77851abad6b7",
+        "title": "定义 TenantIamProvisioningStep 接口与 StepExecutionContext - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-135"
+      },
+      "38c3ecf1-682c-4de6-876a-8f7f82f38a26": {
+        "updated_at": "2026-03-27T11:43:22.450314Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-12-implement-register-and-activate-command-handlers-in-dynamic-datasource-notes.md",
+        "slug": "implement-register-and-activate-command-handlers-in-dynamic-datasource-notes",
+        "document_id": "0eff72e2-aa26-4e81-84e7-9e8a86cc293c",
+        "title": "Implement register and activate command handlers in dynamic-datasource - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-12"
+      },
+      "3c2d1918-f7ba-429a-8290-fb5756f2b959": {
+        "updated_at": "2026-05-23T06:16:44.63987Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-149-iam-onboarding-provisioned-provisioningfailed-notes.md",
+        "slug": "iam-onboarding-provisioned-provisioningfailed-notes",
+        "document_id": "c51f3bd8-a6bc-4136-a43c-8a352c66161f",
+        "title": "定义 IAM Onboarding 输出事件契约 Provisioned 与 ProvisioningFailed - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-149"
+      },
+      "3f23a260-b3b2-4b13-bba0-38e8f6f01035": {
+        "updated_at": "2026-05-23T05:53:43.04404Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-76-kafka-onboarding-notes-2.md",
+        "slug": "kafka-onboarding-notes-2",
+        "document_id": "f6e717a8-58b9-4656-a162-fc4d7b82f423",
+        "title": "Kafka 事件驱动 Onboarding 集成可承接租户生命周期事件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-76"
+      },
+      "3fed74d7-7fa9-40f7-9015-70ea177ecf46": {
+        "updated_at": "2026-05-23T05:52:50.335975Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-74-tenant-iam-notes-2.md",
+        "slug": "tenant-iam-notes-2",
+        "document_id": "0ae9715a-55b9-418a-ba6e-5327a5e7fd5f",
+        "title": "Tenant IAM 事件边界契约可表达上下游事件驱动协作 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-74"
+      },
+      "40131d07-d700-4b53-99bc-acd3616a9c75": {
+        "updated_at": "2026-05-23T06:17:38.64263Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-163-keycloak-organization-membership-notes.md",
+        "slug": "keycloak-organization-membership-notes",
+        "document_id": "15830654-027c-431a-884d-108742e83435",
+        "title": "实现真实 Keycloak Organization Membership 操作 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-163"
+      },
+      "405f1b53-c241-475a-b3dd-1e2d635c618a": {
+        "updated_at": "2026-03-27T11:42:59.908266Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-8-define-the-tenantprojection-data-model-with-all-aggregated-fields-notes.md",
+        "slug": "define-the-tenantprojection-data-model-with-all-aggregated-fields-notes",
+        "document_id": "0f098a24-a806-4d90-9fcf-57396b6a822c",
+        "title": "Define the TenantProjection data model with all aggregated fields - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-8"
+      },
+      "41f2283c-bd69-4ebb-8c36-ca95b696e86f": {
+        "updated_at": "2026-05-23T05:58:16.210974Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-107-fail-closed-notes.md",
+        "slug": "fail-closed-notes",
+        "document_id": "3c54ca03-27dd-4d03-a848-a372238293da",
+        "title": "实现熔断器与 Fail-Closed 默认行为 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-107"
+      },
+      "4585bfc9-9d0e-45c2-b9c3-fc71e314bff8": {
+        "updated_at": "2026-05-23T05:51:59.293539Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-72-provisioning-step-pipeline-reconcile-notes.md",
+        "slug": "provisioning-step-pipeline-reconcile-notes",
+        "document_id": "cb314a4b-2645-4448-8bdc-7292198a7135",
+        "title": "幂等 Provisioning Step Pipeline 可 reconcile 租户身份事实 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-72"
+      },
+      "46e92c12-7a5d-4e8f-985c-d9b8bed408c8": {
+        "updated_at": "2026-05-23T06:16:35.006787Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-147-fake-in-memory-keycloak-adapter-notes.md",
+        "slug": "fake-in-memory-keycloak-adapter-notes",
+        "document_id": "2416e3a3-961a-436f-857e-42d3d1c2dfac",
+        "title": "实现 Fake/In-Memory Keycloak Adapter 承载幂等语义 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-147"
+      },
+      "49b341d3-412c-4188-abd3-6de7426f05f2": {
+        "updated_at": "2026-05-23T05:59:12.035131Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-123-kafka-onboarding-notes.md",
+        "slug": "kafka-onboarding-notes",
+        "document_id": "0174d460-43ec-4d78-8114-479e9c94d751",
+        "title": "编写 Kafka 端到端事件驱动 onboarding 集成测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-123"
+      },
+      "50656e8b-7257-4728-b7e5-6bcdd8f42dde": {
+        "updated_at": "2026-05-23T06:16:49.50062Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-151-ensuretenantadminrolestep-ensure-notes.md",
+        "slug": "ensuretenantadminrolestep-ensure-notes",
+        "document_id": "191ded42-ef97-4b43-a509-69567d82a8b3",
+        "title": "实现 EnsureTenantAdminRoleStep 角色 ensure 与角色分配 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-151"
+      },
+      "53f74f12-1692-480a-93b0-344db36aad3c": {
+        "updated_at": "2026-05-23T05:57:32.143897Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-93-eventpublisher-kafka-adapter-iam-notes.md",
+        "slug": "eventpublisher-kafka-adapter-iam-notes",
+        "document_id": "1b86fdb5-85cc-4f35-9f2a-4042fae05fcc",
+        "title": "实现 EventPublisher 的 Kafka Adapter 发布 IAM 成功与失败事件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-93"
+      },
+      "56ec48a8-9af6-4bc3-948a-7559ac93cbf8": {
+        "updated_at": "2026-03-27T11:43:47.222306Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-17-implement-drain-timeout-enforcement-that-fires-when-draindeadline-is-exceeded-du.md",
+        "slug": "implement-drain-timeout-enforcement-that-fires-when-draindeadline-is-exceeded-du",
+        "document_id": "f80e1397-01db-4e05-82ba-317aad84e59d",
+        "title": "Implement drain timeout enforcement that fires when drain_deadline is exceeded during DRAINING - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-17"
+      },
+      "582115d8-3092-4420-8013-2057390c6051": {
+        "updated_at": "2026-05-23T05:59:39.490894Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-128-tenant-context-notes.md",
+        "slug": "tenant-context-notes",
+        "document_id": "0f54371e-caeb-4c16-b098-b5f1a984f36d",
+        "title": "端到端验证 Tenant Context 传播链的安全与隔离行为 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-128"
+      },
+      "5ceeb2d8-10a8-4b4e-b0c9-87901ac47011": {
+        "updated_at": "2026-05-23T06:18:00.572224Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-167-keycloak-realm-role-user-role-notes.md",
+        "slug": "keycloak-realm-role-user-role-notes",
+        "document_id": "4eb722df-87d0-4171-aeb4-bc04bc7a869d",
+        "title": "实现真实 Keycloak Realm Role 与 User Role 分配操作 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-167"
+      },
+      "6124e75f-7caa-4062-bcda-68d3811e9d47": {
+        "updated_at": "2026-03-27T11:41:21.651468Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-4-tenant-offboarding-can-be-executed-as-an-observable-draining-workflow-with-timeo.md",
+        "slug": "tenant-offboarding-can-be-executed-as-an-observable-draining-workflow-with-timeo",
+        "document_id": "51716aa9-8ece-458f-b1bd-0a90d00c45be",
+        "title": "Tenant offboarding can be executed as an observable DRAINING workflow with timeout handling - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-4"
+      },
+      "62cc4196-5af5-45e8-8441-89ad4f322113": {
+        "updated_at": "2026-03-27T11:43:23.200846Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-13-implement-the-tenantprojection-persistence-store-with-upsert-and-query-operation.md",
+        "slug": "implement-the-tenantprojection-persistence-store-with-upsert-and-query-operation",
+        "document_id": "33fd2c72-82d5-47fb-843a-9ce738938ed9",
+        "title": "Implement the TenantProjection persistence store with upsert and query operations - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-13"
+      },
+      "67bb53d8-4266-4b8b-bdda-d2d55e06b4af": {
+        "updated_at": "2026-05-23T06:16:57.197967Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-154-adminuser-temporarycredentialpolicy-notes.md",
+        "slug": "adminuser-temporarycredentialpolicy-notes",
+        "document_id": "98b953a9-dde2-43e9-89de-153081f5043b",
+        "title": "建模 AdminUser 与 TemporaryCredentialPolicy 值对象 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-154"
+      },
+      "6aa56d02-2b89-44aa-a2fe-4d9d7bda4078": {
+        "updated_at": "2026-05-23T06:18:09.096924Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-169-authorization-service-evaluate-rest-http-notes.md",
+        "slug": "authorization-service-evaluate-rest-http-notes",
+        "document_id": "b8883a9f-4ab6-4940-b00a-07e44676be75",
+        "title": "交付 authorization-service `/evaluate` REST 契约与 HTTP 语义 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-169"
+      },
+      "6b0523ba-6976-4a4b-a784-5ff6775f56d0": {
+        "updated_at": "2026-05-23T06:15:48.58951Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-136-tenantiamprovisioningstate-notes.md",
+        "slug": "tenantiamprovisioningstate-notes",
+        "document_id": "043cf04b-3e25-437f-84d9-1e95031431c1",
+        "title": "建模 TenantIamProvisioningState 实体与状态机枚举 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-136"
+      },
+      "6c212524-0cc4-482a-be40-926cf64412f1": {
+        "updated_at": "2026-05-23T06:16:30.626724Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-146-ensureadminuserstep-ensureorganizationmembershipstep-notes.md",
+        "slug": "ensureadminuserstep-ensureorganizationmembershipstep-notes",
+        "document_id": "59f903ea-c7ae-44c8-a738-9d950016e1a4",
+        "title": "实现 EnsureAdminUserStep 与 EnsureOrganizationMembershipStep - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-146"
+      },
+      "6d4eccf8-2e77-4995-9615-dd5d2753201f": {
+        "updated_at": "2026-05-23T05:59:59.028726Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-131-step-pipeline-notes-3.md",
+        "slug": "step-pipeline-notes-3",
+        "document_id": "c1ff3582-7636-4216-8d87-bf4fbaba4ab1",
+        "title": "组装默认 Step Pipeline 并定义顺序执行语义 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-131"
+      },
+      "70d9d5cc-d970-41d9-a391-e0c7c0a98ed3": {
+        "updated_at": "2026-05-23T06:16:38.149808Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-148-policy-abac-denyreason-notes.md",
+        "slug": "policy-abac-denyreason-notes",
+        "document_id": "df0e9ae1-8aa7-4471-99ad-e40c4d35ef95",
+        "title": "实现 Policy ABAC 评估算法与 DenyReason 决策语义 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-148"
+      },
+      "71f2cbb3-5b20-4814-abf6-cc0fc8a7ea5b": {
+        "updated_at": "2026-03-27T11:44:25.359924Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-25-implement-the-reconciliation-loop-to-detect-and-re-drive-state-drift-after-resta.md",
+        "slug": "implement-the-reconciliation-loop-to-detect-and-re-drive-state-drift-after-resta",
+        "document_id": "13a22c14-b4b5-45f7-8ad8-cd1386ff7125",
+        "title": "Implement the reconciliation loop to detect and re-drive state drift after restart - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-25"
+      },
+      "73cc8c1b-a8d7-4abb-803f-611c14f517b5": {
+        "updated_at": "2026-05-23T05:58:52.96997Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-118-spring-security-pep-preauthorize-notes.md",
+        "slug": "spring-security-pep-preauthorize-notes",
+        "document_id": "8dec87f0-3e9b-425c-9c7b-1be745db8beb",
+        "title": "提供 Spring Security PEP 集成与 @PreAuthorize 角色预筛模式 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-118"
+      },
+      "744013d5-2387-44d8-bada-21698cb70c70": {
+        "updated_at": "2026-03-27T11:45:21.043371Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-30-implement-restart-reconciliation-to-resume-inprogress-and-pending-commands-after.md",
+        "slug": "implement-restart-reconciliation-to-resume-inprogress-and-pending-commands-after",
+        "document_id": "88495aaa-b929-482c-8308-9f5f42b2c80c",
+        "title": "Implement restart reconciliation to resume IN_PROGRESS and PENDING commands after process restart - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-30"
+      },
+      "7460277b-7dfa-4e35-8624-97973466cc42": {
+        "updated_at": "2026-05-23T05:57:10.735565Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-90-secretstoreport-notes.md",
+        "slug": "secretstoreport-notes",
+        "document_id": "0b82a8af-a2bf-4df4-9821-34524348b2d5",
+        "title": "定义 SecretStorePort 抽象与内存实现承载凭证读取 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-90"
+      },
+      "748a7835-7cc3-4ceb-9219-a53a7f10e9cc": {
+        "updated_at": "2026-05-23T05:57:49.32284Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-101-eventpublisher-port-notes-2.md",
+        "slug": "eventpublisher-port-notes-2",
+        "document_id": "f04e8814-4a02-4c0a-b365-a3d999ada6b3",
+        "title": "定义 EventPublisher Port 抽象 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-101"
+      },
+      "753b4aff-08e5-4a59-8a12-345bac4d31e9": {
+        "updated_at": "2026-03-27T11:44:34.960908Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-27-expose-a-query-api-for-retrieving-tenant-projections-without-hitting-upstream-sy.md",
+        "slug": "expose-a-query-api-for-retrieving-tenant-projections-without-hitting-upstream-sy",
+        "document_id": "60aaa12c-4387-4c5e-9ceb-0c1160e5a8ff",
+        "title": "Expose a query API for retrieving tenant projections without hitting upstream systems - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-27"
+      },
+      "76a659f8-532c-4a20-a4d4-a16daaec229a": {
+        "updated_at": "2026-05-23T06:17:13.342396Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-156-fake-adapter-notes.md",
+        "slug": "fake-adapter-notes",
+        "document_id": "4ed64027-b474-44f8-8fe0-74ffb5c0c462",
+        "title": "编写 Fake Adapter 幂等语义单元测试套件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-156"
+      },
+      "76f55251-a3fd-4478-bdb8-9714667d9f47": {
+        "updated_at": "2026-05-23T05:58:20.329618Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-111-in-memory-eventpublisher-notes.md",
+        "slug": "in-memory-eventpublisher-notes",
+        "document_id": "c5582c7a-743b-4ba9-b245-a8b3b4cf6ad1",
+        "title": "实现 In-Memory EventPublisher 适配器 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-111"
+      },
+      "7b0a23e4-7aed-402e-8da0-7ce2bad1173b": {
+        "updated_at": "2026-05-23T05:58:56.747955Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-121-mdc-tenantid-correlationid-notes.md",
+        "slug": "mdc-tenantid-correlationid-notes",
+        "document_id": "c2047f40-435d-474c-a48c-5b70c63ea600",
+        "title": "集成 MDC 日志注入 tenantId 与 correlationId - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-121"
+      },
+      "7e7c0b57-88e2-4b62-a423-77ee29061795": {
+        "updated_at": "2026-05-23T05:57:50.775737Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-102-fake-in-memory-keycloak-adapter-mvp-notes.md",
+        "slug": "fake-in-memory-keycloak-adapter-mvp-notes",
+        "document_id": "819e0f30-20ea-479d-b885-110368545402",
+        "title": "实现 Fake/In-Memory Keycloak Adapter 承载 MVP 流程 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-102"
+      },
+      "7ed24ddf-e6a4-4f83-a0a1-adf8978ecbac": {
+        "updated_at": "2026-05-23T06:18:42.588198Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-173-tenantiamprovisioningstate-tenantiamstatus-notes.md",
+        "slug": "tenantiamprovisioningstate-tenantiamstatus-notes",
+        "document_id": "518881e9-8b89-461b-9106-2a7571616ce4",
+        "title": "建模 TenantIamProvisioningState 与 TenantIamStatus 状态机 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-173"
+      },
+      "84d4e472-cfee-4df6-b6b2-9addc7603ebf": {
+        "updated_at": "2026-05-23T05:54:05.546259Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-77-secretstore-iam-byo-idp-mfa-notes.md",
+        "slug": "secretstore-iam-byo-idp-mfa-notes",
+        "document_id": "5a184fff-3769-46a3-b527-7cddd52edaa4",
+        "title": "SecretStore 与企业 IAM 扩展点可承接 BYO IdP 与 MFA - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-77"
+      },
+      "85706d16-17c9-4a51-9962-fd101ae48f9a": {
+        "updated_at": "2026-05-23T05:58:16.025109Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-106-ensureadminuserstep-ensureorganizationmembershipstep-notes-2.md",
+        "slug": "ensureadminuserstep-ensureorganizationmembershipstep-notes-2",
+        "document_id": "501f3676-1012-4337-b2d3-4829570c350e",
+        "title": "实现 EnsureAdminUserStep 与 EnsureOrganizationMembershipStep - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-106"
+      },
+      "8c75479f-d104-488f-8e31-fc15c1e6ab96": {
+        "updated_at": "2026-05-23T06:18:31.284893Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-70-tenant-iam-desired-state-notes.md",
+        "slug": "tenant-iam-desired-state-notes",
+        "document_id": "9cc5545a-68ef-46bf-89ed-391db9d5d797",
+        "title": "Tenant IAM Desired State 领域模型可表达租户身份事实 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-70"
+      },
+      "8d4e1122-0bf6-4db6-baca-1dcf4e17043e": {
+        "updated_at": "2026-05-23T06:19:03.196905Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-175-outbox-pattern-notes.md",
+        "slug": "outbox-pattern-notes",
+        "document_id": "17595454-0ca2-4184-acd6-4849e87e08d0",
+        "title": "通过 Outbox Pattern 可靠发布授权领域事件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-175"
+      },
+      "8f1ca5d8-1603-4b7e-b128-5e6d4328e1c2": {
+        "updated_at": "2026-03-27T11:44:57.291388Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-29-expose-a-command-status-query-api-so-callers-can-poll-lifecycle-command-progress.md",
+        "slug": "expose-a-command-status-query-api-so-callers-can-poll-lifecycle-command-progress",
+        "document_id": "c95fa2e8-ce6c-4be4-939a-3674654eef3f",
+        "title": "Expose a command status query API so callers can poll lifecycle command progress - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-29"
+      },
+      "90a37075-321f-4c22-a8c8-9d3b7d383d51": {
+        "updated_at": "2026-05-23T06:19:00.092225Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-174-realmstrategy-dedicated-realm-notes.md",
+        "slug": "realmstrategy-dedicated-realm-notes",
+        "document_id": "362df698-36c5-4032-a252-90e6bea848b2",
+        "title": "引入 RealmStrategy 解析扩展点以承接 Dedicated Realm 未来场景 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-174"
+      },
+      "920fbd7f-a972-454b-97cc-146c317c16fc": {
+        "updated_at": "2026-05-23T05:57:01.723993Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-86-tenantiamprovisioningstate-notes-2.md",
+        "slug": "tenantiamprovisioningstate-notes-2",
+        "document_id": "848633e9-a564-4bad-9266-0b8281126994",
+        "title": "建模 TenantIamProvisioningState 聚合与状态机转换规则 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-86"
+      },
+      "96c5c111-ee58-4177-acbe-197c728b0f48": {
+        "updated_at": "2026-03-27T11:43:31.925205Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-15-implement-the-tenantruntimestate-aggregate-with-desired-vs-actual-state-modeling.md",
+        "slug": "implement-the-tenantruntimestate-aggregate-with-desired-vs-actual-state-modeling",
+        "document_id": "107c8f92-fd7d-4c50-bcad-fdc09ce1116b",
+        "title": "Implement the TenantRuntimeState aggregate with desired-vs-actual state modeling - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-15"
+      },
+      "97613845-dfbc-47ff-91b9-890ff8c7976f": {
+        "updated_at": "2026-05-23T06:16:11.4769Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-143-tenantid-tier-email-correlationid-notes.md",
+        "slug": "tenantid-tier-email-correlationid-notes",
+        "document_id": "dfb7362a-4e8e-45a5-87f4-2843d3c4e31f",
+        "title": "建立基础标识与原语值对象（TenantId / Tier / Email / CorrelationId）及领域校验异常 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-143"
+      },
+      "98572d06-8fcb-4299-b952-64817274f051": {
+        "updated_at": "2026-03-27T11:43:18.369189Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-11-implement-durable-persistence-for-lifecyclecommand-records-with-idempotency-enfo.md",
+        "slug": "implement-durable-persistence-for-lifecyclecommand-records-with-idempotency-enfo",
+        "document_id": "3efe697d-b7a1-4324-807a-2ff58b620dc6",
+        "title": "Implement durable persistence for LifecycleCommand records with idempotency enforcement - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-11"
+      },
+      "9a8b50af-f643-4474-a3b6-9ab20287e9d5": {
+        "updated_at": "2026-05-23T06:16:18.786316Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-144-tenantiamstaterepository-notes.md",
+        "slug": "tenantiamstaterepository-notes",
+        "document_id": "d82ebb03-0ec8-418f-a9c8-1d67d51d36bb",
+        "title": "定义 TenantIamStateRepository 端口与内存实现 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-144"
+      },
+      "9b66bd20-cdbf-415d-98d9-cdd9e7abced2": {
+        "updated_at": "2026-05-23T05:51:31.247123Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-71-keycloak-admin-port-fake-adapter-notes.md",
+        "slug": "keycloak-admin-port-fake-adapter-notes",
+        "document_id": "de12c755-6a01-446a-b096-fddee649d3b0",
+        "title": "Keycloak Admin Port 与 Fake Adapter 可隔离外部身份系统 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-71"
+      },
+      "9deb6d38-3556-4d76-b121-d31279b5d5f7": {
+        "updated_at": "2026-05-23T06:16:24.100292Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-145-eventpublisher-kafka-iam-notes.md",
+        "slug": "eventpublisher-kafka-iam-notes",
+        "document_id": "0979baa7-dd69-4656-bdfd-2ba58bd2b2a3",
+        "title": "EventPublisher 的 Kafka 适配器发布 IAM 成功/失败事件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-145"
+      },
+      "9e705258-115a-4196-ad07-3839e9416e78": {
+        "updated_at": "2026-05-23T05:57:01.330839Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-84-authorization-bc-role-roleassignment-policy-notes.md",
+        "slug": "authorization-bc-role-roleassignment-policy-notes",
+        "document_id": "d1850faa-55cd-49d0-a8d8-adf71af197e7",
+        "title": "建模 Authorization BC 核心聚合 Role / RoleAssignment / Policy - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-84"
+      },
+      "a06934d0-f220-433f-b32c-5b5a6830042f": {
+        "updated_at": "2026-05-23T06:17:26.50522Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-161-identitymode-realmstrategy-identityprovider-policy-notes.md",
+        "slug": "identitymode-realmstrategy-identityprovider-policy-notes",
+        "document_id": "12feb930-6a9c-45c3-b1f8-8173ee0ac958",
+        "title": "定义 IdentityMode / RealmStrategy 枚举与 IdentityProvider / Policy 扩展占位类型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-161"
+      },
+      "a1318d26-212f-4e43-978d-abe515479cdc": {
+        "updated_at": "2026-03-27T11:40:45.489803Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-3-dynamic-datasource-can-execute-explicit-lifecycle-commands-with-observable-seman.md",
+        "slug": "dynamic-datasource-can-execute-explicit-lifecycle-commands-with-observable-seman",
+        "document_id": "1d7cedbc-dc0e-41b3-a040-2ce838460495",
+        "title": "dynamic-datasource can execute explicit lifecycle commands with observable semantics - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-3"
+      },
+      "a252b447-43b4-4217-abd8-b6329f49af27": {
+        "updated_at": "2026-05-23T05:58:56.362578Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-120-roleassignmentrepository-policyrepository-notes.md",
+        "slug": "roleassignmentrepository-policyrepository-notes",
+        "document_id": "6a7efd4d-cffb-4720-87aa-54194af8008b",
+        "title": "实现 RoleAssignmentRepository 与 PolicyRepository 持久化边界 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-120"
+      },
+      "a6595e19-5944-4f00-baa0-dbc210040fa6": {
+        "updated_at": "2026-05-23T06:15:50.406148Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-137-iam-onboarding-tenantinfrastructureprovisionedevent-notes.md",
+        "slug": "iam-onboarding-tenantinfrastructureprovisionedevent-notes",
+        "document_id": "285116e2-3a47-47c0-9c45-b6cb4ce2a2e0",
+        "title": "定义 IAM Onboarding 输入事件契约 TenantInfrastructureProvisionedEvent - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-137"
+      },
+      "a703c9e7-45d5-4ae3-b087-ff5d63002ba3": {
+        "updated_at": "2026-05-23T05:59:19.852855Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-124-markiamprovisionedstep-publishtenantiamprovisionedeventstep-notes-2.md",
+        "slug": "markiamprovisionedstep-publishtenantiamprovisionedeventstep-notes-2",
+        "document_id": "5fca7d07-9b0c-4574-b563-2489accdfb8f",
+        "title": "实现 MarkIamProvisionedStep 与 PublishTenantIamProvisionedEventStep 终态步骤 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-124"
+      },
+      "a83402a7-20f6-49dd-9cc5-344f4ed31ef5": {
+        "updated_at": "2026-05-23T05:55:00.687136Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-79-authorization-service-pdp-abac-notes.md",
+        "slug": "authorization-service-pdp-abac-notes",
+        "document_id": "ddcbe2b8-42f8-465e-b28b-a77c3b18944b",
+        "title": "Authorization Service PDP 契约与聚合可承载 ABAC 决策 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-79"
+      },
+      "aa43b3a5-c021-4674-9888-081066a2e1be": {
+        "updated_at": "2026-05-23T05:58:54.417587Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-119-configureidentityproviderstep-configuremfapolicystep-notes.md",
+        "slug": "configureidentityproviderstep-configuremfapolicystep-notes",
+        "document_id": "28f4b7ec-dacd-4f21-9c88-1521ec995e3a",
+        "title": "实现 ConfigureIdentityProviderStep 与 ConfigureMfaPolicyStep 扩展步骤 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-119"
+      },
+      "aaab41fe-c579-4a49-9a6e-4d2bd90e05bd": {
+        "updated_at": "2026-05-23T05:58:20.064852Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-110-pdp-http-post-api-v1-authorization-evaluate-notes.md",
+        "slug": "pdp-http-post-api-v1-authorization-evaluate-notes",
+        "document_id": "0109ab61-400c-4226-bdd0-0af87b057f93",
+        "title": "暴露 PDP HTTP 契约 POST /api/v1/authorization/evaluate - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-110"
+      },
+      "abc6e04f-7293-44de-80bb-2a905fef7b32": {
+        "updated_at": "2026-03-27T11:43:46.462325Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-16-implement-suspend-start-drain-and-close-command-handlers-in-dynamic-datasource-n.md",
+        "slug": "implement-suspend-start-drain-and-close-command-handlers-in-dynamic-datasource-n",
+        "document_id": "5384ef36-f3d9-4ec1-b590-f099aa482427",
+        "title": "Implement suspend, start-drain, and close command handlers in dynamic-datasource - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-16"
+      },
+      "ac6429ec-8097-4b92-b4ed-0df6d3fedea6": {
+        "updated_at": "2026-05-23T06:00:52.806852Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-133-ensure-step-notes.md",
+        "slug": "ensure-step-notes",
+        "document_id": "f20533d2-d80e-4c37-9bd2-a8880605f33d",
+        "title": "编写每个 Ensure Step 的幂等单元测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-133"
+      },
+      "ad33f7fb-cb9b-4d9a-9e97-6a12cb3a2185": {
+        "updated_at": "2026-05-23T05:58:12.136975Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-104-admin-user-ensure-notes.md",
+        "slug": "admin-user-ensure-notes",
+        "document_id": "cce652e9-a3c7-41ad-a057-6bf6187cd1b8",
+        "title": "实现 Admin User 的 ensure 与临时凭证策略 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-104"
+      },
+      "b3e8a1cb-5102-4cb3-beea-8c4340abb611": {
+        "updated_at": "2026-05-23T05:56:59.822842Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-82-tenant-iam-notes.md",
+        "slug": "tenant-iam-notes",
+        "document_id": "ecb9ef7a-fa8e-406b-8929-e72d82d42499",
+        "title": "定义 Tenant IAM 输入/输出领域事件契约 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-82"
+      },
+      "b4e55420-f875-4541-9f54-6d0ce56bc1e7": {
+        "updated_at": "2026-05-23T06:18:02.633601Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-168-tenantiamdesiredstate-notes.md",
+        "slug": "tenantiamdesiredstate-notes",
+        "document_id": "2c4ef71f-95ac-41f1-9133-379d5961d6ea",
+        "title": "实现 TenantIamDesiredState 聚合与最小输入工厂 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-168"
+      },
+      "b6a4bab3-3103-4f1c-8733-d0f7acfb506d": {
+        "updated_at": "2026-05-23T06:15:57.612743Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-140-authorization-bc-notes.md",
+        "slug": "authorization-bc-notes",
+        "document_id": "7fb7e61a-ed12-4956-a05e-21242010d0c4",
+        "title": "建立 Authorization BC 聚合与值对象领域模型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-140"
+      },
+      "b92179a6-59c9-4987-9c4d-3c30d74af615": {
+        "updated_at": "2026-05-23T05:58:52.480237Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-117-notes-3.md",
+        "slug": "notes-3",
+        "document_id": "5a6a03fb-6390-4132-9991-1c105a3b4ab0",
+        "title": "编写事件契约与发布行为的验证场景 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-117"
+      },
+      "ba63b0d8-42cf-4713-9ec6-a02a0dbe4013": {
+        "updated_at": "2026-05-23T06:17:16.151727Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-157-keycloak-user-email-ensure-notes.md",
+        "slug": "keycloak-user-email-ensure-notes",
+        "document_id": "5921a476-c362-4134-a082-67edb687a5fd",
+        "title": "实现真实 Keycloak User 操作（按 email ensure + 临时凭证策略） - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-157"
+      },
+      "bba824b0-b333-4d0c-9e34-db881377477a": {
+        "updated_at": "2026-05-23T05:52:25.914601Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-73-tenant-iam-provisioning-service-onboarding-notes.md",
+        "slug": "tenant-iam-provisioning-service-onboarding-notes",
+        "document_id": "3052d612-916d-4076-bc3d-0a71d3132878",
+        "title": "Tenant IAM Provisioning Service 与本地状态机可端到端编排 onboarding - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-73"
+      },
+      "bcad0cba-9df8-4c26-8337-47caff79d5ec": {
+        "updated_at": "2026-05-23T06:18:40.64046Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-172-keycloak-sdk-notes.md",
+        "slug": "keycloak-sdk-notes",
+        "document_id": "1b3d1d39-08b9-4f5a-bcf6-9862a9e35687",
+        "title": "Keycloak 异常映射层：将 SDK 异常转译为领域错误 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-172"
+      },
+      "be1b961e-e50c-4877-9355-0ff5dffab557": {
+        "updated_at": "2026-05-23T05:58:38.395542Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-114-kafka-correlationid-notes.md",
+        "slug": "kafka-correlationid-notes",
+        "document_id": "bb73b7d3-bdb9-45da-9a0f-8d1b7191d453",
+        "title": "在 Kafka 事件链路贯通 correlationId 与可观察性 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-114"
+      },
+      "c5ac7ac5-0ef1-4b83-973f-ed705f3cb571": {
+        "updated_at": "2026-05-23T06:17:48.398722Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-165-in-memory-eventpublisher-adapter-mvp-notes.md",
+        "slug": "in-memory-eventpublisher-adapter-mvp-notes",
+        "document_id": "8965baf0-9b33-43c2-b8d6-c3b3b96605e3",
+        "title": "实现 In-Memory EventPublisher Adapter 以支持 MVP 验证 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-165"
+      },
+      "c604531c-1d38-4117-bad0-d712a7df2c0f": {
+        "updated_at": "2026-05-23T06:16:55.077918Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-153-notes.md",
+        "slug": "notes",
+        "document_id": "123aa247-ce7c-4710-b2db-ff27a76d4bb7",
+        "title": "入站事件去重与重复消费安全策略 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-153"
+      },
+      "c633c147-9bc7-4f05-aeb8-da19801a6d9f": {
+        "updated_at": "2026-03-27T11:42:56.76335Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-6-define-the-lifecyclecommand-model-with-identity-type-payload-and-status-tracking.md",
+        "slug": "define-the-lifecyclecommand-model-with-identity-type-payload-and-status-tracking",
+        "document_id": "713089b6-01b1-4e05-b109-5c68c6ec007e",
+        "title": "Define the LifecycleCommand model with identity, type, payload, and status tracking fields - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-6"
+      },
+      "c6b147e7-18ad-41f5-878e-43f611b1cf31": {
+        "updated_at": "2026-05-23T05:55:29.030298Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-80-authorization-thin-client-sdk-fail-closed-pdp-notes.md",
+        "slug": "authorization-thin-client-sdk-fail-closed-pdp-notes",
+        "document_id": "b5f6baee-8caf-438f-8863-e4cd4d03f3a7",
+        "title": "Authorization Thin Client SDK 可让业务服务安全 Fail-Closed 调用 PDP - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-80"
+      },
+      "c8ffac3e-efc9-423a-bdff-851ffa904d5f": {
+        "updated_at": "2026-05-23T05:57:40.118069Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-96-policyevaluate-abac-denyreason-notes.md",
+        "slug": "policyevaluate-abac-denyreason-notes",
+        "document_id": "68846fb6-e88a-43ab-9e59-a072749b4968",
+        "title": "实现 Policy.evaluate() ABAC 决策逻辑与 DenyReason 映射 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-96"
+      },
+      "c981c932-bf87-45a2-9761-8adaacfa6297": {
+        "updated_at": "2026-05-23T06:16:07.935608Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-142-secretstoreport-vault-notes.md",
+        "slug": "secretstoreport-vault-notes",
+        "document_id": "cc082023-2531-4454-a0ea-62b9f5d60a00",
+        "title": "定义 SecretStorePort 抽象与内存实现以承接未来 Vault 接入 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-142"
+      },
+      "cf114670-540a-43f4-9458-6ea17aef3a4a": {
+        "updated_at": "2026-05-23T06:17:50.213Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-166-onboarding-notes.md",
+        "slug": "onboarding-notes",
+        "document_id": "704cabc8-6f61-412d-b82f-e0ac87287a91",
+        "title": "编写端到端 onboarding 编排与重试场景测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-166"
+      },
+      "d1cb3a1f-32ae-499c-a745-5b8d0051a104": {
+        "updated_at": "2026-03-27T11:44:37.480252Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-28-implement-execution-callback-ingestion-to-update-command-status-from-asynchronou.md",
+        "slug": "implement-execution-callback-ingestion-to-update-command-status-from-asynchronou",
+        "document_id": "d55eec1d-235b-4cb6-a19f-1b297d302c94",
+        "title": "Implement execution callback ingestion to update command status from asynchronous execution results - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-28"
+      },
+      "d590587d-ab40-45c7-9c5e-45bfa5124923": {
+        "updated_at": "2026-03-27T11:43:01.910549Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-9-implement-drain-initiation-handler-that-transitions-a-tenant-into-draining-and-r.md",
+        "slug": "implement-drain-initiation-handler-that-transitions-a-tenant-into-draining-and-r",
+        "document_id": "8ccbfb93-9c41-463a-9a29-944e1b710877",
+        "title": "Implement drain initiation handler that transitions a tenant into DRAINING and records deadline - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-9"
+      },
+      "d84964c9-93d6-4ae9-a67e-0fded5f77ff6": {
+        "updated_at": "2026-05-23T05:59:04.233761Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-122-onboarding-notes-2.md",
+        "slug": "onboarding-notes-2",
+        "document_id": "2d47d560-ae1a-4c19-8e86-10c80a687785",
+        "title": "编写端到端 onboarding 编排验证场景 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-122"
+      },
+      "d8fbcd6a-48d2-43b2-9944-9a2e3d77044e": {
+        "updated_at": "2026-05-23T05:59:22.301571Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-125-keycloak-notes.md",
+        "slug": "keycloak-notes",
+        "document_id": "8905582e-0692-4fbe-b1b3-c7bbec1681da",
+        "title": "将 Keycloak 异常映射为领域错误 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-125"
+      },
+      "d9618255-fb53-4cfc-9649-cd22d3b658f0": {
+        "updated_at": "2026-05-21T08:25:53.895198Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-10-define-the-tenant-lifecycle-state-enum-and-valid-transition-graph-notes.md",
+        "slug": "define-the-tenant-lifecycle-state-enum-and-valid-transition-graph-notes",
+        "document_id": "5bc1cc26-4baf-4b21-a683-40f09b9e7a53",
+        "title": "Define the tenant lifecycle state enum and valid transition graph - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-10"
+      },
+      "dc9118f3-55c3-4b55-a0a4-9deed03065bf": {
+        "updated_at": "2026-05-23T06:16:45.054944Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-150-keycloak-organization-reconcile-notes.md",
+        "slug": "keycloak-organization-reconcile-notes",
+        "document_id": "f4766f03-2e6a-452a-ab87-9cdfb95c8da6",
+        "title": "实现真实 Keycloak Organization 操作（创建、查询、属性 reconcile） - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-150"
+      },
+      "dccd8aee-8694-45dd-97ca-b54b0c542987": {
+        "updated_at": "2026-05-23T05:59:57.72891Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-130-sdk-notes.md",
+        "slug": "sdk-notes",
+        "document_id": "e403da65-6118-4f91-81da-71c6ebe0918c",
+        "title": "编写 SDK 端到端验证测试场景 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-130"
+      },
+      "dd1c5cfd-fc05-4283-b9e5-1f2b743e64ec": {
+        "updated_at": "2026-05-23T05:57:04.988144Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-87-thin-client-sdk-api-evaluationcontext-notes.md",
+        "slug": "thin-client-sdk-api-evaluationcontext-notes",
+        "document_id": "9f2f230a-feff-40b8-9e50-eed3e5b3e08c",
+        "title": "定义 Thin Client SDK 公共 API 与 EvaluationContext 请求/响应模型 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-87"
+      },
+      "dfc8152d-2520-4a4d-837d-da05eb52198a": {
+        "updated_at": "2026-03-27T11:41:52.510737Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-5-tenant-projection-can-be-maintained-as-a-local-decision-ready-view-from-upstream.md",
+        "slug": "tenant-projection-can-be-maintained-as-a-local-decision-ready-view-from-upstream",
+        "document_id": "f1bfcb85-5f3c-4a5c-b1f9-28485ed54ddb",
+        "title": "Tenant projection can be maintained as a local, decision-ready view from upstream inputs - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-5"
+      },
+      "e1d21fcd-2985-4357-89de-1a5c109836c6": {
+        "updated_at": "2026-05-23T05:58:36.909297Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-113-fake-keycloak-adapter-notes.md",
+        "slug": "fake-keycloak-adapter-notes",
+        "document_id": "e383ae76-17a6-40c1-b262-d9e1e1747bd8",
+        "title": "为 Fake Keycloak Adapter 编写幂等性与冲突处理契约测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-113"
+      },
+      "e5d6d4e0-fd1a-4d17-915b-6874908a987f": {
+        "updated_at": "2026-05-23T06:15:44.771343Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-134-kafka-consumer-tenantinfrastructureprovisionedevent-onboarding-notes.md",
+        "slug": "kafka-consumer-tenantinfrastructureprovisionedevent-onboarding-notes",
+        "document_id": "a6892fcd-d417-4f64-ab43-4e2106b29ca3",
+        "title": "Kafka Consumer 接收 TenantInfrastructureProvisionedEvent 并触发 onboarding - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-134"
+      },
+      "e6537965-d5b9-42fe-a247-955110244715": {
+        "updated_at": "2026-05-23T05:59:43.063573Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-129-outbox-pattern-notes-2.md",
+        "slug": "outbox-pattern-notes-2",
+        "document_id": "bbcf64cf-4973-498a-814a-5ff585304048",
+        "title": "通过 Outbox Pattern 可靠发布授权领域事件 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-129"
+      },
+      "e7cf7519-f044-45ba-b50f-d0dcff93a065": {
+        "updated_at": "2026-05-23T06:16:01.322897Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-141-ensureorganizationstep-ensureorganizationattributesstep-notes.md",
+        "slug": "ensureorganizationstep-ensureorganizationattributesstep-notes",
+        "document_id": "582ecad6-63a9-4cac-b00c-3edd3343c350",
+        "title": "实现 EnsureOrganizationStep 与 EnsureOrganizationAttributesStep - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-141"
+      },
+      "e8774817-16ba-4c59-934c-14803d53c035": {
+        "updated_at": "2026-03-27T11:39:43.406024Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-1-tenant-lifecycle-state-machine-can-be-managed-as-durable-runtime-state-notes.md",
+        "slug": "tenant-lifecycle-state-machine-can-be-managed-as-durable-runtime-state-notes",
+        "document_id": "e01f5451-457a-4793-92be-4864912d723c",
+        "title": "Tenant lifecycle state machine can be managed as durable runtime state - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-1"
+      },
+      "e939f274-4a96-44a2-a30c-4dc0664baf4a": {
+        "updated_at": "2026-05-23T06:17:20.992319Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-160-role-roleassignment-policy-repository-port-schema-per-tenant-notes.md",
+        "slug": "role-roleassignment-policy-repository-port-schema-per-tenant-notes",
+        "document_id": "25d49155-f17c-4a4a-8e1a-daf159280cb5",
+        "title": "定义 Role/RoleAssignment/Policy Repository Port 与 Schema-per-Tenant 边界 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-160"
+      },
+      "ec41acef-c441-485f-9c13-96c23ad59eaf": {
+        "updated_at": "2026-03-27T11:44:15.397305Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-24-implement-the-command-executor-with-safe-retry-logic-and-inprogress-failed-statu.md",
+        "slug": "implement-the-command-executor-with-safe-retry-logic-and-inprogress-failed-statu",
+        "document_id": "9ed1e111-093c-4968-b677-903e5588cd09",
+        "title": "Implement the command executor with safe retry logic and IN_PROGRESS/FAILED status transitions - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-24"
+      },
+      "ec798f91-7471-4c74-b768-c6c588b534c6": {
+        "updated_at": "2026-05-23T06:15:55.180453Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-139-keycloak-admin-client-notes.md",
+        "slug": "keycloak-admin-client-notes",
+        "document_id": "7e8b0a14-95f1-449e-b27d-1847c0fe08d1",
+        "title": "配置 Keycloak Admin Client 与连接基础设施 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-139"
+      },
+      "edd2c869-8208-4757-8990-888200f2105e": {
+        "updated_at": "2026-03-27T11:44:32.457475Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-26-wire-the-command-port-into-the-control-plane-integration-boundary-notes.md",
+        "slug": "wire-the-command-port-into-the-control-plane-integration-boundary-notes",
+        "document_id": "30491620-1a0b-4234-85b0-fcbaf422f53e",
+        "title": "Wire the command port into the control-plane integration boundary - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-26"
+      },
+      "ee9dec9b-671e-4347-92a0-3b5e55e5c7c5": {
+        "updated_at": "2026-03-27T11:43:48.644164Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-19-integrate-lifecycle-state-change-events-as-projection-update-inputs-notes.md",
+        "slug": "integrate-lifecycle-state-change-events-as-projection-update-inputs-notes",
+        "document_id": "db8811df-32e8-405f-b5bf-581c7dc9df73",
+        "title": "Integrate lifecycle state change events as projection update inputs - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-19"
+      },
+      "f0867a90-5e2d-4ea0-9152-5dbe03c15a85": {
+        "updated_at": "2026-05-23T06:18:35.464131Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-91-tenantid-adminuser-notes.md",
+        "slug": "tenantid-adminuser-notes",
+        "document_id": "519a4590-a188-4a7e-ad1f-f9db7ff6e5a0",
+        "title": "定义 TenantId 与 AdminUser 值对象及校验规则 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-91"
+      },
+      "f08d851e-7646-463f-bf6e-9553913d89de": {
+        "updated_at": "2026-05-23T06:17:05.661504Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-155-tenantiamprovisioningservice-notes.md",
+        "slug": "tenantiamprovisioningservice-notes",
+        "document_id": "692156c7-2b07-4fc6-b7e6-e8a5f7b14610",
+        "title": "实现 TenantIamProvisioningService 端到端编排与状态流转 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-155"
+      },
+      "f320a164-7ee5-4cb9-8e5e-a6e7d624365b": {
+        "updated_at": "2026-03-27T11:44:12.074773Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-23-implement-draining-closed-transition-handler-that-closes-on-drain-completion-or.md",
+        "slug": "implement-draining-closed-transition-handler-that-closes-on-drain-completion-or",
+        "document_id": "58ad541d-7b2b-4c64-9272-bfe5e93098dc",
+        "title": "Implement DRAINING → CLOSED transition handler that closes on drain completion or timeout expiry - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-23"
+      },
+      "f84fa9e0-2dc9-40f2-a170-20b446113cdd": {
+        "updated_at": "2026-05-23T05:58:18.461143Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-109-tenantawareexecutor-notes.md",
+        "slug": "tenantawareexecutor-notes",
+        "document_id": "a4e29da6-5776-4427-a48f-0fb06b60c6d1",
+        "title": "实现 TenantAwareExecutor 在异步路径恢复租户与安全上下文 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-109"
+      },
+      "faa3155e-e5de-4d16-ba72-972b8e33c05b": {
+        "updated_at": "2026-05-23T05:57:45.692406Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-100-ensureorganizationstep-ensureorganizationattributesstep-notes-2.md",
+        "slug": "ensureorganizationstep-ensureorganizationattributesstep-notes-2",
+        "document_id": "40dd2b06-76f8-4ce9-91fc-9bd736da3b6f",
+        "title": "实现 EnsureOrganizationStep 与 EnsureOrganizationAttributesStep - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-100"
+      },
+      "fbe358a0-67fd-4778-93eb-7b3667bc6f16": {
+        "updated_at": "2026-05-23T05:57:38.834714Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-95-http-notes.md",
+        "slug": "http-notes",
+        "document_id": "47d53774-fed4-436b-8dbf-7d7eafa8f737",
+        "title": "实现 HTTP 传输层并配置连接/读取/总调用超时 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-95"
+      },
+      "fc2487f9-2438-4a70-8fb5-e41e8070aebe": {
+        "updated_at": "2026-05-23T05:58:12.403754Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-105-tenantiamdesiredstate-notes-2.md",
+        "slug": "tenantiamdesiredstate-notes-2",
+        "document_id": "99b2ede0-3f84-4f91-b119-192c9f457d61",
+        "title": "组合 TenantIamDesiredState 聚合与工厂方法 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-105"
+      },
+      "fd1b1f4d-171b-4623-b220-7070b1b7dca0": {
+        "updated_at": "2026-05-23T06:19:06.158604Z",
+        "local_file": ".hamster/lei-lis-team/briefs/tenant-iam-onboarding-for-multi-tenant-cdp-platform/tasks/lei-176-step-pipeline-notes.md",
+        "slug": "step-pipeline-notes",
+        "document_id": "ee7b199d-da40-49f9-b893-4abe3f46c02c",
+        "title": "编写 Step Pipeline 端到端幂等与中断恢复验证测试 - Notes",
+        "brief_id": "092e4d88-b9b5-4137-b557-de7ec1048ff4",
+        "display_id": "LEI-176"
+      },
+      "ffd0d2db-96ef-4c03-b797-4a7a6626f6e5": {
+        "updated_at": "2026-03-27T11:43:58.427244Z",
+        "local_file": ".hamster/lei-lis-team/briefs/datasource-control-plane-v1-durable-tenant-lifecycle-management/tasks/lei-20-persist-tenantruntimestate-with-a-durable-repository-and-schema-notes.md",
+        "slug": "persist-tenantruntimestate-with-a-durable-repository-and-schema-notes",
+        "document_id": "08eba6c9-fa84-48ef-b2ad-6cc349d79c4a",
+        "title": "Persist TenantRuntimeState with a durable repository and schema - Notes",
+        "brief_id": "828bbf1d-5fa1-47c1-9062-4c56769c42e1",
+        "display_id": "LEI-20"
+      }
+    },
+    "methods": {},
+    "blueprints": {}
+  }
+}
