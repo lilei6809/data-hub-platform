@@ -1,58 +1,194 @@
 {
-  "realm": "data-hub-local",
+  "id": "cdp-auth-pool",
+  "realm": "cdp-auth-pool",
+  "displayName": "CDP Auth Pool",
   "enabled": true,
-  "displayName": "Data Hub Local",
-  "registrationAllowed": false,
+  "organizationsEnabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
+  "verifyEmail": false,
   "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
   "roles": {
     "realm": [
       {
-        "name": "platform-admin",
-        "description": "Local platform operator role"
+        "name": "PLATFORM_ADMIN",
+        "description": "Local platform operator role for control-plane administration"
       },
       {
-        "name": "tenant-operator",
-        "description": "Local tenant operator role"
+        "name": "TENANT_ADMIN",
+        "description": "Tenant administrator role interpreted together with organization membership"
+      },
+      {
+        "name": "data_engineer",
+        "description": "Tenant data engineer role interpreted together with organization membership"
+      },
+      {
+        "name": "viewer",
+        "description": "Tenant read-only viewer role interpreted together with organization membership"
       }
     ]
   },
+  "clientScopes": [
+    {
+      "name": "cdp-platform-claims",
+      "description": "Local CDP token claims consumed by Envoy and downstream services",
+      "protocol": "openid-connect",
+      "attributes": {
+        "display.on.consent.screen": "false",
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "tenant-id-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "aggregate.attrs": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "primary-tenant-id-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "primary_tenant_id",
+            "claim.name": "primary_tenant_id",
+            "jsonType.label": "String",
+            "multivalued": "false",
+            "aggregate.attrs": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "roles-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "cdp-platform-audience-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "cdp-platform",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
   "clients": [
     {
-      "clientId": "data-hub-admin-ui",
-      "name": "Data Hub Admin UI",
+      "clientId": "cdp-platform",
+      "name": "CDP Platform Local Login Client",
       "enabled": true,
       "publicClient": true,
       "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
       "redirectUris": [
         "http://localhost:*/*"
       ],
       "webOrigins": [
         "+"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "cdp-platform-claims"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt",
+        "organization"
       ]
     },
     {
-      "clientId": "data-hub-control-plane",
-      "name": "Data Hub Control Plane",
+      "clientId": "cdp-backend",
+      "name": "CDP Backend Local Admin Client",
       "enabled": true,
       "publicClient": false,
-      "secret": "local-control-plane-secret",
-      "serviceAccountsEnabled": true,
+      "secret": "local-cdp-backend-secret",
+      "clientAuthenticatorType": "client-secret",
       "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "protocol": "openid-connect"
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email",
+        "cdp-platform-claims"
+      ],
+      "optionalClientScopes": [
+        "offline_access",
+        "organization"
+      ]
     }
   ],
   "users": [
     {
-      "username": "platform-admin",
+      "username": "service-account-cdp-backend",
+      "enabled": true,
+      "serviceAccountClientId": "cdp-backend",
+      "clientRoles": {
+        "realm-management": [
+          "query-users",
+          "view-users",
+          "manage-users",
+          "view-realm"
+        ]
+      }
+    },
+    {
+      "username": "platform-admin@local.test",
       "enabled": true,
       "emailVerified": true,
       "firstName": "Platform",
       "lastName": "Admin",
       "email": "platform-admin@local.test",
+      "attributes": {
+        "created_by": [
+          "local-realm-import"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
@@ -61,25 +197,112 @@
         }
       ],
       "realmRoles": [
-        "platform-admin"
+        "PLATFORM_ADMIN"
       ]
     },
     {
-      "username": "tenant-operator",
+      "username": "tenant-admin@acme.local.test",
       "enabled": true,
-      "emailVerified": true,
+      "emailVerified": false,
       "firstName": "Tenant",
-      "lastName": "Operator",
-      "email": "tenant-operator@local.test",
+      "lastName": "Admin",
+      "email": "tenant-admin@acme.local.test",
+      "attributes": {
+        "tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "primary_tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "tier": [
+          "ENTERPRISE"
+        ],
+        "status": [
+          "ACTIVE"
+        ],
+        "created_by": [
+          "local-realm-import"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
-          "value": "operator123",
+          "value": "admin123",
           "temporary": false
         }
       ],
       "realmRoles": [
-        "tenant-operator"
+        "TENANT_ADMIN"
+      ]
+    },
+    {
+      "username": "data-engineer@acme.local.test",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Data",
+      "lastName": "Engineer",
+      "email": "data-engineer@acme.local.test",
+      "attributes": {
+        "tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "primary_tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "tier": [
+          "ENTERPRISE"
+        ],
+        "status": [
+          "ACTIVE"
+        ],
+        "created_by": [
+          "local-realm-import"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "engineer123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "data_engineer"
+      ]
+    },
+    {
+      "username": "viewer@acme.local.test",
+      "enabled": true,
+      "emailVerified": false,
+      "firstName": "Tenant",
+      "lastName": "Viewer",
+      "email": "viewer@acme.local.test",
+      "attributes": {
+        "tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "primary_tenant_id": [
+          "tenant-acme-corp"
+        ],
+        "tier": [
+          "ENTERPRISE"
+        ],
+        "status": [
+          "ACTIVE"
+        ],
+        "created_by": [
+          "local-realm-import"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "viewer"
       ]
     }
   ]
