@@ -12,6 +12,10 @@ updated_at: "2026-05-23T06:16:35.006787+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## Execution Note
+
+Deferred until the Step Pipeline and Application Service call shape are defined. Implement this after the step boundaries clarify which `ensureXxx` operations are actually needed and how failures are classified.
+
 ## Summary
 
 实现 `KeycloakAdminPort` 的 Fake/In-Memory Adapter，使核心 onboarding 流程在无真实 Keycloak 时可运行并落实幂等语义。
@@ -78,4 +82,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 6 |
-

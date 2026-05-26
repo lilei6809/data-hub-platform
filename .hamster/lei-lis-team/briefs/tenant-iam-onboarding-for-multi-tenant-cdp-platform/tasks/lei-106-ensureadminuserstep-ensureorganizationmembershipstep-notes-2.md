@@ -12,6 +12,15 @@ updated_at: "2026-05-23T05:58:16.025109+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Step/Adapter 边界调整
+
+User 与 Membership 的幂等细节由 `KeycloakAdminPort` Adapter 实现，不由 Step 实现：
+
+- `EnsureAdminUserStep` 调用 `ensureUser(email, temporaryCredentialPolicy)`，不处理 email lookup、create 409 或密码重置细节。
+- `EnsureOrganizationMembershipStep` 调用 `ensureOrganizationMembership(organizationId, userId)`，不直接检查 Keycloak membership。
+- 已有 User、已有 Membership、创建时 409、关系已存在 no-op 都属于 Adapter 的 ensure 契约。
+- Step 只负责 Context 读取/写入、敏感信息不入日志、端口异常翻译。
+
 ## 摘要
 
 实现 Pipeline 中负责初始租户管理员的两个 Ensure 步骤：保证管理员 User 在 Keycloak 中存在，并属于上一步骤创建/复用的 Organization。
@@ -21,7 +30,7 @@ synced_at: "2026-05-23T06:24:29Z"
 - `EnsureAdminUserStep`
 - 调用 `KeycloakAdminPort.ensureUser(email, temporaryCredentialPolicy)`。
 - 写入 `adminUserId` 到 `StepExecutionContext`。
-- 处理 409：查询同 email 的现有 User 后继续。
+- 409 fallback 与同 email User 查询由 Adapter 在 `ensureUser(...)` 内完成。
 - `EnsureOrganizationMembershipStep`
 - 从 Context 读取 `organizationId` 与 `adminUserId`。
 - 调用 `KeycloakAdminPort.ensureOrganizationMembership(organizationId, userId)`。
@@ -32,7 +41,7 @@ synced_at: "2026-05-23T06:24:29Z"
 
 - 首次执行创建 User 并加入 Organization。
 - 重复执行不创建重复 User、不重复添加 Membership。
-- 409 不导致失败。
+- 409 不泄漏到 Step；Adapter 应按 Port 契约消解。
 - 临时密码与凭证策略不会泄漏到日志。
 
 ## 技术约束
@@ -54,7 +63,7 @@ synced_at: "2026-05-23T06:24:29Z"
 - [ ] `EnsureAdminUserStep` 能根据 Desired State 的 `adminEmail` 创建或复用 Keycloak User，并把 `adminUserId` 写入 StepExecutionContext
 - [ ] `EnsureOrganizationMembershipStep` 能从 Context 读取 `organizationId` 与 `adminUserId`，调用 Port 保证归属关系存在；关系已存在时视为成功
 - [ ] 重复执行这两个步骤不会创建重复 User、也不会重复添加 Membership
-- [ ] Keycloak 返回 409 Conflict 时步骤能查询现有 User 或验证现有 Membership 并继续
+- [ ] Keycloak 返回 409 Conflict 时由 Adapter 查询现有 User 或验证现有 Membership 并继续；Step 不包含 409 分支
 - [ ] 临时密码、凭证、secret 不会出现在步骤输出、异常信息或日志中
 
 ## Context
@@ -64,4 +73,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 5 |
 | skillReferences | Hamster Blueprint |
-

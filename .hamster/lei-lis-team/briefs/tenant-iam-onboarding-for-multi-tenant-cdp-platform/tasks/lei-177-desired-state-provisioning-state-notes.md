@@ -3,7 +3,7 @@ id: "0c685185-41a6-475b-b769-22c195eefc0d"
 entity_type: "task"
 entity_id: "0ef937c0-3066-4ef9-8799-6ea32411f839"
 title: "为 Desired State 与 Provisioning State 领域模型补充不变量与扩展性单元测试 - Notes"
-status: "todo"
+status: "done"
 priority: "medium"
 display_id: "LEI-177"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -67,4 +67,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | testing |
 | complexity | 3 |
 | skillReferences | Hamster Blueprint |
-

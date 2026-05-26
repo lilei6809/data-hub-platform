@@ -12,22 +12,33 @@ updated_at: "2026-05-23T05:58:44.023+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Step/Adapter 边界调整
+
+`TENANT_ADMIN` 当前按平台预置 Realm Role 处理。Tenant provisioning pipeline 不负责创建平台级 Realm Role。
+
+当前 Step 语义调整为：
+
+- `EnsureTenantAdminRoleStep` 只调用 `ensureUserRealmRole(adminUserId, TENANT_ADMIN)`。
+- `TENANT_ADMIN` 是否存在由平台 bootstrap/realm import 保证。
+- 如果真实 Keycloak 中缺少 `TENANT_ADMIN`，Adapter 应抛出非重试配置错误，而不是在租户 onboarding 中创建角色。
+- 角色绑定已存在、绑定时 409、重复绑定 no-op 都由 Adapter 在 `ensureUserRealmRole(...)` 内处理。
+
 ## 摘要
 
 实现 Pipeline 中负责 `TENANT_ADMIN` Realm Role 的 Ensure 步骤，包含角色存在性与用户绑定两次 ensure 调用。
 
 ## 实现要点
 
-- 调用 `KeycloakAdminPort.ensureRealmRole("TENANT_ADMIN")` 保证角色存在。
-- 调用 `KeycloakAdminPort.ensureUserRealmRole(adminUserId, "TENANT_ADMIN")` 保证用户拥有该角色。
-- 409、已存在角色、已存在绑定均按 ensure 语义视为成功。
+- 调用 `KeycloakAdminPort.ensureUserRealmRole(adminUserId, "TENANT_ADMIN")` 保证用户拥有平台预置角色。
+- 不在 tenant provisioning 中调用 `ensureRealmRole("TENANT_ADMIN")` 创建平台角色。
+- 409、已存在绑定均由 Adapter 按 ensure 语义视为成功。
 - 角色名作为常量或枚举显式表达，遵循 `RoleName` 大写+下划线约束。
 
 ## 验收标准
 
-- 首次执行同时创建 RealmRole 与绑定。
+- 首次执行完成用户与预置 RealmRole 的绑定。
 - 重复执行不产生重复创建或重复绑定。
-- 409 不导致失败。
+- 409 不泄漏到 Step；Adapter 应按 Port 契约消解。
 - `TENANT_ADMIN` 名称在代码中具有单一来源。
 
 ## 技术约束
@@ -46,9 +57,9 @@ synced_at: "2026-05-23T06:24:29Z"
 
 ## Acceptance Criteria
 
-- [ ] 步骤首先调用 `ensureRealmRole("TENANT_ADMIN")`、然后调用 `ensureUserRealmRole(adminUserId, "TENANT_ADMIN")`，两者均使用 KeycloakAdminPort
-- [ ] 角色已存在或绑定已存在时步骤返回成功，不产生异常
-- [ ] Keycloak 返回 409 Conflict 时步骤能查询已有角色或已有绑定后继续
+- [ ] 步骤调用 `ensureUserRealmRole(adminUserId, "TENANT_ADMIN")`，使用 KeycloakAdminPort 分配平台预置角色
+- [ ] 绑定已存在时步骤返回成功，不产生异常
+- [ ] Keycloak 返回 409 Conflict 时由 Adapter 查询已有绑定后继续；Step 不包含 409 分支
 - [ ] 重复执行不会产生重复的 RealmRole 创建请求或重复的角色绑定
 - [ ] `TENANT_ADMIN` 作为平台规定的角色名常量或枚举被显式表达，遵循大写+下划线命名规则
 
@@ -59,4 +70,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 4 |
 | skillReferences | Hamster Blueprint |
-

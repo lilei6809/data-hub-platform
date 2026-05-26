@@ -1,4 +1,14 @@
-/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/application/package-info.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/application/KeycloakAdminPortContractTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/exception/DomainValidationExceptionTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/model/TenantIamDesiredStateTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/model/TenantIamProvisioningStateTest.java
 /home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/package-info.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/AdminUserTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/CorrelationIdTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/EmailTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/IdentityExtensionPlaceholderTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/TemporaryCredentialPolicyTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/TenantIdTest.java
+/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/domain/valueobject/TierTest.java
 /home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/infrastructure/package-info.java
 /home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/src/test/java/io/datahub/platform/iamprovisioning/interfaces/package-info.java

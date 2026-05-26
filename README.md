@@ -191,6 +191,33 @@ invalidate: 当 Tenant Management Service 发布 tier/status 变更事件时
 
 ---
 
+### IAM Provisioning Service
+
+**职责：** 在租户创建后，把平台租户身份事实幂等地落到 Keycloak shared realm 中，作为 Tenant IAM Onboarding 的执行服务。
+
+**MVP 边界：**
+
+- 固定使用 shared realm：`cdp-auth-pool`
+- 暂不支持 dedicated realm
+- tenant 在 Keycloak 中映射为 Organization
+- tenant slug 使用 `tenant-***` 格式，并写入 Organization attribute
+- Organization attributes 至少保存 `tenant_id`、`tier`、`status`
+- 监听 `TenantCreated`，成功后发布 `TenantIamProvisionedEvent`
+
+**Keycloak 资源模型：**
+
+```
+Organization: tenant-{slug}
+Attributes:   tenant_id, tier, status
+Realm roles:  TENANT_ADMIN, data_engineer, viewer
+Admin user:   email 来自用户注册提交
+Isolation:    通过 Organization membership 隔离，而不是租户前缀角色名
+```
+
+**服务账号：** 使用统一 confidential client `cdp-backend` 调用 Keycloak Admin API。client secret 由 Vault 注入，不进入 Git，不进入配置表。
+
+---
+
 ### API Key Management
 
 **职责：** 机器对机器（M2M）场景下的身份认证。当接入方是 ETL 工具、数据管道、外部系统时，不适合使用 OAuth2 用户登录流程，而是使用 API Key。

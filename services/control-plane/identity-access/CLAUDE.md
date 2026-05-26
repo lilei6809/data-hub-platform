@@ -48,6 +48,11 @@ Keycloak 无分布式事务支持。所有 Admin API 调用必须**幂等**（ca
 
 ## 服务模块
 
+### iam-provisioning-service
+- **职责**：Tenant IAM Onboarding 服务，消费 `TenantCreated`，幂等创建 Keycloak Organization、初始管理员、realm role membership，并发布 `TenantIamProvisionedEvent`
+- **依赖**：Spring Boot Web、Actuator、Validation、Spring Data JDBC、Flyway、Kafka、Keycloak Admin Client、Resilience4j、SpringDoc
+- **位置**：`iam-provisioning-service/`
+
 ### token-enrichment-service
 - **职责**：Tenant 上下文富化服务，用于 JWT 和 ExtAuth 流
 - **依赖**：Spring Boot Web、Actuator、Validation、Redis、Kafka、SpringDoc
@@ -106,12 +111,12 @@ JWKS URI: .../realms/cdp/protocol/openid-connect/certs
 
 由 Kafka 事件驱动（**不由 Argo 直接调用**）：
 ```
-TenantInfrastructureProvisionedEvent
+TenantCreated
   → TenantIamProvisioningService.provisionTenantIam()
-      1. 创建 Keycloak Organization（幂等）
-      2. 创建初始管理员（幂等，首次登录强制改密）
+      1. 创建 Keycloak Organization（幂等，shared realm: cdp-auth-pool）
+      2. 创建初始管理员（幂等，不强制 UPDATE_PASSWORD，不启用 email verification）
       3. 绑定用户到 Organization（幂等）
-      4. 配置 BYO IdP（按需，幂等）
+      4. 绑定 realm roles: TENANT_ADMIN / data_engineer / viewer（幂等）
       5. 本地 DB 标记完成（@Transactional）
   → 发布 TenantIamProvisionedEvent
 ```
@@ -122,8 +127,8 @@ TenantInfrastructureProvisionedEvent
 |------|------|
 | `PLATFORM_ADMIN` | 平台管理员，可访问 `/admin/**` |
 | `TENANT_ADMIN` | 租户管理员，管理本租户资源 |
-| `TENANT_VIEWER` | 只读访问本租户数据 |
-| `datasource:write` | 数据源写权限 |
+| `data_engineer` | 数据工程师，执行数据源与数据管道相关操作 |
+| `viewer` | 只读访问本租户数据 |
 
 ## 当前范围外（本版本不实现）
 

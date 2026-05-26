@@ -1,0 +1,52 @@
+package io.datahub.platform.iamprovisioning.application.pipeline.step;
+
+import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
+import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
+import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
+import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
+import io.datahub.platform.iamprovisioning.domain.valueobject.AdminUser;
+import io.datahub.platform.iamprovisioning.domain.valueobject.Email;
+import io.datahub.platform.iamprovisioning.domain.valueobject.TemporaryCredentialPolicy;
+import io.datahub.platform.iamprovisioning.domain.valueobject.UserId;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class EnsureAdminUserStep implements TenantIamProvisioningStep {
+
+    private final static String NAME = "EnsureAdminUserStep";
+    private final KeycloakAdminPort keycloakAdminPort;
+
+    public EnsureAdminUserStep(KeycloakAdminPort keycloakAdminPort) {
+        this.keycloakAdminPort = keycloakAdminPort;
+    }
+
+    @Override
+    public StepExecutionContext ensure(TenantIamDesiredState desired, StepExecutionContext context) {
+
+        try {
+            AdminUser adminUser = desired.adminUser();
+
+            UserId userId = keycloakAdminPort.ensureUser(adminUser.email(), adminUser.temporaryCredentialPolicy());
+            log.info("EnsureAdminUserStep completed. userId={}, correlationId={}",
+                    userId, context.getCorrelationId());
+            return context.withUserId(userId);
+        } catch (KeycloakOperationException ex){
+
+            //TODO: log
+            throw new IamProvisioningException(
+                    name(),
+                    ex.getFailureCode(),
+                    ex.getMessage(),
+                    ex.isRetryable(),
+                    ex
+            );
+        }
+    }
+
+    @Override
+    public String name() {
+        return NAME;
+    }
+}

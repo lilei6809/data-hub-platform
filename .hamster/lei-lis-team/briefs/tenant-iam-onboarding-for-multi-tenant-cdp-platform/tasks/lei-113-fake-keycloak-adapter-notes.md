@@ -12,6 +12,19 @@ updated_at: "2026-05-23T05:58:36.909297+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## Execution Note
+
+Deferred until the Step Pipeline and Application Service call shape are defined. Contract tests should verify the adapter against stable step-driven port semantics, including idempotency, conflict fallback, and controlled failure paths.
+
+## 2026-05-26 Adapter Contract 调整
+
+Fake Adapter 的目标不是模拟 Step 内部逻辑，而是验证 `KeycloakAdminPort.ensureXxx` 契约：
+
+- 重复调用同一个 `ensureXxx` 返回稳定结果，不创建重复对象。
+- 创建时模拟 409 后，Adapter 必须 fallback 到 lookup 并返回已有对象，不把 409 暴露给 Step/Application Service。
+- 属性校正、关系已存在 no-op、角色绑定已存在 no-op 都在 Adapter 契约测试中覆盖。
+- 故障注入用于验证 Adapter 抛出端口级异常及 retryable 标记，不用于驱动 Application Service 流程设计。
+
 ## 概要
 
 为 Fake Keycloak Adapter 编写针对 `KeycloakAdminPort` 的契约测试，验证 ensure 幂等语义与 Port 层错误映射，同时为后续真实 Adapter 复用奠定契约规范。
@@ -61,4 +74,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | testing |
 | complexity | 4 |
-

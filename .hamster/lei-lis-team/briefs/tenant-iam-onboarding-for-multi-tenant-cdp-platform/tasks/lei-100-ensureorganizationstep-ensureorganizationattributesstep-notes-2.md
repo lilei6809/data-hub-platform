@@ -12,6 +12,15 @@ updated_at: "2026-05-23T05:57:45.692406+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Step/Adapter 边界调整
+
+本任务中的 Organization 幂等细节已经下沉到 `KeycloakAdminPort.ensureOrganization(...)` 的 Adapter 实现：
+
+- `EnsureOrganizationStep` 只负责从 Desired State 构造 `OrganizationAttributes`，调用 Port，并把返回的 `OrganizationId` 写入 Context。
+- Step 不处理 Keycloak 409，不直接查询已有 Organization，不引用 SDK/HTTP 类型。
+- Organization attributes 的校正第一版由 `ensureOrganization(tenantId, attributes)` 一并完成。
+- 独立 `EnsureOrganizationAttributesStep` 暂不作为 MVP 必需步骤，除非未来 Port 拆出单独 attributes reconcile 能力。
+
 ## 摘要
 
 实现 Pipeline 中两个负责 Organization 的 Ensure 步骤，保证 Shared Realm `cdp` 中存在与 `tenantId` 对应的 Organization 并携带正确的 `tenant_id` 与 `tier` 属性。
@@ -21,7 +30,7 @@ synced_at: "2026-05-23T06:24:29Z"
 - `EnsureOrganizationStep`
 - 通过 `KeycloakAdminPort.ensureOrganization(tenantId, attributes)` 创建或复用 Organization。
 - 在 `StepExecutionContext` 写入 Keycloak 返回的 Organization 标识，供后续步骤使用。
-- 收到 Keycloak 409 时查询已有 Organization 并继续。
+- Keycloak 409 由 Adapter 在 `ensureOrganization(...)` 内部查询已有 Organization 并继续，Step 不处理。
 - `EnsureOrganizationAttributesStep`
 - 校对当前 Organization 属性与 Desired State 的 `tenant_id`、`tier`。
 - 不一致时按 ensure 语义校正（写入正确值或调用 Port 提供的更新方法）。
@@ -32,7 +41,7 @@ synced_at: "2026-05-23T06:24:29Z"
 
 - 首次执行创建 Organization 并设置正确属性。
 - 重复执行复用 Organization、不重复写属性。
-- Keycloak 409 不导致失败。
+- Keycloak 409 不泄漏到 Step；Adapter 应按 Port 契约消解。
 - 步骤实现只依赖 `KeycloakAdminPort`，不引用 SDK 类型。
 
 ## 技术约束
@@ -53,7 +62,7 @@ synced_at: "2026-05-23T06:24:29Z"
 
 - [ ] `EnsureOrganizationStep` 使用 `KeycloakAdminPort.ensureOrganization(tenantId, attributes)`；Organization 不存在时创建，存在时复用，并把得到的 Organization 标识写入 StepExecutionContext
 - [ ] `EnsureOrganizationAttributesStep` 能检测 Organization 当前属性与 Desired State 的 `tenant_id`、`tier` 不一致的情况，并按资源 ensure 语义进行校正，调用后 Organization 属性与 Desired State 一致
-- [ ] Keycloak 返回 409 Conflict 时两个步骤都能通过查询已有 Organization 继续，而不报错退出
+- [ ] Keycloak 返回 409 Conflict 时由 Adapter 通过查询已有 Organization 继续；Step 不包含 409 分支
 - [ ] 重复执行这两个步骤不会创建重复 Organization，也不会重复写入相同的属性导致状态漂移
 - [ ] 步骤实现不引入 Keycloak SDK 类型，仅依赖 KeycloakAdminPort 抽象
 
@@ -64,4 +73,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 5 |
 | skillReferences | Hamster Blueprint |
-

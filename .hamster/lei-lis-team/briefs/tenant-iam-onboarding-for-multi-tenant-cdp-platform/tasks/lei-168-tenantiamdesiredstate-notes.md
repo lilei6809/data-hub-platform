@@ -3,7 +3,7 @@ id: "2c4ef71f-95ac-41f1-9133-379d5961d6ea"
 entity_type: "task"
 entity_id: "b4e55420-f875-4541-9f54-6d0ce56bc1e7"
 title: "实现 TenantIamDesiredState 聚合与最小输入工厂 - Notes"
-status: "todo"
+status: "done"
 priority: "high"
 display_id: "LEI-168"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -70,4 +70,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 4 |
 | skillReferences | Hamster Blueprint |
-

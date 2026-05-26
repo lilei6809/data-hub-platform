@@ -12,6 +12,18 @@ updated_at: "2026-05-23T05:57:49.32284+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+`EventPublisher` 仍然需要，但不阻塞当前 Application Service 闭环。
+
+当前顺序调整为：
+
+1. 先完成 `LEI-144` Repository Port + In-Memory。
+2. 再完成 `LEI-155` Application Service 状态编排。
+3. 等本地状态从 `PENDING/IN_PROGRESS/AWAITING_RETRY/FAILED/COMPLETED` 闭环跑通后，再实现 `EventPublisher` Port 与成功/失败事件发布。
+
+理由：当前阶段优先验证本地状态机、Keycloak ensure steps 和 checkpoint 持久化边界。事件发布属于外部通知边界，应该在核心用例稳定后接入。
+
 ## Summary
 
 定义 `EventPublisher` Port 抽象，作为发布 Tenant IAM 领域事件的中立边界，屏蔽内存、Kafka、Outbox 等具体实现差异。
@@ -65,4 +77,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 3 |
-

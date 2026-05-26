@@ -22,7 +22,7 @@ synced_at: "2026-05-23T06:24:29Z"
 2. 实现值对象：`TenantId`、`SubjectId`、`RoleId`、`RoleName`、`Permission`、`PolicyId`、`AssignmentId`、`DecisionId`，统一在构造时做格式校验并保持 final/immutable。
 3. 实现聚合根：
 
-- `Role`：roleId、tenantId、roleName、description，工厂方法保证 tenantId+roleName 唯一语义。
+- `Role`：roleId、tenantId、realmRoleName、description，工厂方法保证 tenantId+realmRoleName 唯一语义。
 - `RoleAssignment`：assignmentId、tenantId、subjectId、roleId、assignedAt、expiresAt、status，提供 `expire()`、`revoke()`、`isActiveAt(Instant)` 行为。
 - `Policy`：policyId、tenantId、status、rules(List<PolicyRule>)，提供 `activate()`、`supersedeBy(Policy)`，保证同租户同时只有一个 ACTIVE。
 - `PolicyRule`：ruleId、permission、conditions、effect。

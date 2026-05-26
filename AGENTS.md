@@ -140,6 +140,11 @@ Do not drift into these without a conscious architecture change:
 
 #### 2. Identity & Access Layer
 
+- `iam-provisioning-service`
+  - tenant IAM onboarding in the shared Keycloak realm
+  - derive desired IAM state from tenant lifecycle events
+  - provision Keycloak Organization, initial admin user, realm role memberships, and local provisioning state idempotently
+  - consume `TenantCreated` and publish `TenantIamProvisionedEvent`
 - `token-enrichment-service`
   - resolve tenant business context
   - inject `tenant_id`, `tier`, `feature_flags`, quota-related attributes
@@ -219,6 +224,7 @@ The first batch currently in scope is:
 - `tenant-management-service`
 - `onboarding-service`
 - `offboarding-service`
+- `iam-provisioning-service`
 - `token-enrichment-service`
 - `datasource-config-service`
 - `policy-engine-service`
@@ -229,46 +235,42 @@ Maturity target for this batch:
   - real first-wave services
 - `offboarding-service`, `token-enrichment-service`, `policy-engine-service`
   - standard skeleton plus clear contracts and placeholders
+- `iam-provisioning-service`
+  - current active Identity & Access implementation slice for tenant IAM onboarding
 
 ## Current Status
 
-As of `2026-05-17`:
+As of `2026-05-24`:
 
 - repository directory structure has been created
 - Maven root aggregator `pom.xml` has been created
-- the first six Control Plane service module `pom.xml` files have been created
-- Maven module validation has passed
-- design and planning docs exist under `docs/plans/`
+- root Maven dependency management includes shared versions for Keycloak Admin Client, Lombok, MapStruct, Resilience4j, Spring Cloud, SpringDoc, WireMock, and ArchUnit
+- `iam-provisioning-service` has been created under `services/control-plane/identity-access/`
+- `iam-provisioning-service` has a standard Spring Boot / DDD package structure, first Flyway migration, and service-local dependency set
+- Maven validation has passed for `iam-provisioning-service`
 - local development infrastructure compose scaffolding exists under `infra/docker-compose/`
+- local Keycloak realm import exists for the shared realm `cdp-auth-pool`
 
 Relevant files:
 
 - [README.md](/home/leland/projects/data-hub-platform/README.md:1)
-- [技术栈.md](/home/leland/projects/data-hub-platform/docs/architecture/技术栈.md:1)
-- [repository structure plan](/home/leland/projects/data-hub-platform/docs/plans/2026-05-16-repository-structure.md:1)
-- [Maven module structure design](/home/leland/projects/data-hub-platform/docs/plans/2026-05-16-maven-module-structure-design.md:1)
-- [Maven module implementation plan](/home/leland/projects/data-hub-platform/docs/plans/2026-05-16-maven-module-implementation.md:1)
+- [IAM provisioning service](/home/leland/projects/data-hub-platform/services/control-plane/identity-access/iam-provisioning-service/pom.xml:1)
+- [Identity & Access agent guide](/home/leland/projects/data-hub-platform/services/control-plane/identity-access/agent.md:1)
+- [Identity & Access DDD document](/home/leland/projects/data-hub-platform/services/control-plane/identity-access/docs/DDD.md:1)
 
 ## What To Build Next
 
 Recommended next steps, in order:
 
-1. scaffold `tenant-management-service` as the first real Spring Boot service
-2. add package layout:
-   - `interfaces`
-   - `application`
-   - `domain`
-   - `infrastructure`
-   - `config`
-3. add:
-   - Spring Boot application class
-   - `application.yml`
-   - health endpoint
-   - first Flyway migration
-   - tenant create/query/status API
-4. scaffold `onboarding-service` next, with orchestration state model and client calls to tenant management
-5. scaffold `datasource-config-service`
-6. add shared contracts only when actual reuse appears
+1. implement `LEI-70 - Tenant IAM Desired State 领域模型可表达租户身份事实`
+2. implement the subtask group in this order:
+   - `LEI-143`: base primitive value objects and domain validation exception
+   - `LEI-154`: `AdminUser` and `TemporaryCredentialPolicy`
+   - `LEI-161`: `IdentityMode`, `RealmStrategy`, and extension placeholder types
+   - `LEI-168`: `TenantIamDesiredState` aggregate and minimal-input factory
+   - `LEI-177`: invariant and extensibility unit tests
+3. keep `LEI-91`, `LEI-92`, `LEI-105`, and overlapping subtasks aligned with the above implementation rather than duplicating model work
+4. after desired-state modeling, continue with the idempotent Step Pipeline, Keycloak Admin Port/Fake Adapter, local provisioning state, and event boundary tasks
 
 ## Working Rules For Future Sessions
 

@@ -3,7 +3,7 @@ id: "9cc5545a-68ef-46bf-89ed-391db9d5d797"
 entity_type: "task"
 entity_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
 title: "Tenant IAM Desired State 领域模型可表达租户身份事实 - Notes"
-status: "todo"
+status: "done"
 priority: "high"
 display_id: "LEI-70"
 brief_id: "092e4d88-b9b5-4137-b557-de7ec1048ff4"
@@ -74,4 +74,3 @@ synced_at: "2026-05-23T06:24:29Z"
 **Constraints & Considerations**:
 - 不引入对 Keycloak、Spring、Kafka 的依赖。
 - 字段命名与 PRD 一致，避免后续重命名传播。
-

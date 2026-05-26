@@ -18,8 +18,8 @@ synced_at: "2026-05-23T06:24:29Z"
 
 ## 实施步骤
 
-1. 实现 `ensureRealmRole(roleName)`：先按 roleName 查询 realm role；命中则返回，未命中则创建；创建期间 409 退回查询。
-2. 实现 `ensureUserRealmRole(userId, roleName)`：先查询 user 已分配 realm roles，命中则返回成功；未命中则调用 role-mappings 接口分配；分配期间 409 视为成功。
+1. 实现 `ensureRealmRole(realmRoleName)`：先按 realmRoleName 查询 realm role；命中则返回，未命中则创建；创建期间 409 退回查询。
+2. 实现 `ensureUserRealmRole(userId, realmRoleName)`：先查询 user 已分配 realm roles，命中则返回成功；未命中则调用 role-mappings 接口分配；分配期间 409 视为成功。
 3. 编写单元测试，覆盖每个方法的三种路径（首次、已存在/已分配、409）。
 
 ## 验收标准
@@ -41,8 +41,8 @@ synced_at: "2026-05-23T06:24:29Z"
 
 ## Acceptance Criteria
 
-- [ ] 实现 `ensureRealmRole(roleName)`：不存在时创建，已存在时复用，创建遇 409 退回查询
-- [ ] 实现 `ensureUserRealmRole(userId, roleName)`：user 尚未拥有时分配，已拥有时跳过，分配遇 409 视为成功
+- [ ] 实现 `ensureRealmRole(realmRoleName)`：不存在时创建，已存在时复用，创建遇 409 退回查询
+- [ ] 实现 `ensureUserRealmRole(userId, realmRoleName)`：user 尚未拥有时分配，已拥有时跳过，分配遇 409 视为成功
 - [ ] 两个方法重复调用不产生重复 role 或重复分配
 - [ ] 单元测试为每个方法覆盖：首次创建/分配、已存在/已分配、409 三种路径
 

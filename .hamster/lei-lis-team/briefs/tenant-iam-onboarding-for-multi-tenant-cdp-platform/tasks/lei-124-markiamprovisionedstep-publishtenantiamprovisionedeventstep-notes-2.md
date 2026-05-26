@@ -12,6 +12,21 @@ updated_at: "2026-05-23T05:59:19.852855+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+本任务暂缓，不按原描述实现 `MarkIamProvisionedStep`。
+
+调整原因：
+
+- `MarkIamProvisionedStep` 修改的是本地 provisioning 状态，不是外部 Keycloak desired fact。
+- `TenantIamProvisioningStep` 当前语义是 ensure 外部 IAM 事实；把本地状态推进也做成 step 会混淆职责。
+- 本地完成态应由 `TenantIamProvisioningService` 在所有 Keycloak ensure step 成功后调用 `TenantIamProvisioningState.markCompleted(now)`，并通过 `TenantIamStateRepository.save(state)` 持久化。
+
+事件发布也后置处理：
+
+- `PublishTenantIamProvisionedEventStep` 暂不进入当前 MVP step pipeline。
+- 后续完成 `EventPublisher` Port 与事件模型后，再由 Application Service 或独立事件发布组件处理成功事件。
+
 ## 摘要
 
 实现 Pipeline 末尾的两个终态步骤：把本地状态推进到 `IAM_PROVISIONED`、发布 `TenantIamProvisionedEvent`。
@@ -63,4 +78,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 4 |
 | skillReferences | Hamster Blueprint |
-

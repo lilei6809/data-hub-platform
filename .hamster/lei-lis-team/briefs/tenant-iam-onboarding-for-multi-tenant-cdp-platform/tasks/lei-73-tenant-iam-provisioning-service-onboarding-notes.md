@@ -11,6 +11,18 @@ updated_at: "2026-05-23T05:52:25.914601+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+`LEI-73` 继续作为 Tenant IAM onboarding 的 Application Service 主线任务。当前执行顺序调整为：
+
+1. 先完成 `LEI-144`：定义 `TenantIamStateRepository` Port 与 In-Memory 实现。
+2. 再完成 `LEI-155`：实现 `TenantIamProvisioningService`，由 Application Service 直接编排有序 steps，并在每个关键 checkpoint 后持久化本地状态。
+3. 暂不单独实现只负责 `for` 循环的薄 `TenantIamProvisioningPipeline`。`LEI-170` 的执行语义并入 Application Service。
+4. 暂不实现 `MarkIamProvisionedStep`。本地终态推进由 Application Service 调用 `TenantIamProvisioningState.markCompleted()` 完成。
+5. `EventPublisher` 与事件发布后置，不阻塞当前 Application Service 闭环。
+
+设计理由：当前核心风险不是 step 顺序本身，而是远程 Keycloak ensure 操作与本地状态 checkpoint 的边界。Application Service 必须拥有状态加载、状态转移、每步持久化、失败分类、重试状态记录这些职责；单独的薄 Pipeline 类会把流程控制和状态持久化拆散。
+
 ## 平台开发者可以通过单一应用服务驱动 onboarding 的状态流转与重试。
 
 `TenantIamProvisioningService` 是 MVP 的端到端入口。它把"标记本地状态 → 执行幂等 Pipeline → 记录成功/失败 → 累计重试次数"串成一个显式状态机，保证远程 Keycloak 操作不会与本地事务纠缠。
@@ -86,4 +98,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | Field | Value |
 |-------|-------|
 | dependencyRationale | 幂等 Provisioning Step Pipeline 可 reconcile 租户身份事实 |
-

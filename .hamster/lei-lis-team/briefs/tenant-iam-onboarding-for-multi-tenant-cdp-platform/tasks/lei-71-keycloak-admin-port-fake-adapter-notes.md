@@ -11,6 +11,29 @@ updated_at: "2026-05-23T05:51:31.247123+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## Execution Order Override
+
+Current execution order is intentionally adjusted:
+
+1. Implement only the `KeycloakAdminPort` contract and supporting value/error types first.
+2. Define the Step Pipeline and Application Service call shape before building the full Fake Adapter.
+3. Defer `InMemoryKeycloakAdapter`, idempotency tests, conflict simulation, and fault injection until the core workflow has stable step boundaries.
+
+Rationale: the Fake Adapter should verify the application core contract, not drive the workflow design. Building it before steps are settled risks modeling an imagined Keycloak simulator instead of the actual onboarding use case.
+
+## 2026-05-26 Port/Step/Adapter 语义边界调整
+
+当前实现与原任务描述存在一处重要边界调整：`KeycloakAdminPort` 的业务粒度已经提升为应用层意图型 `ensure` 契约，因此 Keycloak 的 get-or-create、409 Conflict fallback、lookup、attribute reconcile、SDK/HTTP 异常翻译都由 Adapter 实现，不由 Step 实现。
+
+职责划分以此为准：
+
+- Step：表达业务流程中的 IAM fact，例如确保 Organization、Admin User、Membership、Tenant Admin Role 存在。
+- KeycloakAdminPort：声明 `ensureXxx` 方法是幂等契约；调用方不感知 409、HTTP status、SDK exception。
+- Fake/Real Adapter：实现幂等细节，包括先查找、创建、创建时 409 后再查找、属性校正、关系已存在 no-op、异常翻译。
+- Application Service：负责本地状态机、checkpoint、失败是否可重试、重试入口。
+
+因此，后续不要在 Step 中编写“如果 Keycloak 返回 409，则查询已有对象后继续”的代码。Step 只调用 Port；409 fallback 必须在 Adapter 层完成，并通过 Port 契约测试约束。
+
 ## 平台开发者可以通过意图型 Port 调用 Keycloak，并用 Fake Adapter 验证幂等语义。
 
 把 Keycloak 隔离在应用核心之外，让领域用例只表达"需要 Keycloak 完成的事情"，而不绑定 SDK、API 版本和冲突处理细节。MVP 阶段使用内存 Fake Adapter 就能完整验证 onboarding 闭环。
@@ -35,8 +58,8 @@ synced_at: "2026-05-23T06:24:29Z"
   - `ensureOrganization(tenantId, attributes) -> OrganizationId`
   - `ensureUser(email, temporaryCredentialPolicy) -> UserId`
   - `ensureOrganizationMembership(organizationId, userId)`
-  - `ensureRealmRole(roleName)`
-  - `ensureUserRealmRole(userId, roleName)`
+  - `ensureRealmRole(realmRoleName)`
+  - `ensureUserRealmRole(userId, realmRoleName)`
 - 所有方法采用 `ensure` 语义：不存在则创建，存在则复用，关系已存在视为成功。
 - Port 必须为未来扩展方法预留接口风格一致性：`ensureIdentityProvider`、`ensureProtocolMapper`、`ensureClientAudience`、`ensureMfaPolicy`（MVP 不实现，仅在文档/注释中标记）。
 - 提供 `InMemoryKeycloakAdapter`（Fake）：
@@ -81,4 +104,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | Field | Value |
 |-------|-------|
 | dependencyRationale | Tenant IAM Desired State 领域模型可表达租户身份事实 |
-

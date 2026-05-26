@@ -34,7 +34,7 @@ Use this model as the baseline for all implementation work:
 
 ```text
 External IdP
-  -> Keycloak Shared Realm: cdp
+  -> Keycloak Shared Realm: cdp-auth-pool
   -> Envoy Gateway
   -> Spring Boot downstream services
 ```
@@ -42,7 +42,8 @@ External IdP
 Key decisions:
 
 - Keycloak is the identity core and the only JWT issuer trusted by the platform.
-- The platform uses one shared realm named `cdp`.
+- The platform uses one shared realm named `cdp-auth-pool`.
+- Dedicated realms are out of scope for the MVP.
 - Tenants are modeled as Keycloak Organizations, one Organization per tenant.
 - External IdPs such as Okta, Azure AD, and SAML providers are integrated through Keycloak Identity Brokering.
 - Envoy Gateway performs JWT validation and coarse RBAC.
@@ -94,9 +95,10 @@ Revocation:
 
 Realm and tenant model:
 
-- Realm: `cdp`.
+- Realm: `cdp-auth-pool`.
 - Tenant isolation: Keycloak Organization per tenant.
-- Organization attributes must include `tenant_id` and `tier`.
+- Tenant slug format: `tenant-***`.
+- Organization attributes must include `tenant_id`, `tier`, and `status`.
 - `tenant_id` is written into JWT through Protocol Mapper.
 - `tier` is not written into JWT; downstream services query it dynamically.
 
@@ -110,11 +112,32 @@ Client:
 - Client ID: `cdp-platform`.
 - Audience: `cdp-platform`.
 
+Admin client:
+
+- Client ID: `cdp-backend`.
+- Type: confidential service account.
+- Secret source: Vault only; never Git or config tables.
+- Runtime permissions should start from `query-users`, `view-users`, `manage-users`, and `view-realm`; avoid long-term broad `manage-realm` / `manage-clients` unless a task explicitly proves it is required.
+
 External IdP:
 
 - Keycloak is the broker between enterprise IdPs and the platform.
 - Envoy must only trust Keycloak-issued JWTs, never external IdP tokens directly.
 - First login through external IdP may use JIT provisioning to create the Keycloak user and attach it to the tenant Organization.
+
+## Tenant IAM Onboarding Rules
+
+- Deployable service: `iam-provisioning-service`.
+- Input event: `TenantCreated`.
+- Output event: `TenantIamProvisionedEvent`.
+- MVP realm strategy: shared realm only.
+- Tenant maps to Keycloak Organization, not group/client scope.
+- Realm roles: `TENANT_ADMIN`, `data_engineer`, `viewer`.
+- Role isolation is by Organization membership, not tenant-prefixed role names.
+- Tenant admin email comes from the user registration submission.
+- Initial temporary password is generated through the Keycloak onboarding path.
+- Do not force `UPDATE_PASSWORD` in MVP.
+- Do not enable email verification in MVP.
 
 ## Envoy Gateway Rules
 

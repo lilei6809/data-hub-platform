@@ -12,6 +12,26 @@ updated_at: "2026-05-23T06:18:13.44996+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+本任务暂不按原描述实现独立 `TenantIamProvisioningPipeline` 类。
+
+原因：当前 provisioning 流程不只是顺序执行 steps，还必须在每个关键步骤之间更新并持久化 `TenantIamProvisioningState`。如果 Pipeline 只做：
+
+```java
+for (TenantIamProvisioningStep step : steps) {
+    context = step.ensure(desired, context);
+}
+```
+
+它会成为薄封装，并把“step 执行顺序”和“本地状态 checkpoint”拆开，反而增加理解成本。
+
+调整后的任务语义：
+
+- 有序 step 编排先由 `TenantIamProvisioningService` 完成。
+- `LEI-155` 中实现 step 顺序、context 传递、异常中断、checkpoint 持久化。
+- 若后续 Application Service 变重，再抽取 `TenantIamProvisioningPipelineExecutor`，但该 Executor 必须同时承载 checkpoint、失败处理和持久化策略，而不是只做顺序循环。
+
 ## 摘要
 
 提供把 Step 顺序组合并执行的 Pipeline 类，承载 MVP 的 7-Step 默认装配。
@@ -62,4 +82,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 3 |
-

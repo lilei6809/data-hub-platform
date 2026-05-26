@@ -1,4 +1,4 @@
 /**
- * Inbound application ports invoked by message handlers, HTTP adapters, or tests.
+ * Domain events raised by IAM provisioning aggregates.
  */
 package io.datahub.platform.iamprovisioning.application.port.in;

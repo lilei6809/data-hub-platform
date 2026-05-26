@@ -216,8 +216,8 @@ IAM_FAILED -> IAM_PROVISIONING
 ensureOrganization(tenantId, attributes)
 ensureUser(email, temporaryCredentialPolicy)
 ensureOrganizationMembership(organizationId, userId)
-ensureRealmRole(roleName)
-ensureUserRealmRole(userId, roleName)
+ensureRealmRole(realmRoleName)
+ensureUserRealmRole(userId, realmRoleName)
 ```
 
 未来操作：

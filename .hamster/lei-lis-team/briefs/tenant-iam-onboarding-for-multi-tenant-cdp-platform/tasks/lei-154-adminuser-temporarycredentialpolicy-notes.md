@@ -3,7 +3,7 @@ id: "98b953a9-dde2-43e9-89de-153081f5043b"
 entity_type: "task"
 entity_id: "67bb53d8-4266-4b8b-bdda-d2d55e06b4af"
 title: "建模 AdminUser 与 TemporaryCredentialPolicy 值对象 - Notes"
-status: "todo"
+status: "done"
 priority: "medium"
 display_id: "LEI-154"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -65,4 +65,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 3 |
 | skillReferences | Hamster Blueprint |
-

@@ -11,6 +11,18 @@ updated_at: "2026-05-23T05:51:59.293539+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Step 幂等职责调整
+
+本任务中的“Step ensure 语义”需要按当前代码边界重新理解：
+
+- Step 的幂等性来自调用 `KeycloakAdminPort.ensureXxx(...)`，而不是 Step 自己处理 Keycloak create/lookup/409。
+- Step 不感知 Keycloak 409 Conflict、HTTP status、SDK exception，也不直接查询 Keycloak 原生对象。
+- “目标对象不存在则创建、已存在则复用、属性不一致则校正、409 后查询已有对象”属于 Port/Adapter 的 `ensureXxx` 契约。
+- Step 只负责选择正确的 Port 方法、传入 Desired State、读取/写入 `StepExecutionContext`、把端口异常翻译为应用层 `IamProvisioningException`。
+- 本地状态推进、checkpoint 持久化、完成态和失败态不作为 Step 实现，由 `TenantIamProvisioningService` 负责。
+
+因此，下文关于“每个 Step 自己覆盖 409 回退”的描述不再作为实现目标。Step 测试只验证调用正确 Port、Context 传递和异常翻译；409 fallback 在 Adapter/Port 契约测试中验收。
+
 ## 平台开发者可以把 onboarding 表达为一组可重试的 ensure 步骤。
 
 幂等 Step Pipeline 是 Tenant IAM Onboarding 的执行核心。把 reconcile 拆成"对象/属性/关系/角色/状态/事件"等独立步骤，每个都用 ensure 语义实现，让重复事件、部分失败和重试都能安全收敛。
@@ -41,10 +53,10 @@ synced_at: "2026-05-23T06:24:29Z"
   6. `MarkIamProvisionedStep`（驱动本地状态机进入 `IAM_PROVISIONED`）
   7. `PublishTenantIamProvisionedEventStep`（通过 EventPublisher 发布事件）
 - 每个 Step 的 ensure 语义：
-  - 目标对象/关系不存在 → 创建。
-  - 目标对象/关系已存在 → 复用。
-  - Keycloak 返回 409 → 查询已有对象后继续。
-  - 属性不一致 → 按 Desired State 校正。
+  - 目标对象/关系不存在 → 由 Adapter 创建。
+  - 目标对象/关系已存在 → 由 Adapter 复用。
+  - Keycloak 返回 409 → 由 Adapter 查询已有对象后继续，不泄漏到 Step。
+  - 属性不一致 → 由对应 `ensureXxx` Adapter 实现按 Desired State 校正。
 - Pipeline 编排器：
   - 顺序执行 Step。
   - 单个 Step 失败时停止后续步骤、记录失败原因、保留可恢复性。
@@ -66,7 +78,7 @@ synced_at: "2026-05-23T06:24:29Z"
 
 **Scope - INCLUDED**:
 - Step 接口、第一版步骤实现、Pipeline 编排器。
-- 单元测试覆盖每个 Step 的 ensure 语义（创建 / 复用 / 409 回退 / 属性校正）。
+- Step 单元测试覆盖正确调用 Port、Context 传递和异常翻译；创建 / 复用 / 409 回退 / 属性校正由 Adapter 契约测试覆盖。
 - 集成测试覆盖整条 Pipeline 的首次执行、重复执行、中途失败后重试。
 
 **Scope - EXCLUDED**:
@@ -89,4 +101,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | Field | Value |
 |-------|-------|
 | dependencyRationale | Tenant IAM Desired State 领域模型可表达租户身份事实, Keycloak Admin Port 与 Fake Adapter 可隔离外部身份系统 |
-

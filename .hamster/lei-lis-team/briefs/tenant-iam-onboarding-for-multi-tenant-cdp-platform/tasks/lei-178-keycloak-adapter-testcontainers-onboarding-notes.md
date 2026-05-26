@@ -12,6 +12,17 @@ updated_at: "2026-05-23T06:19:25.730411+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 集成测试边界调整
+
+真实 Keycloak 集成测试应验证 Adapter 是否履行 `KeycloakAdminPort.ensureXxx` 契约，而不是验证 Step 是否处理 Keycloak 细节。
+
+重点验收：
+
+- 重复调用 Port 方法不产生重复 Organization/User/Membership/RoleAssignment。
+- 创建冲突、已存在对象、已存在关系在 Adapter 内消解。
+- Step/Application Service 不感知 Keycloak 409、HTTP status 或 SDK exception。
+- `TENANT_ADMIN` 作为平台预置 Realm Role；缺失时应表现为非重试配置错误，而不是 tenant onboarding 自动创建。
+
 ## 摘要
 
 使用 Testcontainers 启动真实 Keycloak 验证真实 Adapter 在生产语义下的幂等、属性正确性与异常映射，作为 Phase 2 验收证据。
@@ -70,4 +81,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | testing |
 | complexity | 7 |
-

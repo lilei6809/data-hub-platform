@@ -3,7 +3,7 @@ id: "518881e9-8b89-461b-9106-2a7571616ce4"
 entity_type: "task"
 entity_id: "7ed24ddf-e6a4-4f83-a0a1-adf8978ecbac"
 title: "建模 TenantIamProvisioningState 与 TenantIamStatus 状态机 - Notes"
-status: "todo"
+status: "done"
 priority: "high"
 display_id: "LEI-173"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -73,4 +73,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 4 |
 | skillReferences | Hamster Blueprint |
-

@@ -3,7 +3,7 @@ id: "dfb7362a-4e8e-45a5-87f4-2843d3c4e31f"
 entity_type: "task"
 entity_id: "97613845-dfbc-47ff-91b9-890ff8c7976f"
 title: "建立基础标识与原语值对象（TenantId / Tier / Email / CorrelationId）及领域校验异常 - Notes"
-status: "todo"
+status: "done"
 priority: "medium"
 display_id: "LEI-143"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -75,4 +75,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 3 |
 | skillReferences | Hamster Blueprint |
-

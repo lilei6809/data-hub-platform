@@ -12,6 +12,17 @@ updated_at: "2026-05-23T06:16:18.786316+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+`LEI-144` 是当前 Application Service 前置任务，优先级高于重复任务 `LEI-94`。
+
+本任务应作为 `TenantIamProvisioningService` 的本地状态持久化边界来实现，第一版只需要 Port + In-Memory Adapter：
+
+- Port 放在 application core 的 outbound port 包中，不依赖 Spring Data、JDBC、JPA 或 PostgreSQL。
+- In-Memory 实现仅用于 MVP、本地验证和后续 Application Service 验收，不代表生产持久化方案。
+- `findOrInitialize(tenantId, correlationId)` 应该创建 `TenantIamProvisioningState.init(...)` 的初始状态，后续调用返回同一 tenant 的已有状态。
+- 不在本任务中处理事务、Schema-per-Tenant、Outbox 或真实数据库映射。
+
 ## 概述
 
 定义 `TenantIamStateRepository` 端口与内存实现，为状态机提供持久化边界。
@@ -58,4 +69,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 3 |
-

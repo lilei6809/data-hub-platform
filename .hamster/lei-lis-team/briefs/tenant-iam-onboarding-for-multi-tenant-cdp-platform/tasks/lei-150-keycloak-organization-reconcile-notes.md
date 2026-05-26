@@ -12,6 +12,18 @@ updated_at: "2026-05-23T06:16:45.054944+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Adapter 职责确认
+
+本任务是 409 fallback 与属性 reconcile 的正确归属位置。`ensureOrganization(...)` 的真实 Keycloak 实现必须在 Adapter 内完成：
+
+- lookup by tenant identity
+- create when missing
+- create 409 后再次 lookup 并复用
+- attributes 不一致时按 Desired State 校正
+- SDK/HTTP 异常翻译为端口级 `KeycloakOperationException` 子类型
+
+Step 不实现上述细节，只调用 `KeycloakAdminPort.ensureOrganization(...)`。
+
 ## 摘要
 
 实现真实 Keycloak Adapter 的 `ensureOrganization` 能力，覆盖 Shared Realm `cdp` 下 Organization 的幂等创建、按 tenantId 查询和 `tenant_id`/`tier` 属性 reconciliation。
@@ -36,7 +48,7 @@ synced_at: "2026-05-23T06:24:29Z"
 
 - ensure 语义，不允许 create-only 行为
 - 属性必须包含 `tenant_id` 与 `tier`，且与 desired state 保持一致
-- 异常向上抛出原始 SDK 异常，由异常映射子任务负责映射
+- 异常应由 Adapter 翻译为端口级异常；不得向 Application Service 或 Step 泄漏原始 SDK 异常
 
 ## 代码模式
 
@@ -62,4 +74,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 7 |
-

@@ -175,8 +175,8 @@ Do not mark the tenant active just because IAM provisioning succeeded. IAM compl
 ensureOrganization(tenantId, attributes)
 ensureUser(email, temporaryCredentialPolicy)
 ensureOrganizationMembership(organizationId, userId)
-ensureRealmRole(roleName)
-ensureUserRealmRole(userId, roleName)
+ensureRealmRole(realmRoleName)
+ensureUserRealmRole(userId, realmRoleName)
 ```
 
 Future operations:

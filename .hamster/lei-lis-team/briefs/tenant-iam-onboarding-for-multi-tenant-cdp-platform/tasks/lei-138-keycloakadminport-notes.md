@@ -12,6 +12,19 @@ updated_at: "2026-05-23T06:15:54.046344+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 Port 契约调整
+
+`KeycloakAdminPort` 的 `ensureXxx` 方法现在被定义为应用层幂等契约，而不是 Keycloak SDK 的薄包装。
+
+契约要求：
+
+- 调用方只看到“目标 IAM fact 已经被确保存在/收敛”的结果。
+- 对象不存在、对象已存在、属性不一致、关系已存在、创建时 409 Conflict 等情况，都应由 Adapter 在 `ensureXxx` 内部消解。
+- Step 和 Application Service 不处理 Keycloak 409，不按 HTTP status 分支，也不引用 Keycloak SDK 异常。
+- Adapter 只能向上抛端口级异常，例如认证失败、外部不可用、配置错误、资源缺失等，并标记是否可重试。
+
+这个调整覆盖下文中关于“冲突由步骤处理”的旧描述。未来验收 `KeycloakAdminPort` 时，重点验收 Port 方法是否足够表达业务意图，以及 Adapter 是否完整履行幂等契约。
+
 ## Summary
 
 定义 `KeycloakAdminPort` 意图型接口和端口契约，作为应用核心与 Keycloak 之间的稳定边界。
@@ -24,8 +37,8 @@ synced_at: "2026-05-23T06:24:29Z"
 - `ensureOrganization(tenantId, attributes) -> OrganizationId`
 - `ensureUser(email, temporaryCredentialPolicy) -> UserId`
 - `ensureOrganizationMembership(organizationId, userId)`
-- `ensureRealmRole(roleName)`
-- `ensureUserRealmRole(userId, roleName)`
+- `ensureRealmRole(realmRoleName)`
+- `ensureUserRealmRole(userId, realmRoleName)`
 
 1. 为入参定义稳定的端口级值对象（如 `OrganizationAttributes`、`TemporaryCredentialPolicy`），返回端口级 ID 类型（`OrganizationId`、`UserId`）。
 2. 定义端口级异常族（如 `KeycloakAdminPortException` 及子类型），表达"外部不可用"、"非法输入"等抽象语义；不暴露 HTTP 状态码或 Keycloak 原生异常。
@@ -60,7 +73,7 @@ synced_at: "2026-05-23T06:24:29Z"
 ## Acceptance Criteria
 
 - [ ] KeycloakAdminPort 接口定义在领域/应用核心层，不依赖任何 Keycloak SDK、HTTP 客户端或具体实现类型
-- [ ] 接口包含第一版 5 个方法：ensureOrganization(tenantId, attributes)、ensureUser(email, temporaryCredentialPolicy)、ensureOrganizationMembership(organizationId, userId)、ensureRealmRole(roleName)、ensureUserRealmRole(userId, roleName)
+- [ ] 接口包含第一版 5 个方法：ensureOrganization(tenantId, attributes)、ensureUser(email, temporaryCredentialPolicy)、ensureOrganizationMembership(organizationId, userId)、ensureRealmRole(realmRoleName)、ensureUserRealmRole(userId, realmRoleName)
 - [ ] 每个方法返回稳定的端口级标识或结果对象（如 OrganizationId、UserId），不暴露 Keycloak 原生 representation 类型
 - [ ] 定义端口级异常或错误类型，表达冲突、未找到、外部不可用等语义，调用方无需感知 HTTP 状态码
 - [ ] 为未来扩展方法（ensureIdentityProvider、ensureProtocolMapper、ensureClientAudience、ensureMfaPolicy）以代码注释或单独占位接口形式预留扩展点，但不实现
@@ -72,4 +85,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 4 |
-

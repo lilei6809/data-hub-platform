@@ -12,6 +12,27 @@ updated_at: "2026-05-23T06:17:05.661504+00:00"
 synced_at: "2026-05-23T06:24:29Z"
 ---
 
+## 2026-05-26 最新任务调整
+
+`LEI-155` 是当前下一步核心实现任务，优先级高于重复任务 `LEI-112`。
+
+当前设计以 Application Service 直接编排有序 `TenantIamProvisioningStep`，不再依赖一个只负责顺序循环的薄 `TenantIamProvisioningPipeline`。服务职责调整为：
+
+- 通过 `TenantIamStateRepository.findOrInitialize(...)` 加载或初始化本地状态。
+- 执行前调用 `state.markInProgress(now)` 并保存。
+- 顺序执行 steps；每个关键 step 成功后调用对应的 `state.markXxx(...)` 并保存 checkpoint。
+- 所有 Keycloak ensure step 成功后调用 `state.markCompleted(now)` 并保存。
+- 捕获 `IamProvisioningException` 后，根据 `retryable` 决定调用 `markAwaitRetry(...)` 或 `markFailed(...)`，不能所有失败都直接进入终态 `FAILED`。
+- Application Service 不直接依赖 Keycloak SDK、Kafka 或具体 Adapter。
+
+当前 checkpoint 映射建议：
+
+- `EnsureOrganizationStep` 成功后：`markOrganizationCreated(now)`
+- `EnsureAdminUserStep` 成功后：`markAdminUserCreated(now)`
+- `EnsureTenantAdminRoleStep` 与 `EnsureOrganizationMembershipStep` 都成功后：`markDefaultRolesAssigned(now)`
+
+`MarkIamProvisionedStep` 不作为 step 实现；本地完成态由 Application Service 调用领域状态机方法推进。
+
 ## 概述
 
 实现 `TenantIamProvisioningService`，作为驱动租户 IAM onboarding 的单一应用入口，负责状态机推进、失败记录与重试入口。
@@ -73,4 +94,3 @@ synced_at: "2026-05-23T06:24:29Z"
 |-------|-------|
 | category | development |
 | complexity | 6 |
-

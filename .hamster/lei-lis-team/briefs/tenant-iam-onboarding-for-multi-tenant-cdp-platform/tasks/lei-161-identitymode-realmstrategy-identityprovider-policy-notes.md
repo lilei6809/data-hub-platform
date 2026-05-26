@@ -3,7 +3,7 @@ id: "12feb930-6a9c-45c3-b1f8-8173ee0ac958"
 entity_type: "task"
 entity_id: "a06934d0-f220-433f-b32c-5b5a6830042f"
 title: "定义 IdentityMode / RealmStrategy 枚举与 IdentityProvider / Policy 扩展占位类型 - Notes"
-status: "todo"
+status: "done"
 priority: "medium"
 display_id: "LEI-161"
 parent_task_id: "8c75479f-d104-488f-8e31-fc15c1e6ab96"
@@ -63,4 +63,3 @@ synced_at: "2026-05-23T06:24:29Z"
 | category | development |
 | complexity | 3 |
 | skillReferences | Hamster Blueprint |
-
