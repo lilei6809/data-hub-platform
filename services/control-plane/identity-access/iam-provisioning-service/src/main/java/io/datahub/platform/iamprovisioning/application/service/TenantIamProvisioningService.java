@@ -40,6 +40,10 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
         // === 阶段 1：加载或初始化状态（本地操作，轻量） ===
         TenantIamProvisioningState currentState = repository.findOrInitById(id, correlationId);
+        if (currentState.isCompleted()) {
+            return;
+        }
+
         // 状态推进到 IN_PROGRESS, 表示"我认领了这个任务"
         // TODO: RetryScheduler 还未配置
         currentState.markInProgress(Instant.now());

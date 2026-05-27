@@ -51,7 +51,7 @@ public class TenantIamProvisioningState {
 
         this.createdAt = Objects.requireNonNull(createdAt);
         this.updatedAt = createdAt;
-        this.overallStatus = IamProvisioningStatus.PENDING;
+        this.overallStatus = IamProvisioningStatus.IAM_PENDING;
         this.retryCount = 0;
     }
 
@@ -66,15 +66,15 @@ public class TenantIamProvisioningState {
     public void markInProgress(Instant now){
         // 校验规则住在领域对象里：PENDING 和 AWAITING_RETRY 才能转 IN_PROGRESS
         // 这保证了任何调用方都无法绕过这条规则
-        if (overallStatus != IamProvisioningStatus.PENDING
+        if (overallStatus != IamProvisioningStatus.IAM_PENDING
         //&& overallStatus != IamProvisioningStatus.FAILED  //  FAILED 是终态，必须人工介入，不允许自动重新进入, 人工介入手动操作状态转移
-                && overallStatus != IamProvisioningStatus.AWAITING_RETRY
+                && overallStatus != IamProvisioningStatus.IAM_AWAITING_RETRY
         ) {
-            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IN_PROGRESS,
+            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_IN_PROGRESS,
                     "");
         }
 
-        this.overallStatus = IamProvisioningStatus.IN_PROGRESS;
+        this.overallStatus = IamProvisioningStatus.IAM_IN_PROGRESS;
         this.lastAttemptAt = now;
         this.updatedAt = now;
 
@@ -82,12 +82,12 @@ public class TenantIamProvisioningState {
 
     public void markCompleted(Instant now){
         if ((!(keycloakOrganizationCreated && defaultRolesAssigned && adminUserCreated && adminUserMembershipCreated) )
-        || (overallStatus != IamProvisioningStatus.IN_PROGRESS)) {
-            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.COMPLETED,
+        || (overallStatus != IamProvisioningStatus.IAM_IN_PROGRESS)) {
+            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_COMPLETED,
                     "Not all critical steps were completed successfully or Current IamProvisioningStatus is not IN_PROGRESS");
         }
 
-        this.overallStatus = IamProvisioningStatus.COMPLETED;
+        this.overallStatus = IamProvisioningStatus.IAM_COMPLETED;
 
         this.retryCount = 0;
         this.updatedAt = now;
@@ -109,23 +109,23 @@ public class TenantIamProvisioningState {
 
         // markFailed 表达"这次执行失败，并且不再自动重试"。
         // 因此它必须发生在一次正在执行的尝试中，而不是等待重试或已完成之后。
-        if (this.overallStatus != IamProvisioningStatus.IN_PROGRESS) {
-            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.FAILED, "");
+        if (this.overallStatus != IamProvisioningStatus.IAM_IN_PROGRESS) {
+            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_FAILED, "");
         }
 
         this.retryCount++;
         this.lastAttemptAt = now;
         this.updatedAt = now;
 
-        this.overallStatus = IamProvisioningStatus.FAILED;
+        this.overallStatus = IamProvisioningStatus.IAM_FAILED;
         this.provisioningFailureCode = code;
         this.failureMessage = message;
     }
 
     // “当前尝试失败，但可重试”，会记录失败详情；达到最大重试次数后直接进入 FAILED
     public void markAwaitRetry(Instant markTime, IamProvisioningFailureCode code, String message){
-        if (this.overallStatus != IamProvisioningStatus.IN_PROGRESS){
-            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.AWAITING_RETRY, "");
+        if (this.overallStatus != IamProvisioningStatus.IAM_IN_PROGRESS){
+            throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_AWAITING_RETRY, "");
         }
 
         this.retryCount++;
@@ -135,9 +135,9 @@ public class TenantIamProvisioningState {
         this.failureMessage = message;
 
         if (isRetryExhausted()) {
-            this.overallStatus = IamProvisioningStatus.FAILED;
+            this.overallStatus = IamProvisioningStatus.IAM_FAILED;
         } else {
-            this.overallStatus = IamProvisioningStatus.AWAITING_RETRY;
+            this.overallStatus = IamProvisioningStatus.IAM_AWAITING_RETRY;
 
             // TODO: retryScheduler.scheduleRetry(tenantId, state.nextRetryAt());
             this.nextRetryAt = markTime.plus(nextRetryDelay(), ChronoUnit.SECONDS);
@@ -207,23 +207,23 @@ public class TenantIamProvisioningState {
 //    }
 
     public boolean isPending(){
-        return this.overallStatus == IamProvisioningStatus.PENDING;
+        return this.overallStatus == IamProvisioningStatus.IAM_PENDING;
     }
 
     public boolean isInProgress(){
-        return this.overallStatus == IamProvisioningStatus.IN_PROGRESS;
+        return this.overallStatus == IamProvisioningStatus.IAM_IN_PROGRESS;
     }
 
     public boolean isCompleted() {
-        return this.overallStatus == IamProvisioningStatus.COMPLETED;
+        return this.overallStatus == IamProvisioningStatus.IAM_COMPLETED;
     }
 
     public boolean isFailed(){
-        return this.overallStatus == IamProvisioningStatus.FAILED;
+        return this.overallStatus == IamProvisioningStatus.IAM_FAILED;
     }
 
     public boolean isAwaitingRetry(){
-        return this.overallStatus == IamProvisioningStatus.AWAITING_RETRY;
+        return this.overallStatus == IamProvisioningStatus.IAM_AWAITING_RETRY;
     }
 
     public TenantIamProvisioningState snapshot() {

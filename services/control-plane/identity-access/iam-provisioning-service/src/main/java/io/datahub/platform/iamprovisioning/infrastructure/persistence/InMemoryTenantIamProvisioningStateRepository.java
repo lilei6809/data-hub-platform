@@ -61,7 +61,7 @@ public class InMemoryTenantIamProvisioningStateRepository implements TenantIamPr
     public List<TenantIamProvisioningState> findReadyForRetry(Instant now, int limit) {
 
         return store.values().stream()
-                .filter(state -> state.getOverallStatus() == IamProvisioningStatus.AWAITING_RETRY)
+                .filter(state -> state.getOverallStatus() == IamProvisioningStatus.IAM_AWAITING_RETRY)
                 // 不需要判断是否重试耗尽, 因为 AWAITING_RETRY 就表示可以重试
                 .filter(state -> state.getNextRetryAt() != null)
                 .filter(state -> !state.getNextRetryAt().isAfter(now))

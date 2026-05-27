@@ -1,13 +1,12 @@
 package io.datahub.platform.iamprovisioning.infrastructure.keycloak;
 
+import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -34,7 +33,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     // ============================================================
     // 故障注入机制（测试用）
     // ============================================================
-    private final Map<String, Queue<Exception>> scheduledFailures = new ConcurrentHashMap<>();
+    private final Map<KeycloakOperation, Queue<Exception>> scheduledFailures = new ConcurrentHashMap<>();
 
 
     // ============================================================
@@ -43,7 +42,8 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     @Override
     public OrganizationId ensureOrganization(TenantId tenantId, OrganizationAttributes attributes) {
 
-        // TODO: 故障注入
+        // 故障注入
+        triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_ORGANIZATION);
 
         return organizations.computeIfAbsent(tenantId,
                 id -> {
@@ -55,7 +55,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
     @Override
     public UserId ensureUser(Email email, TemporaryCredentialPolicy credentialPolicy) {
-
+        triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_USER);
 
         return users.computeIfAbsent(email,
                 key -> {
@@ -67,6 +67,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
     @Override
     public void ensureOrganizationMembership(OrganizationId organizationId, UserId userId) {
+        triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP);
 
         // FakeKeycloakAdminPort 的“怎么知道 organizationId 是否存在”：fake adapter 如果要严格模拟真实 Keycloak，可以维护一个 Map<OrganizationId,
         //  StoredOrganization> 或在 organizations.values() 里查。但第一版可以先不做严格校验；等 pipeline 故障注入测试开始后，再让 fake 对不存在的 org/user
@@ -78,12 +79,13 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
     @Override
     public void ensureRealmRole(RealmRoleName realmRoleName) {
-
+        triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_REALM_ROLE);
         realmRoles.add(realmRoleName);
     }
 
     @Override
     public void ensureUserRealmRole(UserId userId, RealmRoleName realmRoleName) {
+        triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_USER_REALM_ROLE);
 
         userRoleAssignments.computeIfAbsent(userId, uid -> ConcurrentHashMap.newKeySet()).add(realmRoleName);
     }
@@ -129,14 +131,30 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
         return copy;
     }
 
-    public ConcurrentHashMap<String, Queue<Exception>> scheduledFailuresSnapshot() {
-        ConcurrentHashMap<String, Queue<Exception>> copy = new ConcurrentHashMap<>();
-        scheduledFailures.forEach((userId, failures) -> {
-            copy.put(userId, failures);
-        });
-        return copy;
+
+    //================ 故障注入 ==========================
+    public void scheduleFailures(KeycloakOperation op, int failureCount, KeycloakOperationException e) {
+        scheduledFailures.computeIfAbsent(op,
+                k -> {
+                    Queue<Exception> exceptions = new LinkedList<>();
+
+                    for (int i = 0; i < failureCount; i++) {
+                        exceptions.add(e);
+                    }
+                    return exceptions;
+                });
     }
 
+
+    private void triggerScheduledFailuresIfAny(KeycloakOperation op) {
+        Queue<Exception> exceptions = scheduledFailures.get(op);
+        if (exceptions != null && !exceptions.isEmpty()) {
+            Exception ex = exceptions.poll();
+            if (ex instanceof RuntimeException runtimeException) {
+                throw runtimeException;
+            }
+        }
+    }
 
 
 }

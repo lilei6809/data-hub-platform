@@ -22,7 +22,7 @@ class TenantIamProvisioningStateTest {
 
         assertThat(state.getTenantId()).isEqualTo(tenantId);
         assertThat(state.getWorkflowCorrelationId()).isEqualTo(correlationId);
-        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.PENDING);
+        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_PENDING);
         assertThat(state.getRetryCount()).isZero();
         assertThat(state.getCreatedAt()).isEqualTo(now);
         assertThat(state.getUpdatedAt()).isEqualTo(now);
@@ -38,7 +38,7 @@ class TenantIamProvisioningStateTest {
         state.markInProgress(startedAt);
         state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE, "connection timeout");
 
-        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.AWAITING_RETRY);
+        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_AWAITING_RETRY);
         assertThat(state.getRetryCount()).isEqualTo(1);
         assertThat(state.getLastAttemptAt()).isEqualTo(failedAt);
         assertThat(state.getUpdatedAt()).isEqualTo(failedAt);
@@ -59,7 +59,7 @@ class TenantIamProvisioningStateTest {
             );
         }
 
-        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.FAILED);
+        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_FAILED);
         assertThat(state.getRetryCount()).isEqualTo(5);
         assertThat(state.getLastAttemptAt()).isEqualTo(Instant.parse("2026-05-25T00:01:05Z"));
         assertThat(state.getProvisioningFailureCode()).isEqualTo(IamProvisioningFailureCode.KEYCLOAK_API_ERROR);
@@ -122,7 +122,7 @@ class TenantIamProvisioningStateTest {
         state.markInProgress(startedAt);
         state.markFailed(failedAt, IamProvisioningFailureCode.ADMIN_USER_EXISTS, "admin user already exists");
 
-        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.FAILED);
+        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_FAILED);
         assertThat(state.getRetryCount()).isEqualTo(1);
         assertThat(state.getLastAttemptAt()).isEqualTo(failedAt);
         assertThat(state.getUpdatedAt()).isEqualTo(failedAt);

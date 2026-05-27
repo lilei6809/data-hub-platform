@@ -39,7 +39,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
         assertThat(state).isNotNull();
         assertThat(state.getTenantId()).isEqualTo(tenantId);
         assertThat(state.getWorkflowCorrelationId()).isEqualTo(correlationId);
-        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.PENDING);
+        assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_PENDING);
         assertThat(state.getVersion()).isZero();
     }
 
@@ -57,7 +57,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
 
         assertThat(loaded.getTenantId()).isEqualTo(tenantId);
         assertThat(loaded.getWorkflowCorrelationId()).isEqualTo(firstCorrelationId);
-        assertThat(loaded.getOverallStatus()).isEqualTo(IamProvisioningStatus.IN_PROGRESS);
+        assertThat(loaded.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_IN_PROGRESS);
         assertThat(loaded.getVersion()).isEqualTo(1);
     }
 
@@ -73,7 +73,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
         Optional<TenantIamProvisioningState> loaded = repository.findByTenantId(tenantId);
         assertThat(loaded).isPresent();
         assertThat(loaded.get().getTenantId()).isEqualTo(tenantId);
-        assertThat(loaded.get().getOverallStatus()).isEqualTo(IamProvisioningStatus.IN_PROGRESS);
+        assertThat(loaded.get().getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_IN_PROGRESS);
         assertThat(loaded.get().getVersion()).isEqualTo(1);
     }
 
@@ -92,7 +92,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
         firstLoaded.markInProgress(Instant.parse("2026-05-25T00:00:01Z"));
 
         TenantIamProvisioningState secondLoaded = repository.findOrInitById(tenantId, CorrelationId.of("ignored-corr"));
-        assertThat(secondLoaded.getOverallStatus()).isEqualTo(IamProvisioningStatus.PENDING);
+        assertThat(secondLoaded.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_PENDING);
     }
 
     @Test
