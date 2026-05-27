@@ -8,6 +8,7 @@ import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureOrgan
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureTenantAdminRoleStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakAuthenticationException;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakTransientException;
+import io.datahub.platform.iamprovisioning.application.service.TenantIamOnboardingService;
 import io.datahub.platform.iamprovisioning.application.service.TenantIamProvisioningService;
 import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFailedEvent;
@@ -80,10 +81,14 @@ class TenantIamOnboardingEventHandlerTest {
                 eventPublisher
         );
 
-        handler = new TenantIamOnboardingEventHandler(
+        // TenantIamOnboardingService 持有 mapper，实现 HandleTenantIamOnboardingEventUseCase Port
+        TenantIamOnboardingService onboardingService = new TenantIamOnboardingService(
                 new TenantIamDesiredStateMapper(),
                 service
         );
+
+        // 薄适配器：仅持有 Port，不含任何业务逻辑
+        handler = new TenantIamOnboardingEventHandler(onboardingService);
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
