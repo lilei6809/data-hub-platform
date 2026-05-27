@@ -5,6 +5,7 @@ import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionCon
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.ProvisionTenantIamUseCase;
 import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
@@ -28,7 +29,6 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         this.ensureSteps = ensureSteps;
     }
 
-
     /**
      * 认领工作流
      * @param desired 租户 IAM provisioning 的期望状态
@@ -41,6 +41,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         // === 阶段 1：加载或初始化状态（本地操作，轻量） ===
         TenantIamProvisioningState currentState = repository.findOrInitById(id, correlationId);
         // 状态推进到 IN_PROGRESS, 表示"我认领了这个任务"
+        // TODO: RetryScheduler 还未配置
         currentState.markInProgress(Instant.now());
 
         // 立刻持久化
@@ -81,6 +82,11 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
             repository.save(currentState);
             // 向上重新抛出，让调用方知道失败了
+            throw e;
+        } catch (RuntimeException e) {
+
+            currentState.markFailed(Instant.now(), IamProvisioningFailureCode.UNKNOWN_ERROR, e.getMessage());
+            repository.save(currentState);
             throw e;
         }
     }

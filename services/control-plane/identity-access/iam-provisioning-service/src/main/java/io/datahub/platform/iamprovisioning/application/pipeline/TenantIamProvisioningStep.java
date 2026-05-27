@@ -1,8 +1,8 @@
 package io.datahub.platform.iamprovisioning.application.pipeline;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
-import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
+import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 
 public interface TenantIamProvisioningStep {
 

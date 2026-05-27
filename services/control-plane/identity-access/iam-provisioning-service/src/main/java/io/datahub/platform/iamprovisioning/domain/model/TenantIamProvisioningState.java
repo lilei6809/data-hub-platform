@@ -1,6 +1,5 @@
 package io.datahub.platform.iamprovisioning.domain.model;
 
-import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
@@ -82,7 +81,7 @@ public class TenantIamProvisioningState {
     }
 
     public void markCompleted(Instant now){
-        if ((!(keycloakOrganizationCreated && defaultRolesAssigned && adminUserCreated) )
+        if ((!(keycloakOrganizationCreated && defaultRolesAssigned && adminUserCreated && adminUserMembershipCreated) )
         || (overallStatus != IamProvisioningStatus.IN_PROGRESS)) {
             throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.COMPLETED,
                     "Not all critical steps were completed successfully or Current IamProvisioningStatus is not IN_PROGRESS");
@@ -237,6 +236,7 @@ public class TenantIamProvisioningState {
         copy.keycloakOrganizationCreated = this.keycloakOrganizationCreated;
         copy.adminUserCreated = this.adminUserCreated;
         copy.defaultRolesAssigned = this.defaultRolesAssigned;
+        copy.adminUserMembershipCreated = this.adminUserMembershipCreated;
         copy.lastAttemptAt = this.lastAttemptAt;
         copy.nextRetryAt = this.nextRetryAt;
         copy.provisionedAt = this.provisionedAt;

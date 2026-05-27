@@ -1,4 +1,4 @@
-package io.datahub.platform.iamprovisioning.application.pipeline;
+package io.datahub.platform.iamprovisioning.domain.model;
 
 public enum TenantIamProvisioningCheckpoint {
     ORGANIZATION_CREATED,
