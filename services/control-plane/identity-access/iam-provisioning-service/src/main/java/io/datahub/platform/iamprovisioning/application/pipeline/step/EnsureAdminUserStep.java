@@ -37,7 +37,6 @@ public class EnsureAdminUserStep implements TenantIamProvisioningStep {
             return context.withUserId(userId);
         } catch (KeycloakOperationException ex){
 
-            //TODO: log
             throw new IamProvisioningException(
                     name(),
                     ex.getFailureCode(),

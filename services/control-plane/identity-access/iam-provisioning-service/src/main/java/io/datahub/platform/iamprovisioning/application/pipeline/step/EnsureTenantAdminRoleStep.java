@@ -51,8 +51,6 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
         }
         catch (KeycloakOperationException ex) {
 
-            //TODO: log
-
             throw new IamProvisioningException(
                     NAME,
                     ex.getFailureCode(),
