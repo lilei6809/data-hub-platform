@@ -18,5 +18,9 @@ management:
       exposure:
         include: health,info
 
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} %kvp - %msg%n"
+
 server:
   port: ${IAM_PROVISIONING_SERVICE_PORT:8083}

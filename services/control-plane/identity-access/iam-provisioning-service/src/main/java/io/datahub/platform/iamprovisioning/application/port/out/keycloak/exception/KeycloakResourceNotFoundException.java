@@ -1,5 +1,6 @@
 package io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception;
 
+import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 
 // 场景：404（查询一个本应存在的资源时找不到）
@@ -8,7 +9,7 @@ import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 public class KeycloakResourceNotFoundException extends KeycloakOperationException {
     public KeycloakResourceNotFoundException(String operation, TenantId tenantId,
                                              String resourceType, Throwable cause) {
-        super(tenantId, operation, "KEYCLOAK_RESOURCE_NOT_FOUND",
+        super(tenantId, operation, IamProvisioningFailureCode.KEYCLOAK_RESOURCE_NOT_FOUND,
                 "Expected " + resourceType + " not found during " + operation, cause, true);
     }
 }

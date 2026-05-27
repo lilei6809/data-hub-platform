@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.application.pipeline.step;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
+import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
@@ -9,11 +10,12 @@ import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.RealmRoleName;
 import io.datahub.platform.iamprovisioning.domain.valueobject.UserId;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
+@Component
+@Order(3)
 @Slf4j
 public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
     private final static String NAME = "EnsureTenantAdminRoleStep";
@@ -59,6 +61,11 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
                     ex
             );
         }
+    }
+
+    @Override
+    public TenantIamProvisioningCheckpoint checkpoint() {
+        return TenantIamProvisioningCheckpoint.TENANT_ADMIN_ROLE_ASSIGNED;
     }
 
     @Override

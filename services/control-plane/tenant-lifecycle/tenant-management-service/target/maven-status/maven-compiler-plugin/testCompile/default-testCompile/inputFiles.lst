@@ -1,4 +1,0 @@
-/home/leland/projects/data-hub-platform/services/control-plane/tenant-lifecycle/tenant-management-service/src/test/java/io/datahub/platform/tenantmanagement/TenantManagementServiceIntegrationTest.java
-/home/leland/projects/data-hub-platform/services/control-plane/tenant-lifecycle/tenant-management-service/src/test/java/io/datahub/platform/tenantmanagement/application/TenantApplicationServiceTest.java
-/home/leland/projects/data-hub-platform/services/control-plane/tenant-lifecycle/tenant-management-service/src/test/java/io/datahub/platform/tenantmanagement/infrastructure/TenantJdbcStoreTest.java
-/home/leland/projects/data-hub-platform/services/control-plane/tenant-lifecycle/tenant-management-service/src/test/java/io/datahub/platform/tenantmanagement/interfaces/http/TenantControllerTest.java

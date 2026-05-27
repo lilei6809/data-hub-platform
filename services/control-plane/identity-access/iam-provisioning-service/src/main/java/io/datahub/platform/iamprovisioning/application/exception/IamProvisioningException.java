@@ -1,10 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.exception;
 
+import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
+
 public class IamProvisioningException extends RuntimeException {
     private final String stepName;
-    private final String failureCode;
+    private final IamProvisioningFailureCode failureCode;
     private final boolean retryable;
-    public IamProvisioningException(String stepName, String failureCode, String message, boolean retryable, Throwable cause) {
+    public IamProvisioningException(String stepName, IamProvisioningFailureCode failureCode, String message, boolean retryable, Throwable cause) {
         super(message, cause);
         this.stepName = stepName;
         this.failureCode = failureCode;
@@ -17,7 +19,7 @@ public class IamProvisioningException extends RuntimeException {
     ){
         return new IamProvisioningException(
                 stepName,
-                "PIPELINE_CONTEXT_MISSING",
+                IamProvisioningFailureCode.PIPELINE_CONTEXT_MISSING,
                 "Step " + stepName + " requires " + fieldName + ", but it is missing from StepExecutionContext",
                 false,
                 null
@@ -29,7 +31,7 @@ public class IamProvisioningException extends RuntimeException {
         return stepName;
     }
 
-    public String failureCode() {
+    public IamProvisioningFailureCode failureCode() {
         return failureCode;
     }
 

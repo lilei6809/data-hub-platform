@@ -1,9 +1,9 @@
 package io.datahub.platform.iamprovisioning.domain.model;
 
 public enum IamProvisioningStatus {
-    PENDING,
-    IN_PROGRESS,
-    COMPLETED,
-    FAILED,
-    AWAITING_RETRY
+    IAM_PENDING,
+    IAM_IN_PROGRESS,
+    IAM_COMPLETED,
+    IAM_FAILED,
+    IAM_AWAITING_RETRY
 }
