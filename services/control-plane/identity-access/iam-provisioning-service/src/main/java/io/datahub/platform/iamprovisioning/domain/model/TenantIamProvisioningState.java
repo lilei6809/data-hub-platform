@@ -1,5 +1,6 @@
 package io.datahub.platform.iamprovisioning.domain.model;
 
+import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Slf4j
@@ -16,6 +18,7 @@ public class TenantIamProvisioningState {
     private final TenantId tenantId;
 
     private static final int MAX_RETRY = 5;  // 如果不是 static: 你有多少个租户，就会有多少个 TenantIamProvisioningState 实例，每一个都持有一个自己的 MAX_RETRY = 5，这既浪费内存，又在语义上表达了错误的含义（好像每个租户可以有不同的最大重试次数）。
+    private Instant nextRetryAt;  // 下次允许重试的时间点，null 表示不需要等待
 
     // 宏观状态机
     private IamProvisioningStatus overallStatus;
@@ -24,6 +27,7 @@ public class TenantIamProvisioningState {
     private boolean keycloakOrganizationCreated;
     private boolean defaultRolesAssigned;
     private boolean adminUserCreated;
+    private boolean adminUserMembershipCreated;
 
     // 重试治理
     private int retryCount;
@@ -36,16 +40,18 @@ public class TenantIamProvisioningState {
     private Instant createdAt;
     private Instant updatedAt;
 
+    private long version;
+
     // 分布式追踪
     private CorrelationId workflowCorrelationId;
 
-    public TenantIamProvisioningState(TenantId tenantId, CorrelationId correlationId, Instant now) {
+    public TenantIamProvisioningState(TenantId tenantId, CorrelationId correlationId, Instant createdAt) {
         this.tenantId = Objects.requireNonNull(tenantId);
 
         this.workflowCorrelationId = Objects.requireNonNull(correlationId);
 
-        this.createdAt = Objects.requireNonNull(now);
-        this.updatedAt = now;
+        this.createdAt = Objects.requireNonNull(createdAt);
+        this.updatedAt = createdAt;
         this.overallStatus = IamProvisioningStatus.PENDING;
         this.retryCount = 0;
     }
@@ -91,6 +97,7 @@ public class TenantIamProvisioningState {
         // 成功时清除失败记录，由领域对象自己保证这个清理动作不会被遗忘
         this.provisioningFailureCode = null;
         this.failureMessage = null;
+        this.nextRetryAt = null;
 
     }
 
@@ -117,14 +124,14 @@ public class TenantIamProvisioningState {
     }
 
     // “当前尝试失败，但可重试”，会记录失败详情；达到最大重试次数后直接进入 FAILED
-    public void markAwaitRetry(Instant now, IamProvisioningFailureCode code, String message){
+    public void markAwaitRetry(Instant markTime, IamProvisioningFailureCode code, String message){
         if (this.overallStatus != IamProvisioningStatus.IN_PROGRESS){
             throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.AWAITING_RETRY, "");
         }
 
         this.retryCount++;
-        this.lastAttemptAt = now;
-        this.updatedAt = now;
+        this.lastAttemptAt = markTime;
+        this.updatedAt = markTime;
         this.provisioningFailureCode = code;
         this.failureMessage = message;
 
@@ -132,8 +139,25 @@ public class TenantIamProvisioningState {
             this.overallStatus = IamProvisioningStatus.FAILED;
         } else {
             this.overallStatus = IamProvisioningStatus.AWAITING_RETRY;
+
+            // TODO: retryScheduler.scheduleRetry(tenantId, state.nextRetryAt());
+            this.nextRetryAt = markTime.plus(nextRetryDelay(), ChronoUnit.SECONDS);
         }
     }
+
+    private Long nextRetryDelay() {
+        // 基础退避：1min, 2min, 4min, 8min, 16min...
+        long baseDelaySeconds = (long) Math.pow(2, retryCount) * 60;
+
+        // 加上随机抖动：±30% 的随机偏移
+        long jitterSeconds = (long) (baseDelaySeconds * 0.3 * Math.random());
+
+        // 设置上限，最长不超过 30 分钟
+        long totalSeconds = Math.min(baseDelaySeconds + jitterSeconds, 1800);
+
+        return totalSeconds;
+    }
+
 
     // 每个子目标完成时，都有明确的领域方法来记录
     public void markOrganizationCreated(Instant now) {
@@ -151,10 +175,77 @@ public class TenantIamProvisioningState {
         this.updatedAt = now;
     }
 
+    public void markAdminUserMembershipCreated(Instant now) {
+         this.adminUserMembershipCreated = true;
+         this.updatedAt = now;
+    }
+
+    public void markPersisted(long version){
+        this.version = version;
+    }
+
+    public void markStepCompleted(TenantIamProvisioningCheckpoint checkpoint, Instant now){
+        switch (checkpoint){
+            case ORGANIZATION_CREATED:
+                markOrganizationCreated(now);
+                break;
+            case ADMIN_USER_CREATED:
+                markAdminUserCreated(now);
+                break;
+            case TENANT_ADMIN_ROLE_ASSIGNED:
+                markDefaultRolesAssigned(now);
+                break;
+            case ORGANIZATION_MEMBERSHIP_CREATED:
+                markAdminUserMembershipCreated(now);
+                break;
+
+        }
+    }
+
     // Step Pipeline 通过这些只读方法决定是否跳过该步骤
 //    public boolean isOrganizationCreated() {
 //        return keycloakOrganizationCreated;
 //    }
+
+    public boolean isPending(){
+        return this.overallStatus == IamProvisioningStatus.PENDING;
+    }
+
+    public boolean isInProgress(){
+        return this.overallStatus == IamProvisioningStatus.IN_PROGRESS;
+    }
+
+    public boolean isCompleted() {
+        return this.overallStatus == IamProvisioningStatus.COMPLETED;
+    }
+
+    public boolean isFailed(){
+        return this.overallStatus == IamProvisioningStatus.FAILED;
+    }
+
+    public boolean isAwaitingRetry(){
+        return this.overallStatus == IamProvisioningStatus.AWAITING_RETRY;
+    }
+
+    public TenantIamProvisioningState snapshot() {
+        TenantIamProvisioningState copy = new TenantIamProvisioningState(this.tenantId, this.workflowCorrelationId, this.createdAt);
+
+        // 复制所有可变字段
+        copy.overallStatus = this.overallStatus;
+        copy.retryCount = this.retryCount;
+        copy.version = this.version;
+        copy.keycloakOrganizationCreated = this.keycloakOrganizationCreated;
+        copy.adminUserCreated = this.adminUserCreated;
+        copy.defaultRolesAssigned = this.defaultRolesAssigned;
+        copy.lastAttemptAt = this.lastAttemptAt;
+        copy.nextRetryAt = this.nextRetryAt;
+        copy.provisionedAt = this.provisionedAt;
+        copy.provisioningFailureCode = this.provisioningFailureCode;
+        copy.failureMessage = this.failureMessage;
+        copy.updatedAt = this.updatedAt;
+        // Instant 是不可变的，所以直接赋值是安全的，不需要再 copy
+        return copy;
+    }
 
     @Override
     public String toString() {
