@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.application.pipeline.step;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
+import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
@@ -12,7 +13,11 @@ import io.datahub.platform.iamprovisioning.domain.valueobject.OrganizationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantName;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
+@Component
+@Order(1)
 @Slf4j
 public class EnsureOrganizationStep implements TenantIamProvisioningStep {
 
@@ -52,6 +57,11 @@ public class EnsureOrganizationStep implements TenantIamProvisioningStep {
             );
         }
 
+    }
+
+    @Override
+    public TenantIamProvisioningCheckpoint checkpoint() {
+        return TenantIamProvisioningCheckpoint.ORGANIZATION_CREATED;
     }
 
     @Override

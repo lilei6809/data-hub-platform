@@ -22,6 +22,7 @@ public interface TenantIamProvisioningStep {
      */
     StepExecutionContext ensure(TenantIamDesiredState desired, StepExecutionContext context);
 
+    TenantIamProvisioningCheckpoint checkpoint();
 
     String name();
 }

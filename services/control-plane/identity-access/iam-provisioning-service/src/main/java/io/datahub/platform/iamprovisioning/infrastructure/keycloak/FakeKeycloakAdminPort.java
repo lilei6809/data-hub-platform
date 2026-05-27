@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.infrastructure.keycloak;
 
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Queue;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
     // 内存存储：每种对象用最自然的"稳定键"做索引
