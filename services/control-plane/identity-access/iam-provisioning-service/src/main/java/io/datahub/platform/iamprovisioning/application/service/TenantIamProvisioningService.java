@@ -4,7 +4,10 @@ import io.datahub.platform.iamprovisioning.application.exception.IamProvisioning
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.ProvisionTenantIamUseCase;
+import io.datahub.platform.iamprovisioning.application.port.out.EventPublisher;
 import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisionedEvent;
+import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFailedEvent;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
@@ -23,11 +26,14 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
     private final TenantIamProvisioningStateRepository repository;
     private final List<TenantIamProvisioningStep> ensureSteps;
 
+    private final EventPublisher eventPublisher;
 
-
-    public TenantIamProvisioningService(TenantIamProvisioningStateRepository repository, List<TenantIamProvisioningStep> ensureSteps) {
+    public TenantIamProvisioningService(TenantIamProvisioningStateRepository repository,
+                                        List<TenantIamProvisioningStep> ensureSteps,
+                                        EventPublisher eventPublisher) {
         this.repository = repository;
         this.ensureSteps = ensureSteps;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -107,14 +113,24 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                         .addKeyValue("userId", context.getUserId().map(Object::toString).orElse(null))
                         .log("Tenant IAM provisioning step completed");
             }
-            // 暂时在此控制 order, 因为代码设计有问题
-            // 每一步结束, 我们需要保存当前的 state, 但是代码却没有 currentState 的更新
-            // 并且 state 的字段并不包含 organizationId, userId 这些需要保存的信息[我们当前可以重新查询]
+
 
 
             // === 阶段 3：所有 Steps 成功，推进终态 ===
             currentState.markCompleted(Instant.now());
             repository.save(currentState);
+
+            //TODO: outbox pattern
+            eventPublisher.publish(
+                    TenantIamProvisionedEvent.of(
+                            currentState.getTenantId(),
+                            desired.tier(),
+                            desired.adminUser().email(),
+                            correlationId,
+                            currentState.getProvisionedAt()
+                    )
+            );
+
             log.atInfo()
                     .addKeyValue("event", "tenant_iam_provisioning_completed")
                     .addKeyValue("tenantId", id)
@@ -140,7 +156,6 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                         .addKeyValue("retryCount", currentState.getRetryCount())
                         .addKeyValue("nextRetryAt", currentState.getNextRetryAt())
                         .log("Tenant IAM provisioning failed with retryable error");
-
             } else  {
                 currentState.markFailed(Instant.now(), e.failureCode(), e.getMessage());
                 log.atError()
@@ -157,6 +172,16 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
             }
 
             repository.save(currentState);
+
+            TenantIamProvisioningFailedEvent failedEvent = TenantIamProvisioningFailedEvent.of(
+              currentState.getTenantId(),
+              desired.tier(),
+              e.failureCode(),
+              e.retryable(),
+              correlationId,
+              currentState.getFailedAt()
+            );
+
             // 向上重新抛出，让调用方知道失败了
             throw e;
         } catch (RuntimeException e) {

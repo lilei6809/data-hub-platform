@@ -14,6 +14,7 @@ import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningSta
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
+import io.datahub.platform.iamprovisioning.infrastructure.messaging.InMemoryEventPublisher;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningStateRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,7 @@ class TenantIamProvisioningServiceTest {
     private EnsureAdminUserStep ensureAdminUserStep;
     private EnsureTenantAdminRoleStep ensureTenantAdminRoleStep;
     private EnsureOrganizationMembershipStep ensureOrganizationMembershipStep;
-
+    private InMemoryEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -45,10 +46,12 @@ class TenantIamProvisioningServiceTest {
         ensureAdminUserStep = new EnsureAdminUserStep(port);
         ensureTenantAdminRoleStep = new EnsureTenantAdminRoleStep(port);
         ensureOrganizationMembershipStep = new EnsureOrganizationMembershipStep(port);
+        eventPublisher = new InMemoryEventPublisher();
 
-        service = new TenantIamProvisioningService(repository, List.of(
-                ensureOrganizationStep, ensureAdminUserStep, ensureTenantAdminRoleStep, ensureOrganizationMembershipStep
-        ));
+        service = new TenantIamProvisioningService(repository,
+                List.of(
+                ensureOrganizationStep, ensureAdminUserStep, ensureTenantAdminRoleStep, ensureOrganizationMembershipStep),
+                eventPublisher);
     }
 
 

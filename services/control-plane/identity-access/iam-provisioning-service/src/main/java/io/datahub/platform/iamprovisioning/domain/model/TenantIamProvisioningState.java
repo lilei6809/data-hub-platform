@@ -32,6 +32,7 @@ public class TenantIamProvisioningState {
     private int retryCount;
     private Instant lastAttemptAt;
     private Instant provisionedAt;              // 可变，仅在 PROVISIONED 时设置
+    private Instant failedAt;
     private IamProvisioningFailureCode  provisioningFailureCode;
     private String failureMessage;  // 便于运维排查
 
@@ -116,6 +117,7 @@ public class TenantIamProvisioningState {
         this.retryCount++;
         this.lastAttemptAt = now;
         this.updatedAt = now;
+        this.failedAt = now;
 
         this.overallStatus = IamProvisioningStatus.IAM_FAILED;
         this.provisioningFailureCode = code;
