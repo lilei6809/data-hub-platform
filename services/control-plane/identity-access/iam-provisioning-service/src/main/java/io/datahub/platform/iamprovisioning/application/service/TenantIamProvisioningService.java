@@ -173,16 +173,24 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
             repository.save(currentState);
 
+            // lastAttemptAt 在 markAwaitRetry 和 markFailed 中均被设置，
+            // 因此无论是可重试还是不可重试失败，它都不为 null，作为事件时间戳安全可用。
+            // （failedAt 仅在 markFailed 时设置，对可重试路径为 null，不适合此处使用。）
             TenantIamProvisioningFailedEvent failedEvent = TenantIamProvisioningFailedEvent.of(
               currentState.getTenantId(),
               desired.tier(),
               e.failureCode(),
               e.retryable(),
               correlationId,
-              currentState.getFailedAt()
+              currentState.getLastAttemptAt()
             );
 
-            // 向上重新抛出，让调用方知道失败了
+            // 先发布事件，再抛出异常。
+            // 如果顺序颠倒（先抛出），调用方 catch 后可能不再执行发布，导致下游永远感知不到失败。
+            eventPublisher.publish(failedEvent);
+
+            // 向上重新抛出，让调用方（Kafka Consumer / 测试）知道失败了，
+            // 以便触发消息重试或死信队列
             throw e;
         } catch (RuntimeException e) {
 
