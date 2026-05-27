@@ -89,8 +89,56 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     }
 
     // 内部存储类（私有 record）
-    private record StoredOrganization(OrganizationId organizationId, OrganizationAttributes attributes) {}
-    private record StoredUser(UserId userId, Email email, TemporaryCredentialPolicy credentialPolicy) {}
+    public record StoredOrganization(OrganizationId organizationId, OrganizationAttributes attributes) {};
+    public record StoredUser(UserId userId, Email email, TemporaryCredentialPolicy credentialPolicy) {}
+
+
+    // ============== 可观测 ============================
+    public ConcurrentHashMap<TenantId, StoredOrganization> organizationsSnapshot() {
+        ConcurrentHashMap<TenantId, StoredOrganization> copy = new ConcurrentHashMap<>();
+
+        organizations.forEach((tenantId, organization) -> {
+            copy.put(tenantId, organization);
+        });
+
+        return copy;
+    }
+
+    public ConcurrentHashMap<Email, StoredUser> usersSnapshot() {
+        ConcurrentHashMap<Email, StoredUser> copy = new ConcurrentHashMap<>();
+        users.forEach((email, storedUser) -> {
+            copy.put(email, storedUser);
+        });
+        return copy;
+    }
+
+    public ConcurrentHashMap<OrganizationId, Set<UserId>> membershipsSnapshot() {
+        ConcurrentHashMap<OrganizationId, Set<UserId>> copy = new ConcurrentHashMap<>();
+        memberships.forEach((organizationId, userIds) -> {
+            copy.put(organizationId, userIds);
+        });
+        return copy;
+    }
+
+    public ConcurrentHashMap<UserId, Set<RealmRoleName>> userRoleAssignmentsSnapshot() {
+        ConcurrentHashMap<UserId, Set<RealmRoleName>> copy = new ConcurrentHashMap<>();
+        userRoleAssignments.forEach((userId, realmRoles) -> {
+            copy.put(userId, realmRoles);
+
+        });
+        return copy;
+    }
+
+    public ConcurrentHashMap<String, Queue<Exception>> scheduledFailuresSnapshot() {
+        ConcurrentHashMap<String, Queue<Exception>> copy = new ConcurrentHashMap<>();
+        scheduledFailures.forEach((userId, failures) -> {
+            copy.put(userId, failures);
+        });
+        return copy;
+    }
+
+
+
 }
 
 
