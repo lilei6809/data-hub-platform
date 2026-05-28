@@ -64,4 +64,7 @@ public record TenantInfrastructureProvisionedEvent(
         return new TenantInfrastructureProvisionedEvent(
                 tenantId, tenantName, tier, adminEmail, correlationId, occurredAt);
     }
+
+
+
 }

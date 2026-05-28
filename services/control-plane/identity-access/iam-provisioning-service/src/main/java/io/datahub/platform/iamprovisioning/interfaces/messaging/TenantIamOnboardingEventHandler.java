@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TenantIamOnboardingEventHandler {
 
+    // port.in
     private final HandleTenantIamOnboardingEventUseCase useCase;
 
     public TenantIamOnboardingEventHandler(HandleTenantIamOnboardingEventUseCase useCase) {

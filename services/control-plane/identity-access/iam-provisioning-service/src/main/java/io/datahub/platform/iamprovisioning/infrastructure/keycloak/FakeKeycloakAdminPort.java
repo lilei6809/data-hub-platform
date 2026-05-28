@@ -4,12 +4,10 @@ import io.datahub.platform.iamprovisioning.application.exception.IamProvisioning
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
 public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
     // 内存存储：每种对象用最自然的"稳定键"做索引
@@ -158,5 +156,4 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
 
 }
-
 

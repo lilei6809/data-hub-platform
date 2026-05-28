@@ -5,9 +5,9 @@ spring:
     virtual:
       enabled: true
   datasource:
-    url: ${IAM_PROVISIONING_DB_URL:jdbc:postgresql://localhost:5432/datahub}
-    username: ${IAM_PROVISIONING_DB_USERNAME:datahub}
-    password: ${IAM_PROVISIONING_DB_PASSWORD:datahub}
+    url: "${IAM_PROVISIONING_DB_URL:jdbc:postgresql://localhost:5432/iam_provisioning}"
+    username: "${IAM_PROVISIONING_DB_USERNAME:iam_provisioning}"
+    password: "${IAM_PROVISIONING_DB_PASSWORD:iam_provisioning}"
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -24,3 +24,21 @@ logging:
 
 server:
   port: ${IAM_PROVISIONING_SERVICE_PORT:8083}
+
+
+# keycloak client 的配置
+cdp:
+  keycloak:
+    admin:
+      server-url: "${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:18080}"
+      realm: "${KEYCLOAK_ADMIN_REALM:cdp-auth-pool}"
+      admin-client-id: "${KEYCLOAK_ADMIN_CLIENT_ID:cdp-provisioning-service}"
+      connect-timeout: 2s
+      read-timeout: 1s
+      enabled: "${KEYCLOAK_ADMIN_ENABLED:false}"
+    adapter:
+      type: "${KEYCLOAK_ADAPTER_TYPE:fake}"
+
+  vault:
+    adapter:
+      type: "${VAULT_ADAPTER_TYPE:fake}"

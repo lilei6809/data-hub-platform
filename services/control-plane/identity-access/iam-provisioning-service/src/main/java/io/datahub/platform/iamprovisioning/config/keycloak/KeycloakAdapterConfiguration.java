@@ -1,0 +1,31 @@
+package io.datahub.platform.iamprovisioning.config.keycloak;
+
+import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.config.keycloak.properties.KeycloakAdminProperty;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.RealKeycloakAdminPort;
+import org.keycloak.admin.client.Keycloak;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class KeycloakAdapterConfiguration {
+
+    @Bean
+    @ConditionalOnProperty(
+            name = "cdp.keycloak.adapter.type",
+            havingValue = "fake"
+    )
+    public KeycloakAdminPort fakeKeycloakAdminPort() {
+        return new FakeKeycloakAdminPort();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "cdp.keycloak.adapter.type", havingValue = "real")
+    @ConditionalOnBean(Keycloak.class)
+    public KeycloakAdminPort realKeycloakAdminPort(Keycloak keycloak, KeycloakAdminProperty props) {
+        return new RealKeycloakAdminPort(keycloak, props.getRealm());
+    }
+}
