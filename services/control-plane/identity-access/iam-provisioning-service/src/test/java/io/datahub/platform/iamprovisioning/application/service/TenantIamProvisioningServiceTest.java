@@ -5,8 +5,8 @@ import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureAdmin
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureOrganizationMembershipStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureOrganizationStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureTenantAdminRoleStep;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakAuthenticationException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakTransientException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakAuthenticationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakTransientException;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;

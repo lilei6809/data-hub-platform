@@ -1,4 +1,4 @@
-package io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception;
+package io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception;
 
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;

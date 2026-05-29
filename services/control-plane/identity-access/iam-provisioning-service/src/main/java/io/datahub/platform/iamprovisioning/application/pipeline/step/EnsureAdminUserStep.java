@@ -1,11 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.pipeline.step;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
+import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.AdminUser;
 import io.datahub.platform.iamprovisioning.domain.valueobject.UserId;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class EnsureAdminUserStep implements TenantIamProvisioningStep {
 
-    private final static String NAME = "EnsureAdminUserStep";
     private final KeycloakAdminPort keycloakAdminPort;
 
     public EnsureAdminUserStep(KeycloakAdminPort keycloakAdminPort) {
@@ -42,7 +42,7 @@ public class EnsureAdminUserStep implements TenantIamProvisioningStep {
         } catch (KeycloakOperationException ex){
             //  step: 翻译 keycloak 异常 -> 业务异常
             throw new IamProvisioningException(
-                    name(),
+                    IamProvisioningStep.ENSURE_USER,
                     ex.getFailureCode(),
                     ex.getMessage(),
                     ex.isRetryable(),
@@ -58,6 +58,8 @@ public class EnsureAdminUserStep implements TenantIamProvisioningStep {
 
     @Override
     public String name() {
-        return NAME;
+        return IamProvisioningStep.ENSURE_USER.name();
     }
+
+
 }

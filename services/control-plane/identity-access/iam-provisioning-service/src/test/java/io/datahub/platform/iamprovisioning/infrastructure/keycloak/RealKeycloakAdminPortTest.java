@@ -1,8 +1,8 @@
 package io.datahub.platform.iamprovisioning.infrastructure.keycloak;
 
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakAuthenticationException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakInvalidRequestException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakTransientException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakAuthenticationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakInvalidRequestException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakTransientException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.Email;
 import io.datahub.platform.iamprovisioning.domain.valueobject.OrganizationAttributes;
 import io.datahub.platform.iamprovisioning.domain.valueobject.OrganizationId;

@@ -53,19 +53,19 @@ public final class StepExecutionContext {
         );
     }
 
-    public OrganizationId requireOrganizationId(String stepName) {
+    public OrganizationId requireOrganizationId(IamProvisioningStep step) {
         return organizationId.orElseThrow(
                 () -> IamProvisioningException.missingContextValue(
-                        stepName,
+                        step,
                         "OrganizationId"
                 )
         );
     }
 
-    public UserId requireUserId(String stepName) {
+    public UserId requireUserId(IamProvisioningStep step) {
         return userId.orElseThrow(
                 () -> IamProvisioningException.missingContextValue(
-                        stepName,
+                        step,
                         "UserId"
                 )
         );

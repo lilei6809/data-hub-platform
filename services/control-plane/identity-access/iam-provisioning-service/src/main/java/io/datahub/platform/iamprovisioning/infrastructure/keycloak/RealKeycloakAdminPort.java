@@ -1,10 +1,10 @@
 package io.datahub.platform.iamprovisioning.infrastructure.keycloak;
 
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakAuthenticationException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakInvalidRequestException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakTransientException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakAuthenticationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakInvalidRequestException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakTransientException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.util.SecureRandomPasswordGenerator;
 import jakarta.ws.rs.ForbiddenException;

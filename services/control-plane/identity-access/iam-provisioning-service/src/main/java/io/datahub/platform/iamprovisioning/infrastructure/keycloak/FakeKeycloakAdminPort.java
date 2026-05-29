@@ -1,8 +1,7 @@
 package io.datahub.platform.iamprovisioning.infrastructure.keycloak;
 
-import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 
 import java.util.*;

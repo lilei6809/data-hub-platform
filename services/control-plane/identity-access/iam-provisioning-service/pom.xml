@@ -33,7 +33,15 @@
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
         </dependency>
 
-<!--        <dependency>-->
+        <dependency>
+            <groupId>com.github.dasniko</groupId>
+            <artifactId>testcontainers-keycloak</artifactId>
+            <version>4.2.1</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!--        <dependency>-->
 <!--            <groupId>org.springframework.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-vault-config</artifactId>-->
 <!--        </dependency>-->
@@ -108,14 +116,13 @@
     </dependencies>
     <build>
         <plugins>
+            <!-- Failsafe 集成测试配置：includes/skip/executions 继承自 parent pluginManagement -->
+            <!-- mvn test              → 只跑 Surefire 单元测试 -->
+            <!-- mvn verify -DskipITs=false → 追加跑集成测试（需 Docker 可用） -->
+            <!-- WSL2 Docker Desktop 本地环境可使用：mvn verify -DskipITs=false -Pwsl2-docker-desktop -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
-                </configuration>
+                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

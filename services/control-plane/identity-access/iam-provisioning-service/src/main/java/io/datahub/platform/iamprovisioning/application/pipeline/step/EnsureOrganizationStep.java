@@ -1,11 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.pipeline.step;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
+import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.OrganizationAttributes;
 import io.datahub.platform.iamprovisioning.domain.valueobject.OrganizationId;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class EnsureOrganizationStep implements TenantIamProvisioningStep {
 
-    private final static String NAME = "EnsureOrganizationStep";
     private final KeycloakAdminPort  keycloakAdminPort;
 
     public EnsureOrganizationStep(KeycloakAdminPort keycloakAdminPort) {
@@ -47,7 +47,7 @@ public class EnsureOrganizationStep implements TenantIamProvisioningStep {
             // 因为 adapter 层翻译的是 Keycloak SDK / HTTP / 409 / 404 / 5xx
             //    -> KeycloakOperationException
             throw new IamProvisioningException(
-                    NAME,
+                    IamProvisioningStep.ENSURE_ORGANIZATION,
                     ex.getFailureCode(),
                     ex.getMessage(),
                     ex.isRetryable(),
@@ -64,7 +64,7 @@ public class EnsureOrganizationStep implements TenantIamProvisioningStep {
 
     @Override
     public String name() {
-        return NAME;
+        return IamProvisioningStep.ENSURE_ORGANIZATION.name();
     }
 
 

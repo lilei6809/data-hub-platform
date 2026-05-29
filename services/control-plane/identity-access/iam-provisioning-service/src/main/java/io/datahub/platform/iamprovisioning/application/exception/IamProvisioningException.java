@@ -1,35 +1,34 @@
 package io.datahub.platform.iamprovisioning.application.exception;
 
+import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 
 public class IamProvisioningException extends RuntimeException {
-    private final String stepName;
+    private final IamProvisioningStep step;
     private final IamProvisioningFailureCode failureCode;
     private final boolean retryable;
-    public IamProvisioningException(String stepName, IamProvisioningFailureCode failureCode, String message, boolean retryable, Throwable cause) {
+    public IamProvisioningException(IamProvisioningStep step, IamProvisioningFailureCode failureCode, String message, boolean retryable, Throwable cause) {
         super(message, cause);
-        this.stepName = stepName;
+        this.step = step;
         this.failureCode = failureCode;
         this.retryable = retryable;
     }
 
     public static IamProvisioningException missingContextValue(
-            String stepName,
+            IamProvisioningStep step,
             String fieldName
     ){
         return new IamProvisioningException(
-                stepName,
+                step,
                 IamProvisioningFailureCode.PIPELINE_CONTEXT_MISSING,
-                "Step " + stepName + " requires " + fieldName + ", but it is missing from StepExecutionContext",
+                "Step " + step.name() + " requires " + fieldName + ", but it is missing from StepExecutionContext",
                 false,
                 null
 
         );
     }
 
-    public String stepName() {
-        return stepName;
-    }
+
 
     public IamProvisioningFailureCode failureCode() {
         return failureCode;
@@ -37,6 +36,10 @@ public class IamProvisioningException extends RuntimeException {
 
     public boolean retryable() {
         return retryable;
+    }
+
+    public IamProvisioningStep step() {
+        return step;
     }
 
 }

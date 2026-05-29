@@ -1,11 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.pipeline.step;
 
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
+import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.RealmRoleName;
 import io.datahub.platform.iamprovisioning.domain.valueobject.UserId;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Component;
 @Order(3)
 @Slf4j
 public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
-    private final static String NAME = "EnsureTenantAdminRoleStep";
     private static final RealmRoleName TENANT_ADMIN = RealmRoleName.of("TENANT_ADMIN");
 
 
@@ -33,7 +33,7 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
 
         try {
 
-            UserId userId = context.requireUserId(name());
+            UserId userId = context.requireUserId(IamProvisioningStep.ENSURE_REALM_ROLE);
 
             keycloakAdminPort.ensureUserRealmRole(context.getTenantId(), userId, TENANT_ADMIN);
 
@@ -52,7 +52,7 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
         catch (KeycloakOperationException ex) {
 
             throw new IamProvisioningException(
-                    NAME,
+                    IamProvisioningStep.ENSURE_REALM_ROLE,
                     ex.getFailureCode(),
                     ex.getMessage(),
                     ex.isRetryable(),
@@ -68,6 +68,8 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
 
     @Override
     public String name() {
-        return NAME;
+        return IamProvisioningStep.ENSURE_REALM_ROLE.name();
     }
+
+
 }

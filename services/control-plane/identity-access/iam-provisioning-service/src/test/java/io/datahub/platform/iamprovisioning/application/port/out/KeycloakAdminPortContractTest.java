@@ -1,12 +1,19 @@
 package io.datahub.platform.iamprovisioning.application.port.out;
 
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.KeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.RealKeycloakAdminPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -200,5 +207,31 @@ class FakeKeycloakAdminAdapterContractTest extends KeycloakAdminPortContractTest
     @Override
     protected KeycloakAdminPort createPort() {
         return new FakeKeycloakAdminPort();
+    }
+}
+
+// 命名为 IT（Integration Test）：由 Maven Failsafe 在 mvn verify 阶段运行，
+// 不被 Surefire（mvn test）捡起，避免拖慢日常构建。
+@Testcontainers
+class RealKeycloakAdminAdapterContractIT extends KeycloakAdminPortContractTest {
+    // static：所有测试方法共享一个 Keycloak 容器（启动一次约需 10-15s）
+    // 非 static 则每个 @Test 都重启一次，太慢
+    @Container
+    static KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:26.0.5")
+            .withRealmImportFile("keycloak/realm-export.json")
+            ;
+
+
+    @Override
+    protected KeycloakAdminPort createPort() {
+        Keycloak keycloak = KeycloakBuilder.builder()
+                .serverUrl(keycloakContainer.getAuthServerUrl())
+                .realm("cdp-auth-pool")
+                .clientId("cdp-provisioning-service")
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                .clientSecret("local-cdp-cdp-provisioning-service-secret")
+                .build();
+
+        return new RealKeycloakAdminPort(keycloak, "cdp-auth-pool");
     }
 }
