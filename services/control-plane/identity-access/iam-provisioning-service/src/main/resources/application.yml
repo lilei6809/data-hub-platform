@@ -38,8 +38,11 @@ cdp:
       read-timeout: 1s
       enabled: "${KEYCLOAK_ADMIN_ENABLED:true}"
     adapter:
-      type: "${KEYCLOAK_ADAPTER_TYPE:real}"
+      real:
+        enabled: "${KEYCLOAK_ADAPTER_REAL_ENABLED:true}"
 
   vault:
     adapter:
-      type: "${VAULT_ADAPTER_TYPE:fake}"
+      real:
+        enabled: "${VAULT_ADAPTER_REAL_ENABLED:false}"
+

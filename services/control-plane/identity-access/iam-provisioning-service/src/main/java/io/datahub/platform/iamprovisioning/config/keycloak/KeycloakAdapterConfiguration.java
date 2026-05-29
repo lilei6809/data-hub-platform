@@ -14,15 +14,15 @@ public class KeycloakAdapterConfiguration {
 
     @Bean
     @ConditionalOnProperty(
-            name = "cdp.keycloak.adapter.type",
-            havingValue = "fake"
+            name = "cdp.keycloak.adapter.real.enabled",
+            havingValue = "false"
     )
     public KeycloakAdminPort fakeKeycloakAdminPort() {
         return new FakeKeycloakAdminPort();
     }
 
     @Bean
-    @ConditionalOnProperty(name = "cdp.keycloak.adapter.type", havingValue = "real")
+    @ConditionalOnProperty(name = "cdp.keycloak.adapter.real.enabled", havingValue = "true")
     public KeycloakAdminPort realKeycloakAdminPort(Keycloak keycloak, KeycloakAdminProperty props) {
         return new RealKeycloakAdminPort(keycloak, props.getRealm());
     }

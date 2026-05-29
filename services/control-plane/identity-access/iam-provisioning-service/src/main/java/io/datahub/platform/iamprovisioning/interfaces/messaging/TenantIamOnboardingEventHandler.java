@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.interfaces.messaging;
 
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,6 +47,7 @@ public class TenantIamOnboardingEventHandler {
      *
      * @param event 来自上游 BC 的基础设施就绪事件，不得为 null
      */
+    @KafkaListener(topics = "tenant.infrastructure.provisioned")
     public void handle(TenantInfrastructureProvisionedEvent event) {
         useCase.handle(event);
     }
