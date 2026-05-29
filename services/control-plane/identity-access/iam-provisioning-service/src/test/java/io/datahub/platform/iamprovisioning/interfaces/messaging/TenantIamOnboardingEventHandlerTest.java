@@ -154,7 +154,7 @@ class TenantIamOnboardingEventHandlerTest {
         fakeKeycloak.scheduleFailures(
                 KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP,
                 1,
-                new KeycloakTransientException("EnsureMembership", TenantId.of("tenant-beta"), null)
+                new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, TenantId.of("tenant-beta"), null)
         );
 
         TenantInfrastructureProvisionedEvent inboundEvent = TenantInfrastructureProvisionedEvent.of(
@@ -209,7 +209,7 @@ class TenantIamOnboardingEventHandlerTest {
         fakeKeycloak.scheduleFailures(
                 KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP,
                 1,
-                new KeycloakAuthenticationException(TenantId.of("tenant-gamma"), "EnsureMembership", "forbidden", null)
+                new KeycloakAuthenticationException(TenantId.of("tenant-gamma"), KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, "forbidden", null)
         );
 
         TenantInfrastructureProvisionedEvent inboundEvent = TenantInfrastructureProvisionedEvent.of(
@@ -266,7 +266,7 @@ class TenantIamOnboardingEventHandlerTest {
         fakeKeycloak.scheduleFailures(
                 KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP,
                 1,
-                new KeycloakTransientException("EnsureMembership", tenantId, null)
+                new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, tenantId, null)
         );
 
         TenantInfrastructureProvisionedEvent firstEvent = TenantInfrastructureProvisionedEvent.of(

@@ -52,7 +52,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     }
 
     @Override
-    public UserId ensureUser(Email email, TemporaryCredentialPolicy credentialPolicy) {
+    public UserId ensureUser(TenantId tenantId, Email email, TemporaryCredentialPolicy credentialPolicy) {
         triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_USER);
 
         return users.computeIfAbsent(email,
@@ -64,7 +64,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     }
 
     @Override
-    public void ensureOrganizationMembership(OrganizationId organizationId, UserId userId) {
+    public void ensureOrganizationMembership(TenantId tenantId, OrganizationId organizationId, UserId userId) {
         triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP);
 
         // FakeKeycloakAdminPort 的“怎么知道 organizationId 是否存在”：fake adapter 如果要严格模拟真实 Keycloak，可以维护一个 Map<OrganizationId,
@@ -82,7 +82,7 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
     }
 
     @Override
-    public void ensureUserRealmRole(UserId userId, RealmRoleName realmRoleName) {
+    public void ensureUserRealmRole(TenantId tenantIdm, UserId userId, RealmRoleName realmRoleName) {
         triggerScheduledFailuresIfAny(KeycloakOperation.ENSURE_USER_REALM_ROLE);
 
         userRoleAssignments.computeIfAbsent(userId, uid -> ConcurrentHashMap.newKeySet()).add(realmRoleName);
@@ -156,4 +156,3 @@ public class FakeKeycloakAdminPort implements KeycloakAdminPort {
 
 
 }
-

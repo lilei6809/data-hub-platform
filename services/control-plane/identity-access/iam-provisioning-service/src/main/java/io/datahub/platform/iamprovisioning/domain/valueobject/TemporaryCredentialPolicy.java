@@ -7,7 +7,8 @@ import java.util.Set;
 
 /**
  * Describes how the initial tenant administrator receives the first login credential.
- *
+ *  为什么要这样设计？因为领域层不应该生成真实密码，真实密码的生成属于基础设施细节（可能来自 Vault、随机生成器等）。
+ *  领域层只负责表达"这个用户的初始凭证应该遵循什么规则"。
  * <p>This value object does not hold a password. It only captures the desired
  * provisioning semantics: what kind of temporary credential is needed and which
  * actions the administrator must complete on first login.

@@ -6,10 +6,14 @@ import io.datahub.platform.iamprovisioning.application.port.out.keycloak.excepti
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakOperationException;
 import io.datahub.platform.iamprovisioning.application.port.out.keycloak.exception.KeycloakTransientException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
+import io.datahub.platform.iamprovisioning.util.SecureRandomPasswordGenerator;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.OrganizationRepresentation;
+import org.keycloak.representations.idm.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -108,25 +112,54 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
 
                 } else if (status == 401 || status == 403) {
                     // Service Account 凭证失效或权限不足，重试无意义，需运维介入
-                    throw new KeycloakAuthenticationException(tenantId, OP_ENSURE_ORG, "HTTP " + status, null);
+                    throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION, "HTTP " + status, null);
 
                 } else if (status >= 400 && status < 500) {
                     // 其他 4xx：请求本身有问题（如字段非法），重试不会解决
-                    throw new KeycloakInvalidRequestException(tenantId, OP_ENSURE_ORG, status, null);
+                    String body = response.readEntity(String.class);
+                    log.atError()
+                            .addKeyValue("event", "keycloak_org_create_rejected")
+                            .addKeyValue("tenantId", tenantId)
+                            .addKeyValue("httpStatus", status)
+                            .addKeyValue("responseBody", body)
+                            .log("Keycloak rejected organization creation request");
+                    throw new KeycloakInvalidRequestException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION, status, null);
 
                 } else {
                     // 5xx：Keycloak 服务端错误，视为瞬时故障，值得重试
-                    throw new KeycloakTransientException(OP_ENSURE_ORG, tenantId, null);
+                    throw new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION, tenantId, null);
                 }
             }
         } catch (KeycloakOperationException e) {
             // 领域异常直接透传，不重复包装
             throw e;
-        } catch (Exception e) {
+        }
+
+        catch (Exception e) {
+
+
+            if (hasAuthFailureInCause(e)){
+                throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION,
+                        "Token acquisition failed", e);
+            }
+
             // 网络超时、连接拒绝、SDK 内部异常等均视为瞬时故障
             // 保留原始 cause，确保排查时能看到完整堆栈
-            throw new KeycloakTransientException(OP_ENSURE_ORG, tenantId, e);
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION, tenantId, e);
         }
+    }
+
+    private boolean hasAuthFailureInCause(Throwable e) {
+        Throwable cause = e;
+
+        while (cause != null) {
+            if (cause instanceof NotAuthorizedException || cause instanceof ForbiddenException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+
+        return false;
     }
 
     /**
@@ -144,7 +177,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
             // 极少数情况：刚刚收到 409，但立刻搜不到。
             // 可能原因：Keycloak 内部短暂不一致（如写入后索引未刷新）。
             // 处理：当作瞬时故障抛出，让 Pipeline 重试，下次搜索应能找到。
-            throw new KeycloakTransientException(OP_ENSURE_ORG, tenantId,
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION, tenantId,
                     new IllegalStateException("409 Conflict but org not found by name: " + tenantId.value()));
         }
 
@@ -223,6 +256,10 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
         rep.setDescription(attributes.displayName().tenantName());
         rep.setEnabled(true);
         rep.setAttributes(buildAttributes(attributes));
+        // Keycloak 要求至少一个 domain，使用 tenantId 衍生内部域名
+        //   MVP 阶段不需要邮件域路由，但 Keycloak schema 强制要求至少一个 domain。我们用 tenant-acme.internal 纯粹是为了通过校验。
+        // tenant-acme.internal → .internal 是 RFC 保留的非公网域名，Keycloak 接受，但不会和任何真实邮件流量冲突
+        rep.addDomain(new OrganizationDomainRepresentation(tenantId.value() + ".internal"));
         return rep;
     }
 
@@ -263,27 +300,331 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
         return (values != null && !values.isEmpty()) ? values.get(0) : null;
     }
 
+
+
+    @Override
+    public UserId ensureUser(TenantId tenantId, Email email, TemporaryCredentialPolicy credentialPolicy) {
+        try {
+            UserId existingUserId = findUserByEmail(email);
+            if (existingUserId != null) {
+                return existingUserId;
+            }
+
+            UserRepresentation userRep = buildUserRepresentation(email, credentialPolicy);
+
+            try (Response response = keycloak.realm(realm).users().create(userRep)) {
+                int status = response.getStatus();
+
+                if (status == 201) {
+                    UserId userId = UserId.of(extractCreatedId(response));
+                    log.atInfo()
+                            .addKeyValue("event", "keycloak_user_created")
+                            .addKeyValue("tenantId", tenantId)
+                            .addKeyValue("userId", userId)
+                            .log("Keycloak user created");
+                    return userId;
+                }
+
+                if (status == 409) {
+                    log.atInfo()
+                            .addKeyValue("event", "keycloak_user_already_exists")
+                            .addKeyValue("tenantId", tenantId)
+                            .addKeyValue("email", email)
+                            .log("User already exists, resolving existing userId");
+                    return findUserByEmailAfterConflict(tenantId, email);
+                }
+
+                if (status == 401 || status == 403) {
+                    throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_USER, "HTTP " + status, null);
+                }
+
+                if (status >= 400 && status < 500) {
+                    String body = readResponseBody(response);
+                    log.atError()
+                            .addKeyValue("event", "keycloak_user_create_rejected")
+                            .addKeyValue("tenantId", tenantId)
+                            .addKeyValue("httpStatus", status)
+                            .addKeyValue("responseBody", body)
+                            .log("Keycloak rejected user creation request");
+                    throw new KeycloakInvalidRequestException(tenantId, KeycloakOperation.ENSURE_USER, status, null);
+                }
+
+                throw new KeycloakTransientException(KeycloakOperation.ENSURE_USER, tenantId, null);
+            }
+        } catch (KeycloakOperationException e) {
+            throw e;
+        } catch (Exception e) {
+            if (hasAuthFailureInCause(e)) {
+                throw new KeycloakAuthenticationException(
+                        tenantId,
+                        KeycloakOperation.ENSURE_USER,
+                        "Token acquisition failed",
+                        e
+                );
+            }
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_USER, tenantId, e);
+        }
+    }
+
+    private UserId findUserByEmailAfterConflict(TenantId tenantId, Email email) {
+        UserId userId = findUserByEmail(email);
+        if (userId == null) {
+            throw new KeycloakTransientException(
+                    KeycloakOperation.ENSURE_USER,
+                    tenantId,
+                    new IllegalStateException("409 Conflict but user not found by email: " + email.value())
+            );
+        }
+        return userId;
+    }
+
+    private UserId findUserByEmail(Email email) {
+        List<UserRepresentation> existing = keycloak.realm(realm).users().searchByEmail(email.value(), true);
+        if (existing.isEmpty()) {
+            return null;
+        }
+        return userIdFrom(existing.get(0), email.value());
+    }
+
+    private UserId userIdFrom(UserRepresentation user, String lookupValue) {
+        String id = user.getId();
+        if (id == null || id.isBlank()) {
+            throw new IllegalStateException("Keycloak user missing id for lookup: " + lookupValue);
+        }
+        return UserId.of(id);
+    }
+
+    private UserRepresentation buildUserRepresentation(Email email, TemporaryCredentialPolicy credentialPolicy) {
+        UserRepresentation userRep = new UserRepresentation();
+        userRep.setUsername(email.value());
+        userRep.setEmail(email.value());
+        userRep.setEnabled(true);
+        userRep.setEmailVerified(false);
+        userRep.setRequiredActions(credentialPolicy.requiredActions().stream()
+                .map(Enum::name)
+                .toList());
+
+        CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+        credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+        String psw = SecureRandomPasswordGenerator.generateSecureRandomPassword();
+        log.info("密码已创建: {}", psw);
+        credentialRepresentation.setValue(psw);
+        credentialRepresentation.setTemporary(true);
+        userRep.setCredentials(List.of(credentialRepresentation));
+        return userRep;
+    }
+
+    private String readResponseBody(Response response) {
+        try {
+            return response.readEntity(String.class);
+        } catch (Exception e) {
+            return "<unreadable response body>";
+        }
+    }
+
+    private String generateTemporaryPassword() {
+        // 使用 SecureRandom 生成符合密码策略的临时密码
+        // 生产环境通常要求：大小写 + 数字 + 特殊字符 + 最小长度
+        return SecureRandomPasswordGenerator.generateSecureRandomPassword();
+
+        // 这个值只活在内存里，用于 POST /users，然后消失
+        // 绝不能：log.info("Generated temp password: {}", password)
+        // 绝不能：放入任何 DTO 返回给上层
+        // 绝不能：存入数据库
+    }
+
+
     // ══════════════════════════════════════════════════════════════════
     // 待实现方法（后续子任务）
     // ══════════════════════════════════════════════════════════════════
-
     @Override
-    public UserId ensureUser(Email email, TemporaryCredentialPolicy credentialPolicy) {
-        throw new UnsupportedOperationException("Not implemented yet (LEI-104)");
+    public void ensureOrganizationMembership(TenantId tenantId, OrganizationId organizationId, UserId userId) {
+        // Step 1: 检查 membership 是否已存在
+        // 前置检查（org/user 是否存在）由 Step Pipeline 保证：
+        // EnsureOrganizationStep 和 EnsureAdminUserStep 均已在此步骤之前成功执行。
+        // GET /realms/cdp/organizations/{orgId}/members/{userId}
+        if (membershipExists(organizationId, userId)){
+            // 存在直接返回
+            return;
+        }
+
+        // Step 2: 添加 membership
+        //    // POST /realms/cdp/organizations/{orgId}/members
+        try (Response response = createMembership(organizationId, userId)){
+            int status = response.getStatus();
+
+            if (status == 201) {
+                log.atInfo()
+                        .addKeyValue("event", "keycloak_membership_created")
+                        .addKeyValue("tenantId", tenantId)
+                        .addKeyValue("organizationId", organizationId)
+                        .addKeyValue("userId", userId)
+                        .log("Keycloak membership created");
+                return;
+            }
+
+            if (status == 409) {
+                log.atInfo()
+                        .addKeyValue("event", "keycloak_membership_existed")
+                        .addKeyValue("tenantId", tenantId)
+                        .addKeyValue("organizationId", organizationId)
+                        .addKeyValue("userId", userId)
+                        .log("Keycloak membership existed");
+                return;
+            }
+
+
+
+            if (status == 401 || status == 403) {
+                throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, "HTTP " + status, null);
+            }
+
+            if (status >= 400 && status < 500) {
+                String body = readResponseBody(response);
+                log.atError()
+                        .addKeyValue("event", "keycloak_membership_create_rejected")
+                        .addKeyValue("tenantId", tenantId)
+                        .addKeyValue("httpStatus", status)
+                        .addKeyValue("responseBody", body)
+                        .log("Keycloak rejected membership creation request");
+                throw new KeycloakInvalidRequestException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, status, null);
+            }
+
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP,tenantId,null);
+
+        }
+
+        catch (KeycloakOperationException e) {
+            throw e;
+        } catch (Exception e) {
+            if (hasAuthFailureInCause(e)) {
+                throw new KeycloakAuthenticationException(
+                        tenantId,
+                        KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP,
+                        "Token acquisition failed",
+                        e
+                );
+            }
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, tenantId, e);
+        }
     }
 
-    @Override
-    public void ensureOrganizationMembership(OrganizationId organizationId, UserId userId) {
-        throw new UnsupportedOperationException("Not implemented yet (LEI-115)");
+    private Response createMembership(OrganizationId organizationId, UserId userId) {
+        return keycloak.realm(realm).organizations().get(organizationId.value())
+                .members().addMember(userId.value());
+    }
+
+    private boolean membershipExists(OrganizationId organizationId, UserId userId) {
+        try {
+            keycloak.realm(realm)
+                    .organizations()
+                    .get(organizationId.value())
+                    .members()
+                    .member(userId.value())
+                    .toRepresentation();
+            return true;
+        } catch (NotFoundException e){
+            return false;
+        }
     }
 
     @Override
     public void ensureRealmRole(RealmRoleName realmRoleName) {
-        throw new UnsupportedOperationException("Not implemented yet (LEI-167)");
+        try {
+            try {
+                keycloak.realm(realm)
+                        .roles()
+                        .get(realmRoleName.roleName())
+                        .toRepresentation();
+                return;
+            } catch (NotFoundException ignored) {
+                // Role 不存在才进入创建分支；ensure 语义下已存在直接成功。
+            }
+
+            RoleRepresentation roleRepresentation = new RoleRepresentation();
+            roleRepresentation.setName(realmRoleName.roleName());
+            keycloak.realm(realm).roles().create(roleRepresentation);
+
+            log.atInfo()
+                    .addKeyValue("event", "keycloak_realm_role_created")
+                    .addKeyValue("realmRoleName", realmRoleName.roleName())
+                    .log("Keycloak realm role created");
+        } catch (KeycloakOperationException e) {
+            throw e;
+        } catch (Exception e) {
+            if (hasAuthFailureInCause(e)) {
+                throw new KeycloakAuthenticationException(
+                        null,
+                        KeycloakOperation.ENSURE_REALM_ROLE,
+                        "Token acquisition failed",
+                        e
+                );
+            }
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_REALM_ROLE, null, e);
+        }
     }
 
     @Override
-    public void ensureUserRealmRole(UserId userId, RealmRoleName realmRoleName) {
-        throw new UnsupportedOperationException("Not implemented yet (LEI-167)");
+    public void ensureUserRealmRole(TenantId tenantId, UserId userId, RealmRoleName realmRoleName) {
+        try{
+            List<RoleRepresentation> roles = findRolesByUserId(userId);
+
+            boolean match = roles.stream().anyMatch(
+                    role -> role.getName().equals(realmRoleName.roleName())
+            );
+
+            if (match){
+                log.atInfo()
+                        .addKeyValue("event", "keycloak_realm-role-attach_existed")
+                        .addKeyValue("tenantId", tenantId)
+                        .addKeyValue("userId", userId)
+                        .addKeyValue("realmRoleName", realmRoleName.roleName())
+                        .log("Keycloak realm-role attaching existed");
+                return;
+            }
+
+            attachRole(userId, realmRoleName);
+
+            log.atInfo()
+                    .addKeyValue("event", "keycloak_realm-role_attached")
+                    .addKeyValue("tenantId", tenantId)
+                    .addKeyValue("userId", userId)
+                    .addKeyValue("realmRoleName", realmRoleName.roleName())
+                    .log("Keycloak realm-role attached");
+        }
+        catch (KeycloakOperationException e) {
+            throw e;
+        } catch (Exception e) {
+            if (hasAuthFailureInCause(e)) {
+                throw new KeycloakAuthenticationException(
+                        tenantId,
+                        KeycloakOperation.ENSURE_USER_REALM_ROLE,
+                        "Token acquisition failed",
+                        e
+                );
+            }
+            throw new KeycloakTransientException(KeycloakOperation.ENSURE_USER_REALM_ROLE, tenantId, e);
+        }
+    }
+
+    private void attachRole(UserId userId, RealmRoleName realmRoleName) {
+        RoleRepresentation roleRep = keycloak.realm(realm)
+                .roles()
+                .get(realmRoleName.roleName())
+                .toRepresentation();
+
+        keycloak.realm(realm)
+                .users()
+                .get(userId.value())
+                .roles()
+                .realmLevel()
+                .add(List.of(roleRep));
+
+    }
+
+    private List<RoleRepresentation> findRolesByUserId(UserId userId) {
+        return keycloak.realm(realm).users().get(userId.value())
+                .roles().realmLevel()
+                .listAll();
     }
 }

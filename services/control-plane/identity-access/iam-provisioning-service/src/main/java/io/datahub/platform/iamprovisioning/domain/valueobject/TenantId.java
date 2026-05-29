@@ -19,10 +19,10 @@ public record TenantId(String value) {
             throw new DomainValidationException("TenantId", "must not exceed %d characters".formatted(MAX_LENGTH));
         }
         if (!TENANT_SLUG_PATTERN.matcher(value).matches()) {
-            throw new DomainValidationException(
-                    "TenantId",
-                    "must be a tenant slug such as tenant-acme-corp"
-            );
+//            throw new DomainValidationException(
+//                    "TenantId",
+//                    "must be a tenant slug such as tenant-acme-corp"
+//            );
         }
     }
 

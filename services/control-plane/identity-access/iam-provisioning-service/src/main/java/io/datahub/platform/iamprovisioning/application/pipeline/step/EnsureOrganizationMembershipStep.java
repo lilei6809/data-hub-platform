@@ -32,7 +32,7 @@ public class EnsureOrganizationMembershipStep implements TenantIamProvisioningSt
             OrganizationId organizationId = context.requireOrganizationId(name());
             UserId userId = context.requireUserId(name());
 
-            keycloakAdminPort.ensureOrganizationMembership(organizationId, userId);
+            keycloakAdminPort.ensureOrganizationMembership(desired.tenantId(), organizationId, userId);
 
             return context;
         } catch (IamProvisioningException ex){

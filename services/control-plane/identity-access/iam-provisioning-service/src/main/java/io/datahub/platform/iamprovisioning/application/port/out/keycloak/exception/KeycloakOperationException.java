@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.application.port.out.keycloak.except
 
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
 import lombok.Getter;
 
 // 基类 — 所有 Port 异常的根
@@ -10,12 +11,12 @@ import lombok.Getter;
 // 然后正常返回 ID，不向上抛异常。
 @Getter
 public class KeycloakOperationException extends RuntimeException {
-    private final String operation;      // 哪个 Port 方法失败了，e.g. "ensureOrganization"
+    private final KeycloakOperation operation;      // 哪个 Port 方法失败了，e.g. "ensureOrganization"
     private final TenantId tenantId;       // 哪个租户，便于日志关联
     private final IamProvisioningFailureCode failureCode;    // 机器可读的失败码，供状态机存储
     private final boolean retryable;     // Pipeline 的重试决策依赖这个字段
 
-    protected KeycloakOperationException(TenantId tenantId, String operation, IamProvisioningFailureCode failureCode,
+    protected KeycloakOperationException(TenantId tenantId, KeycloakOperation operation, IamProvisioningFailureCode failureCode,
                                          String message, Throwable cause, boolean retryable) {
         // 保留 cause：翻译异常时绝对不能丢失原始堆栈
         // 否则排查线上问题会非常困难

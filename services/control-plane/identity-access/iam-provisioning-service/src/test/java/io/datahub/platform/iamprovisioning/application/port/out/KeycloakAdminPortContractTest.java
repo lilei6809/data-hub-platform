@@ -92,10 +92,11 @@ abstract class KeycloakAdminPortContractTest {
     @DisplayName("ensureUser: 首次调用时应创建并返回一个 userId")
     void ensureUser_firstCall_shouldCreate() {
         //given
+        TenantId tenantId = TenantId.of("tenant-user");
         Email email = Email.of("abc@abc.com");
         TemporaryCredentialPolicy credentialPolicy = TemporaryCredentialPolicy.defaultPolicy();
 
-        UserId userId = port.ensureUser(email, credentialPolicy);
+        UserId userId = port.ensureUser(tenantId, email, credentialPolicy);
 
         assertThat(userId).isNotNull();
     }
@@ -104,11 +105,12 @@ abstract class KeycloakAdminPortContractTest {
     @DisplayName("ensureUser: 重复调用应返回相同 userId，不创建新对象")
     void ensureUser_secondCall_shouldReturnSameId() {
         //given
+        TenantId tenantId = TenantId.of("tenant-user");
         Email email = Email.of("abc@abc.com");
         TemporaryCredentialPolicy credentialPolicy = TemporaryCredentialPolicy.defaultPolicy();
 
-        UserId firstId = port.ensureUser(email, credentialPolicy);
-        UserId secondId = port.ensureUser(email, credentialPolicy);
+        UserId firstId = port.ensureUser(tenantId, email, credentialPolicy);
+        UserId secondId = port.ensureUser(tenantId, email, credentialPolicy);
 
         assertThat(firstId).isEqualTo(secondId);
     }
@@ -118,12 +120,13 @@ abstract class KeycloakAdminPortContractTest {
     @DisplayName("ensureUser:  不同的 email 代表不同的 user, 应该返回不同的 userId")
     void ensureUser_diffEmail_shouldReturnDiffId() {
         //given
+        TenantId tenantId = TenantId.of("tenant-user");
         Email email1 = Email.of("abc@abc.com");
         Email email2 = Email.of("123@123.com");
         TemporaryCredentialPolicy credentialPolicy = TemporaryCredentialPolicy.defaultPolicy();
 
-        UserId firstId = port.ensureUser(email1, credentialPolicy);
-        UserId secondId = port.ensureUser(email2, credentialPolicy);
+        UserId firstId = port.ensureUser(tenantId, email1, credentialPolicy);
+        UserId secondId = port.ensureUser(tenantId, email2, credentialPolicy);
 
         assertThat(firstId).isNotEqualTo(secondId);
     }
@@ -137,15 +140,16 @@ abstract class KeycloakAdminPortContractTest {
         OrganizationId orgId = port.ensureOrganization(tenantId,
                 new OrganizationAttributes(tenantId, TenantName.of("abc"), Tier.of("BASIC")));
         UserId userId = port.ensureUser(
+                tenantId,
                 Email.of("admin@tenant-member.com"),
                 TemporaryCredentialPolicy.defaultPolicy());
 
         // 第一次：建立关系
-        port.ensureOrganizationMembership(orgId, userId);
+        port.ensureOrganizationMembership(tenantId, orgId, userId);
 
         // 第二次：重复调用不应抛出任何异常
         assertThatNoException().isThrownBy(
-                () -> port.ensureOrganizationMembership(orgId, userId)
+                () -> port.ensureOrganizationMembership(tenantId, orgId, userId)
         );
     }
 
@@ -178,14 +182,15 @@ abstract class KeycloakAdminPortContractTest {
         port.ensureRealmRole(realmRoleName);
 
         UserId userId = port.ensureUser(
+                TenantId.of("tenant-role"),
                 Email.of("123@123.com"),
                 TemporaryCredentialPolicy.defaultPolicy()
         );
 
         // 第一次分配 realm role
-        port.ensureUserRealmRole(userId, realmRoleName);
+        port.ensureUserRealmRole(TenantId.of("tenant-role"), userId, realmRoleName);
 
-        assertThatNoException().isThrownBy(() -> port.ensureUserRealmRole(userId, realmRoleName));
+        assertThatNoException().isThrownBy(() -> port.ensureUserRealmRole(TenantId.of("tenant-role"), userId, realmRoleName));
     }
 
 }

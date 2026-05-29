@@ -36,7 +36,10 @@ public final class StepExecutionContext {
 
     // 派生方法：Step 1 写入 organizationId 后，返回一个新的 context
     // 旧的 context 不变——这就是不可变性的含义
+    // TODO: 配置写保护, 不允许对已有的 id 进行更新?
     public StepExecutionContext withOrganizationId(OrganizationId organizationId) {
+        // 重复执行时，可以校验新值和旧值是否一致
+        // 不一致说明出了严重的一致性问题
         return new StepExecutionContext(this.tenantId, this.correlationId,
                 Optional.of(organizationId), this.userId);
     }

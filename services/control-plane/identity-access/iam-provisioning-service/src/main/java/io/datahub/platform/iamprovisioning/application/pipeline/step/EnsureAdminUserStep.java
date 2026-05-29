@@ -31,12 +31,16 @@ public class EnsureAdminUserStep implements TenantIamProvisioningStep {
         try {
             AdminUser adminUser = desired.adminUser();
 
-            UserId userId = keycloakAdminPort.ensureUser(adminUser.email(), adminUser.temporaryCredentialPolicy());
+            UserId userId = keycloakAdminPort.ensureUser(
+                    context.getTenantId(),
+                    adminUser.email(),
+                    adminUser.temporaryCredentialPolicy()
+            );
             log.info("EnsureAdminUserStep completed. userId={}, correlationId={}",
                     userId, context.getCorrelationId());
             return context.withUserId(userId);
         } catch (KeycloakOperationException ex){
-
+            //  step: 翻译 keycloak 异常 -> 业务异常
             throw new IamProvisioningException(
                     name(),
                     ex.getFailureCode(),

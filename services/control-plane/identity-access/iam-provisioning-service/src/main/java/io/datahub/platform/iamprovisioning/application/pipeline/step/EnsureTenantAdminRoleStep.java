@@ -35,7 +35,7 @@ public class EnsureTenantAdminRoleStep implements TenantIamProvisioningStep {
 
             UserId userId = context.requireUserId(name());
 
-            keycloakAdminPort.ensureUserRealmRole(userId, TENANT_ADMIN);
+            keycloakAdminPort.ensureUserRealmRole(context.getTenantId(), userId, TENANT_ADMIN);
 
 
             log.info("EnsureTenantAdminRoleStep Completed:  tenantId={}, organizationId={}, correlationId={}, userId={}: TENANT_ADMIN realm role Attached",

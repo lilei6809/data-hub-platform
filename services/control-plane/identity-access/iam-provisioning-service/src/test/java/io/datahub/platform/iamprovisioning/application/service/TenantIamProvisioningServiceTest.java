@@ -160,7 +160,7 @@ class TenantIamProvisioningServiceTest {
         );
 
         port.scheduleFailures(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, 1,
-                new KeycloakTransientException("EnsureMembership", tenantId, null));
+                new KeycloakTransientException(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, tenantId, null));
 
 
         assertThatThrownBy(() -> service.provisionTenantIam(desiredState, CorrelationId.newCorrelationId()))
@@ -237,7 +237,7 @@ class TenantIamProvisioningServiceTest {
         );
 
         port.scheduleFailures(KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, 1,
-                new KeycloakAuthenticationException(tenantId, "EnsureMembership", "forbidden", null));
+                new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION_MEMBERSHIP, "forbidden", null));
 
         assertThatThrownBy(() -> service.provisionTenantIam(desiredState, CorrelationId.newCorrelationId()))
                 .isInstanceOf(IamProvisioningException.class)

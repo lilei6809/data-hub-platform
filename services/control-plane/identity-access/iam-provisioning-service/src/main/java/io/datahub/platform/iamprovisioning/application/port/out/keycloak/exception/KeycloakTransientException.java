@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.application.port.out.keycloak.except
 
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
 
 // 场景：5xx、网络超时、连接失败
 // 语义：Keycloak 暂时不可用，值得重试
@@ -10,7 +11,7 @@ import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 // 连接被拒绝	502 Bad Gateway
 // 服务过载/熔断 503 Service Unavailable
 public class KeycloakTransientException extends KeycloakOperationException {
-    public KeycloakTransientException(String operation, TenantId tenantId, Throwable cause) {
+    public KeycloakTransientException(KeycloakOperation operation, TenantId tenantId, Throwable cause) {
         super(tenantId, operation, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE,
                 "Keycloak transient failure during " + operation, cause, true);
     }

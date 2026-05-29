@@ -33,11 +33,12 @@ cdp:
       server-url: "${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:18080}"
       realm: "${KEYCLOAK_ADMIN_REALM:cdp-auth-pool}"
       admin-client-id: "${KEYCLOAK_ADMIN_CLIENT_ID:cdp-provisioning-service}"
+      client-credential: "${KEYCLOAK_ADMIN_CLIENT_CREDENTIAL:tNXJWqasSLhIYaLG0FtECqNH4QhVXntb}"
       connect-timeout: 2s
       read-timeout: 1s
-      enabled: "${KEYCLOAK_ADMIN_ENABLED:false}"
+      enabled: "${KEYCLOAK_ADMIN_ENABLED:true}"
     adapter:
-      type: "${KEYCLOAK_ADAPTER_TYPE:fake}"
+      type: "${KEYCLOAK_ADAPTER_TYPE:real}"
 
   vault:
     adapter:
