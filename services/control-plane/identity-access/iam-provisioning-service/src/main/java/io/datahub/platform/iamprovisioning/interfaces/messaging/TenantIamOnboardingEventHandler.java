@@ -5,7 +5,9 @@ import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProv
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+
 /**
+ * 仅仅供测试和手动触发使用
  * Inbound 适配器：接收来自外部（Kafka / 测试直调）的 {@link TenantInfrastructureProvisionedEvent}，
  * 转交给应用层 {@link HandleTenantIamOnboardingEventUseCase} 处理。
  *

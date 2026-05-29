@@ -12,6 +12,19 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+  kafka:
+    consumer:
+      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}"
+      group-id: iam-provisioning-service
+      auto-offset-reset: earliest
+      enable-auto-commit: false        # 禁止自动提交，使用手动 Ack
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer: # DLT 路由需要 Producer
+      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}"
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
 management:
   endpoints:
     web:
@@ -28,6 +41,12 @@ server:
 
 # keycloak client 的配置
 cdp:
+  kafka:
+    consumer:
+      enabled: "${KAFKA_CONSUMER_ENABLED:true}"
+    topic:
+      tenant-infrastructure-provisioned: "cdp.tenant.lifecycle.infrastructure-provisioned"
+      tenant-infrastructure-provisioned-dlt: "cdp.tenant.lifecycle.infrastructure-provisioned.DLT"
   keycloak:
     admin:
       server-url: "${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:18080}"
