@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
+import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.exception.DomainValidationException;
+import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
+import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.interfaces.messaging.dto.TenantInfrastructureProvisionedEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -17,6 +20,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -27,13 +31,15 @@ public class TenantIamKafkaConsumer {
     private final TenantInfrastructureProvisionedEventTranslator translator;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaTopicProperties kafkaTopicProperties;
+    private final TenantIamProvisioningStateRepository repository;
 
-    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, TenantInfrastructureProvisionedEventTranslator translator, KafkaTemplate<String, String> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
+    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, TenantInfrastructureProvisionedEventTranslator translator, KafkaTemplate<String, String> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties, TenantIamProvisioningStateRepository repository) {
         this.useCase = useCase;
         this.objectMapper = objectMapper;
         this.translator = translator;
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaTopicProperties = kafkaTopicProperties;
+        this.repository = repository;
     }
 
     @KafkaListener(
@@ -73,6 +79,32 @@ public class TenantIamKafkaConsumer {
         }
 
 
+        // ==============================================================
+        // 入站事件去重
+        Optional<TenantIamProvisioningState> existing = repository.findByTenantId(event.tenantId());
+
+        // 重复记录
+        if (existing.isPresent()) {
+            IamProvisioningStatus status = existing.get().getOverallStatus();
+
+            // 查决策表:COMPLETED / FAILED / IN_PROGRESS 都是"不放行"
+            if (isShortCircuit(status)){
+                // 必须打结构化日志:tenantId + correlationId + currentStatus + action
+                log.atInfo()
+                        .addKeyValue("tenantId", event.tenantId())
+                        .addKeyValue("correlationId", event.correlationId())
+                        .addKeyValue("currentStatus", status)
+                        .addKeyValue("action", "SKIPPED_DUPLICATE")
+                        .log("Duplicate/in-flight event skipped at consumer");
+
+                ack.acknowledge();  // 直接 ack,不卡分区
+                return;
+            }
+        }
+
+        // 只有 pending 或 existing 不存在才放行
+
+
         // === 阶段 3：调用用例（业务已启动，结果由状态机管理）===
         try {
             useCase.handle(event);
@@ -93,6 +125,13 @@ public class TenantIamKafkaConsumer {
             routeToDlt(record, "unexpected-error");
             ack.acknowledge();
         }
+    }
+
+    private boolean isShortCircuit(IamProvisioningStatus status) {
+        return status == IamProvisioningStatus.IAM_COMPLETED ||
+                status == IamProvisioningStatus.IAM_FAILED ||
+                status == IamProvisioningStatus.IAM_IN_PROGRESS ||
+                status == IamProvisioningStatus.IAM_AWAITING_RETRY;
     }
 
     private void routeToDlt(ConsumerRecord<String, String> sourceRecord, String reason) {

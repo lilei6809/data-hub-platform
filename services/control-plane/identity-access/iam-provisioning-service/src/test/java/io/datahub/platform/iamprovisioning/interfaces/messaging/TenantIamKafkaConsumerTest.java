@@ -61,7 +61,7 @@ class TenantIamKafkaConsumerTest {
                 objectMapper,
                 new TenantInfrastructureProvisionedEventTranslator(),
                 kafkaTemplate,
-                kafkaTopicProperties);
+                kafkaTopicProperties, null);
     }
 
 

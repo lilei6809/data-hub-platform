@@ -1,6 +1,7 @@
 package io.datahub.platform.iamprovisioning.domain.exception;
 
-public class EventPublishException extends Exception {
+// 事件发布失败
+public class EventPublishException extends RuntimeException {
 
     public EventPublishException(String message) {
         super(message);

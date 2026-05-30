@@ -8,6 +8,7 @@ import io.datahub.platform.iamprovisioning.application.port.out.EventPublisher;
 import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFailedEvent;
+import io.datahub.platform.iamprovisioning.domain.exception.EventPublishException;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
@@ -55,6 +56,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                 .addKeyValue("retryCount", currentState.getRetryCount())
                 .log("Tenant IAM provisioning started");
 
+        // 状态短路
         if (currentState.isCompleted()) {
             log.atInfo()
                     .addKeyValue("event", "tenant_iam_provisioning_already_completed")
@@ -63,6 +65,17 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                     .addKeyValue("status", currentState.getOverallStatus())
                     .addKeyValue("provisionedAt", currentState.getProvisionedAt())
                     .log("Tenant IAM provisioning skipped because state is already completed");
+            return;
+        }
+
+        if (currentState.isInProgress()){
+            log.atInfo()
+                    .addKeyValue("event", "tenant_iam_provisioning_task_processed_by_others")
+                    .addKeyValue("tenantId", id)
+                    .addKeyValue("correlationId", correlationId)
+                    .addKeyValue("status", currentState.getOverallStatus())
+                    .addKeyValue("provisionedAt", currentState.getProvisionedAt())
+                    .log("Tenant IAM provisioning task is being processed by other service instance");
             return;
         }
 
@@ -115,7 +128,6 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
             }
 
 
-
             // === 阶段 3：所有 Steps 成功，推进终态 ===
             currentState.markCompleted(Instant.now());
             repository.save(currentState);
@@ -142,7 +154,9 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                     .addKeyValue("defaultRolesAssigned", currentState.isDefaultRolesAssigned())
                     .addKeyValue("adminUserMembershipCreated", currentState.isAdminUserMembershipCreated())
                     .log("Tenant IAM provisioning completed");
-        } catch (IamProvisioningException e) {
+        }
+
+        catch (IamProvisioningException e) {
             if (e.retryable()){
                 currentState.markAwaitRetry(Instant.now(), e.failureCode(), e.getMessage());
                 log.atWarn()
