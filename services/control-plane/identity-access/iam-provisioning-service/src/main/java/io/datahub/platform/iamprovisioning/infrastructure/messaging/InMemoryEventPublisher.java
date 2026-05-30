@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
 public class InMemoryEventPublisher implements EventPublisher {
 
     private final Map<Class<?>, List<DomainEvent>> store = new ConcurrentHashMap<>();

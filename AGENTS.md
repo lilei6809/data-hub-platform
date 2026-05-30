@@ -142,9 +142,10 @@ Do not drift into these without a conscious architecture change:
 
 - `iam-provisioning-service`
   - tenant IAM onboarding in the shared Keycloak realm
-  - derive desired IAM state from tenant lifecycle events
+  - derive desired IAM state from tenant infrastructure lifecycle events
   - provision Keycloak Organization, initial admin user, realm role memberships, and local provisioning state idempotently
-  - consume `TenantCreated` and publish `TenantIamProvisionedEvent`
+  - consume `TenantInfrastructureProvisionedEvent` and publish `TenantIamProvisionedEvent`
+  - expose a manual operator trigger at `POST /admin/tenants/{tenantId}/provision-iam`
 - `token-enrichment-service`
   - resolve tenant business context
   - inject `tenant_id`, `tier`, `feature_flags`, quota-related attributes
@@ -240,16 +241,44 @@ Maturity target for this batch:
 
 ## Current Status
 
-As of `2026-05-24`:
+As of `2026-05-29`:
 
-- repository directory structure has been created
-- Maven root aggregator `pom.xml` has been created
-- root Maven dependency management includes shared versions for Keycloak Admin Client, Lombok, MapStruct, Resilience4j, Spring Cloud, SpringDoc, WireMock, and ArchUnit
-- `iam-provisioning-service` has been created under `services/control-plane/identity-access/`
-- `iam-provisioning-service` has a standard Spring Boot / DDD package structure, first Flyway migration, and service-local dependency set
-- Maven validation has passed for `iam-provisioning-service`
+- repository directory structure and root Maven aggregator are in place
+- root Maven dependency management includes shared versions for Keycloak Admin Client, Lombok, MapStruct, Resilience4j, Spring Cloud, SpringDoc, WireMock, Testcontainers, and ArchUnit
+- root Maven plugin management owns Java 21 compiler configuration, annotation processors, Failsafe `**/*IT.java` integration-test conventions, default `skipITs=true`, and the optional `wsl2-docker-desktop` profile for local Testcontainers runs
+- `iam-provisioning-service` exists under `services/control-plane/identity-access/` with Spring Boot, DDD/hexagonal package structure, Flyway migration scaffold, and service-local dependencies
+- `LEI-70` desired-state modeling work is implemented:
+  - base value objects and `DomainValidationException`
+  - `AdminUser` and `TemporaryCredentialPolicy`
+  - `IdentityMode`, `RealmStrategy`, and placeholder extension value objects
+  - `TenantIamDesiredState` aggregate with minimal-input factory and invariant tests
+- `iam-provisioning-service` application flow is implemented for the current slice:
+  - `TenantInfrastructureProvisionedEvent` is translated to `TenantIamDesiredState`
+  - `TenantIamOnboardingService` delegates to `ProvisionTenantIamUseCase`
+  - `TenantIamProvisioningService` coordinates the ordered Step Pipeline
+  - pipeline steps currently ensure Keycloak Organization, initial admin user, tenant-admin realm role assignment, and Organization membership
+  - step completion is checkpointed in `TenantIamProvisioningState`
+- `KeycloakAdminPort` now defines the application-core contract for idempotent Keycloak operations
+- `FakeKeycloakAdminPort` exists for contract/application tests and includes basic fault injection
+- `RealKeycloakAdminPort` exists for Keycloak Admin API integration and handles core ensure semantics, including `409 Conflict` as already-created success where applicable
+- local provisioning state is currently backed by `InMemoryTenantIamProvisioningStateRepository` with snapshot isolation and optimistic version checks; persistent JDBC state is not implemented yet
+- event publishing is currently represented by `EventPublisher` and an in-memory publisher; Kafka binding and the required Outbox Pattern are not implemented yet
+- Vault integration is still a placeholder; `VaultSecretStore` is not production-ready
+- messaging adapter is intentionally thin and currently has no Kafka listener annotation; it is ready to be wired once the event transport contract is finalized
+- HTTP manual trigger exists for operator-driven IAM provisioning retries or manual execution
 - local development infrastructure compose scaffolding exists under `infra/docker-compose/`
 - local Keycloak realm import exists for the shared realm `cdp-auth-pool`
+- current focused test suite for `iam-provisioning-service` passes with `mvn -pl services/control-plane/identity-access/iam-provisioning-service -am test -DskipITs=true` (`96` tests)
+- Keycloak/Testcontainers resources exist under `iam-provisioning-service/src/test/resources`; integration tests should be run through `mvn verify -DskipITs=false`, and local WSL2 Docker Desktop users can add `-Pwsl2-docker-desktop`
+
+Known production gaps and safety issues:
+
+- remove any logging of Keycloak admin client credentials or generated temporary passwords before continuing toward production readiness
+- remove local default Keycloak client secret values from committed application configuration; secrets must come from environment/Vault only
+- replace in-memory provisioning state and in-memory event publishing with PostgreSQL/Flyway-backed state plus Outbox Pattern
+- wire real Kafka consumption/publication after event schemas and topic names are finalized
+- finish Vault-backed secret access before relying on service-account credentials outside local development
+- review current Keycloak role strategy: code assigns `TENANT_ADMIN`; older docs also mention `data_engineer` and `viewer`, so the MVP role set must be reconciled before broadening provisioning
 
 Relevant files:
 
@@ -262,15 +291,30 @@ Relevant files:
 
 Recommended next steps, in order:
 
-1. implement `LEI-70 - Tenant IAM Desired State 领域模型可表达租户身份事实`
-2. implement the subtask group in this order:
-   - `LEI-143`: base primitive value objects and domain validation exception
-   - `LEI-154`: `AdminUser` and `TemporaryCredentialPolicy`
-   - `LEI-161`: `IdentityMode`, `RealmStrategy`, and extension placeholder types
-   - `LEI-168`: `TenantIamDesiredState` aggregate and minimal-input factory
-   - `LEI-177`: invariant and extensibility unit tests
-3. keep `LEI-91`, `LEI-92`, `LEI-105`, and overlapping subtasks aligned with the above implementation rather than duplicating model work
-4. after desired-state modeling, continue with the idempotent Step Pipeline, Keycloak Admin Port/Fake Adapter, local provisioning state, and event boundary tasks
+1. fix credential hygiene immediately:
+   - remove Keycloak admin client secret logging
+   - remove generated temporary password logging
+   - remove committed default client secret from `application.yml`
+2. harden and align the Keycloak Admin adapter:
+   - reconcile the MVP role set (`TENANT_ADMIN` only vs `TENANT_ADMIN`, `data_engineer`, `viewer`)
+   - ensure every Keycloak SDK/HTTP failure is translated at the infrastructure boundary
+   - add or promote real Keycloak Testcontainers coverage to Failsafe `*IT` tests
+3. implement persistent local provisioning state:
+   - JDBC/Flyway table for `TenantIamProvisioningState`
+   - optimistic locking/version checks in the JDBC repository
+   - retry query for `IAM_AWAITING_RETRY`
+4. implement reliable event boundaries:
+   - Kafka consumer for `TenantInfrastructureProvisionedEvent`
+   - Outbox Pattern for `TenantIamProvisionedEvent` and `TenantIamProvisioningFailedEvent`
+   - avoid direct publish after DB state mutation once persistent state exists
+5. finish secret-management integration:
+   - implement `SecretStorePort` with Vault-backed adapter
+   - inject Keycloak service-account credential through the secret boundary
+6. after IAM provisioning reaches persistent/evented MVP, return to the first-batch services:
+   - `tenant-management-service`
+   - `onboarding-service`
+   - `datasource-config-service`
+   - skeleton contracts for `offboarding-service`, `token-enrichment-service`, and `policy-engine-service`
 
 ## Working Rules For Future Sessions
 

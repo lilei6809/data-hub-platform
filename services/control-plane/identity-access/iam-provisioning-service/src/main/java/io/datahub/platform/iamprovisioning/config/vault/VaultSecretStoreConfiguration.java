@@ -16,8 +16,8 @@ public class VaultSecretStoreConfiguration {
 
     @Bean
     @ConditionalOnProperty(
-            name = "cdp.vault.adapter.type",
-            havingValue = "fake"
+            name = "cdp.vault.adapter.real.enabled",
+            havingValue = "false"
     )
     public SecretStorePort fakeVaultSecretStore(KeycloakAdminProperty keycloakAdminProperty) {
         InMemorySecretStore secretStore = new InMemorySecretStore();
@@ -31,8 +31,8 @@ public class VaultSecretStoreConfiguration {
 
     @Bean
     @ConditionalOnProperty(
-            name = "cdp.vault.adapter.type",
-            havingValue = "real"
+            name = "cdp.vault.adapter.real.enabled",
+            havingValue = "true"
     )
     public SecretStorePort realVaultSecretStore() {
         return new VaultSecretStore();
