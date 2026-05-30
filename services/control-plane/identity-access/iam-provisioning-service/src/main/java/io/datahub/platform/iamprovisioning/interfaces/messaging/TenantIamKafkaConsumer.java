@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
+import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.exception.DomainValidationException;
 import io.datahub.platform.iamprovisioning.interfaces.messaging.dto.TenantInfrastructureProvisionedEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
@@ -26,19 +26,18 @@ public class TenantIamKafkaConsumer {
     private final ObjectMapper objectMapper;
     private final TenantInfrastructureProvisionedEventTranslator translator;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTopicProperties kafkaTopicProperties;
 
-    @Value("${cdp.kafka.topic.tenant-infrastructure-provisioned-dlt}")
-    private String dltTopic;
-
-    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, TenantInfrastructureProvisionedEventTranslator translator, KafkaTemplate<String, String> kafkaTemplate) {
+    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, TenantInfrastructureProvisionedEventTranslator translator, KafkaTemplate<String, String> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
         this.useCase = useCase;
         this.objectMapper = objectMapper;
         this.translator = translator;
         this.kafkaTemplate = kafkaTemplate;
+        this.kafkaTopicProperties = kafkaTopicProperties;
     }
 
     @KafkaListener(
-            topics = "${cdp.kafka.topic.tenant-infrastructure-provisioned}",
+            topics = "${cdp.kafka.topics.tenant-infrastructure-provisioned}",
             groupId = "iam-provisioning-service",
             containerFactory = "kafkaListenerContainerFactory"
     )
@@ -97,7 +96,11 @@ public class TenantIamKafkaConsumer {
     }
 
     private void routeToDlt(ConsumerRecord<String, String> sourceRecord, String reason) {
-        ProducerRecord<String, String> dltRecord = new ProducerRecord<>(dltTopic, sourceRecord.key(), sourceRecord.value());
+        ProducerRecord<String, String> dltRecord = new ProducerRecord<>(
+                kafkaTopicProperties.getTenantInfrastructureProvisionedDlt(),
+                sourceRecord.key(),
+                sourceRecord.value()
+        );
         dltRecord.headers().add("failure-reason", reason.getBytes(StandardCharsets.UTF_8));
         dltRecord.headers().add("source-topic", sourceRecord.topic().getBytes(StandardCharsets.UTF_8));
         dltRecord.headers().add("source-partition", Integer.toString(sourceRecord.partition()).getBytes(StandardCharsets.UTF_8));

@@ -42,11 +42,17 @@ server:
 # keycloak client 的配置
 cdp:
   kafka:
+    producer:
+      enabled:  "${KAFKA_PRODUCER_ENABLED:true}"
     consumer:
       enabled: "${KAFKA_CONSUMER_ENABLED:true}"
-    topic:
-      tenant-infrastructure-provisioned: "cdp.tenant.lifecycle.infrastructure-provisioned"
-      tenant-infrastructure-provisioned-dlt: "cdp.tenant.lifecycle.infrastructure-provisioned.DLT"
+    topics:
+#      inbound:
+        tenant-infrastructure-provisioned: "cdp.infrastructure.tenant.provisioned"
+        tenant-infrastructure-provisioned-dlt: "cdp.infrastructure.tenant.provisioned.dlt"
+#      outbound:
+        tenant-iam-provisioned: "cdp.iam.tenant.provisioned"
+        tenant-iam-provision-failed: "cdp.iam.tenant.provision-failed"
   keycloak:
     admin:
       server-url: "${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:18080}"

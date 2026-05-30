@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
+import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
-import io.datahub.platform.iamprovisioning.domain.exception.DomainValidationException;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.interfaces.messaging.dto.TenantInfrastructureProvisionedEventDto;
@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -41,25 +40,28 @@ class TenantIamKafkaConsumerTest {
 
 
     @Mock
-    TenantInfrastructureProvisionedEventTranslator translator;
-
-    @Mock
     Acknowledgment ack;
 
     ObjectMapper objectMapper = new ObjectMapper();
+
+    KafkaTopicProperties kafkaTopicProperties;
 
     TenantIamKafkaConsumer consumer;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        kafkaTopicProperties = new KafkaTopicProperties();
+        kafkaTopicProperties.setTenantInfrastructureProvisioned("cdp.infrastructure.tenant.provisioned");
+        kafkaTopicProperties.setTenantInfrastructureProvisionedDlt("cdp.infrastructure.tenant.provisioned.dlt");
+        kafkaTopicProperties.setTenantIamProvisioned("cdp.iam.tenant.provisioned");
+        kafkaTopicProperties.setTenantIamProvisionFailed("cdp.iam.tenant.provision-failed");
+
         consumer = new TenantIamKafkaConsumer(useCase,
                 objectMapper,
                 new TenantInfrastructureProvisionedEventTranslator(),
-                kafkaTemplate);
-
-        ReflectionTestUtils.setField(consumer, "dltTopic", "cdp.tenant.lifecycle.infrastructure-provisioned.DLT");
-
+                kafkaTemplate,
+                kafkaTopicProperties);
     }
 
 
@@ -70,10 +72,6 @@ class TenantIamKafkaConsumerTest {
         String validJson = buildValidJson("tenant-abc",  "abc@abc.com");
         ConsumerRecord<String, String> record = buildConsumeRecord(validJson);
         TenantInfrastructureProvisionedEvent event = buildDomainEvent(validJson);
-
-        // 控制 Translator 返回正常的领域事件
-        when(translator.translate(any())).thenReturn(event);
-
 
         // act
         consumer.consume(record, ack);
@@ -100,7 +98,6 @@ class TenantIamKafkaConsumerTest {
                 null
         )).when(useCase).handle(any());
 
-        when(translator.translate(any())).thenReturn(event);
         consumer.consume(record, ack);
 
         // assert
@@ -126,7 +123,6 @@ class TenantIamKafkaConsumerTest {
                 null
         )).when(useCase).handle(any());
 
-        when(translator.translate(any())).thenReturn(event);
         consumer.consume(record, ack);
 
         // assert
@@ -171,13 +167,13 @@ class TenantIamKafkaConsumerTest {
         Header sourcePartition = dltRecord.headers().lastHeader("source-partition");
         Header sourceOffset = dltRecord.headers().lastHeader("source-offset");
 
-        assertThat(dltRecord.topic()).isEqualTo("cdp.tenant.lifecycle.infrastructure-provisioned.DLT");
+        assertThat(dltRecord.topic()).isEqualTo(kafkaTopicProperties.getTenantInfrastructureProvisionedDlt());
         assertThat(dltRecord.key()).isEqualTo("tenant-abc");
         assertThat(dltRecord.value()).isEqualTo(invalid);
         assertThat(failureReason).isNotNull();
         assertThat(new String(failureReason.value(), StandardCharsets.UTF_8)).isEqualTo("deserialization-failure");
         assertThat(sourceTopic).isNotNull();
-        assertThat(new String(sourceTopic.value(), StandardCharsets.UTF_8)).isEqualTo("tenant.infrastructure.provisioned");
+        assertThat(new String(sourceTopic.value(), StandardCharsets.UTF_8)).isEqualTo(kafkaTopicProperties.getTenantInfrastructureProvisioned());
         assertThat(sourcePartition).isNotNull();
         assertThat(new String(sourcePartition.value(), StandardCharsets.UTF_8)).isEqualTo("0");
         assertThat(sourceOffset).isNotNull();
@@ -189,9 +185,6 @@ class TenantIamKafkaConsumerTest {
     void consume_invalidDomainFields_shouldRouteToDltAndAck() {
         String s = buildValidJson("tenant-abc", "email-----");
         ConsumerRecord<String, String> record = buildConsumeRecord(s);
-
-        when(translator.translate(any()))
-                .thenThrow(new DomainValidationException("Email", "invalid format"));
 
         consumer.consume(record, ack);
 
@@ -207,14 +200,14 @@ class TenantIamKafkaConsumerTest {
         Header sourcePartition = dltRecord.headers().lastHeader("source-partition");
         Header sourceOffset = dltRecord.headers().lastHeader("source-offset");
 
-        assertThat(dltRecord.topic()).isEqualTo("cdp.tenant.lifecycle.infrastructure-provisioned.DLT");
+        assertThat(dltRecord.topic()).isEqualTo(kafkaTopicProperties.getTenantInfrastructureProvisionedDlt());
         assertThat(dltRecord.key()).isEqualTo("tenant-abc");
         assertThat(dltRecord.value()).isEqualTo(s);
 
         assertThat(failureReason).isNotNull();
         assertThat(new String(failureReason.value(), StandardCharsets.UTF_8)).isEqualTo("validation-failure");
         assertThat(sourceTopic).isNotNull();
-        assertThat(new String(sourceTopic.value(), StandardCharsets.UTF_8)).isEqualTo("tenant.infrastructure.provisioned");
+        assertThat(new String(sourceTopic.value(), StandardCharsets.UTF_8)).isEqualTo(kafkaTopicProperties.getTenantInfrastructureProvisioned());
         assertThat(sourcePartition).isNotNull();
         assertThat(new String(sourcePartition.value(), StandardCharsets.UTF_8)).isEqualTo("0");
         assertThat(sourceOffset).isNotNull();
@@ -225,7 +218,7 @@ class TenantIamKafkaConsumerTest {
 
     private ConsumerRecord<String, String> buildConsumeRecord(String json) {
         return new ConsumerRecord<>(
-                "tenant.infrastructure.provisioned", // topic
+                kafkaTopicProperties.getTenantInfrastructureProvisioned(),
                 0,
                 0L,
                 "tenant-abc",
