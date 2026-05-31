@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
+import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
@@ -24,6 +25,7 @@ import org.springframework.kafka.support.Acknowledgment;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +40,8 @@ class TenantIamKafkaConsumerTest {
     @Mock
     KafkaTemplate<String, String> kafkaTemplate;
 
+    @Mock
+    TenantIamProvisioningStateRepository repository;
 
     @Mock
     Acknowledgment ack;
@@ -57,11 +61,14 @@ class TenantIamKafkaConsumerTest {
         kafkaTopicProperties.setTenantIamProvisioned("cdp.iam.tenant.provisioned");
         kafkaTopicProperties.setTenantIamProvisionFailed("cdp.iam.tenant.provision-failed");
 
+        when(repository.findByTenantId(any(TenantId.class))).thenReturn(Optional.empty());
+
         consumer = new TenantIamKafkaConsumer(useCase,
                 objectMapper,
                 new TenantInfrastructureProvisionedEventTranslator(),
                 kafkaTemplate,
-                kafkaTopicProperties, null);
+                kafkaTopicProperties,
+                repository);
     }
 
 

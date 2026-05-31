@@ -8,6 +8,16 @@ spring:
     url: "${IAM_PROVISIONING_DB_URL:jdbc:postgresql://localhost:5432/iam_provisioning}"
     username: "${IAM_PROVISIONING_DB_USERNAME:iam_provisioning}"
     password: "${IAM_PROVISIONING_DB_PASSWORD:iam_provisioning}"
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 5000
+      idle-timeout: 300000           # 空闲连接 5 分钟后回收
+      max-lifetime: 1800000          # 连接最长存活 30 分钟后强制回收
+      leak-detection-threshold: 30000 # 连接被借出超过 30 秒未归还，打警告日志
+
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -18,7 +28,7 @@ spring:
       # 序列化：生产环境推荐 JSON 或 Avro + Schema Registry
       # JSON 适合 MVP 阶段，Avro 适合需要强 Schema 演化的大规模系统
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
         # 可靠性地基
         ack: all
@@ -51,7 +61,7 @@ spring:
       enable-auto-commit: false        # 禁止自动提交，使用手动 Ack
         # 反序列化
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
       properties:
 #        # 告诉 JsonDeserializer 信任哪些包下的类（安全配置）
@@ -91,6 +101,8 @@ server:
 
 # keycloak client 的配置
 cdp:
+  postgre:
+    enabled: true
   kafka:
     producer:
       enabled:  "${KAFKA_PRODUCER_ENABLED:true}"

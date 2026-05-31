@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Repository
 public class InMemoryTenantIamProvisioningStateRepository implements TenantIamProvisioningStateRepository {
 
     // ConcurrentHashMap 只保证单个 key 的 compute 原子执行；

@@ -3,6 +3,7 @@ package io.datahub.platform.iamprovisioning.domain.model;
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.TenantIamProvisioningStateRow;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -255,6 +256,22 @@ public class TenantIamProvisioningState {
                 .formatted(tenantId, overallStatus, retryCount, provisioningFailureCode, workflowCorrelationId);
     }
 
+    public void restoreFrom(TenantIamProvisioningStateRow row) {
+        this.overallStatus = IamProvisioningStatus.valueOf(row.iamStatus());
+        this.retryCount = row.retryCount();
+        this.failedAt =  row.failedAt();
+        this.updatedAt = row.updatedAt();
+        this.provisionedAt = row.provisionedAt();
+        this.lastAttemptAt = row.lastAttemptAt();
+        this.version = row.version();
+        this.keycloakOrganizationCreated = row.keycloakOrganizationCreated();
+        this.adminUserCreated = row.adminUserCreated();
+        this.defaultRolesAssigned = row.defaultRolesAssigned();
+        this.adminUserMembershipCreated = row.adminUserMembershipCreated();
+
+        this.failureMessage = row.failureMessage();
+
+    }
 }
 
 
