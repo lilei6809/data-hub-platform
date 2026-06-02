@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 
 import io.datahub.platform.iamprovisioning.application.exception.ProvisioningStateNotFoundException;
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
 import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +78,9 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
                             next_retry_at = ?,
                             failure_message = ?,
                             workflow_correlation_id = ?,
-                            updated_at = ?
+                            updated_at = ?,
+                            claimed_by = ?,
+                            claimed_at = ?
                         WHERE tenant_id = ?
                           AND version = ?
                     """,
@@ -94,6 +98,9 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
                 row.failureMessage(),
                 row.workflowCorrelationId(),
                 toTimestamp(row.updatedAt()),
+                row.claimedBy(),
+                toTimestamp(row.claimedAt()),
+
                 row.tenantId(),
                 row.version()
             );
@@ -153,6 +160,73 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
                 .stream()
                 .findFirst()
                 .map(domainMapper::toDomain);
+    }
+
+    @Override
+    public List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy) {
+
+        // step1: 确认一批待重试的记录
+        List<TenantIamProvisioningStateRow> rows = jdbcTemplate.query(
+                """
+                        SELECT * FROM tenant_iam_provisioning_state
+                        WHERE iam_status = 'IAM_AWAITING_RETRY' AND next_retry_at IS NOT NULL
+                        ORDER BY next_retry_at ASC
+                        LIMIT ?
+                        FOR UPDATE SKIP LOCKED
+                        """, rowMapper, limit);
+
+        List<String> ids = rows.stream()
+                .map(TenantIamProvisioningStateRow::tenantId)
+                .toList();
+
+        // step2: 认领当前批记录, 状态 -> IN_PROGRESS
+        for (String id : ids) {
+            jdbcTemplate.update("""
+                        UPDATE tenant_iam_provisioning_state
+                        SET iam_status = 'IAM_IN_PROGRESS', claimed_at = now(), claimed_by = ?
+                        WHERE tenant_id = ?
+            """, claimedBy, id);
+        }
+
+        // rows 没更新, 我重新查一遍, 拿新的结果
+        rows.clear();
+
+        for (String id : ids) {
+            TenantIamProvisioningStateRow row = jdbcTemplate.queryForObject(
+                    """
+                            SELECT * FROM tenant_iam_provisioning_state
+                            WHERE tenant_id = ?
+                            """, rowMapper, id);
+            rows.add(row);
+        }
+
+
+        return rows.stream().map(domainMapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional
+    public void claim(String tenantId, String claimedBy, Instant timestamp) {
+        jdbcTemplate.update(
+                """
+                    UPDATE tenant_iam_provisioning_state
+                    SET iam_status = 'IAM_IN_PROGRESS', claimed_at = ?, claimed_by = ?
+                    WHERE tenant_id = ?
+                    """,  Timestamp.from(timestamp), claimedBy, tenantId);
+
+    }
+
+    @Override
+    public int reclaimStale(Duration staleThreshold) {
+        int affected = jdbcTemplate.update(
+                """
+                        UPDATE tenant_iam_provisioning_state
+                        SET iam_status = 'IAM_AWAITING_RETRY', claimed_at = NULL, claimed_by = NULL
+                        WHERE iam_status = 'IAM_IN_PROGRESS' AND claimed_by IS NOT NULL 
+                            AND claimed_at < now() - ? * INTERVAL '1 seconds'
+                        """, staleThreshold.toSeconds());
+
+        return affected;
     }
 
     private Timestamp toTimestamp(Instant instant) {

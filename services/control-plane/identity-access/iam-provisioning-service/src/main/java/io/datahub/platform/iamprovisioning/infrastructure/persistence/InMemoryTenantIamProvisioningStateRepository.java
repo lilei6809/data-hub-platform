@@ -6,6 +6,7 @@ import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningSta
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -73,5 +74,20 @@ public class InMemoryTenantIamProvisioningStateRepository implements TenantIamPr
     public Optional<TenantIamProvisioningState> findByTenantId(TenantId tenantId) {
         return Optional.ofNullable(store.get(tenantId))
                 .map(TenantIamProvisioningState::snapshot);
+    }
+
+    @Override
+    public List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy) {
+        return List.of();
+    }
+
+    @Override
+    public void claim(String tenantId, String claimedBy, Instant timestamp) {
+
+    }
+
+    @Override
+    public int reclaimStale(Duration staleThreshold) {
+        return 0;
     }
 }

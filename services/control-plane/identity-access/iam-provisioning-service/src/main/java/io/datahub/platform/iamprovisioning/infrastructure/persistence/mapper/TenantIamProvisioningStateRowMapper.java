@@ -29,6 +29,8 @@ public class TenantIamProvisioningStateRowMapper implements RowMapper<TenantIamP
                 rs.getTimestamp("next_retry_at") == null ? null : rs.getTimestamp("next_retry_at").toInstant(),
                 rs.getTimestamp("created_at").toInstant(),
                 rs.getTimestamp("updated_at").toInstant(),
+                rs.getString("claimed_by"),
+                rs.getTimestamp("claimed_at") == null ? null : rs.getTimestamp("claimed_at").toInstant(),
                 rs.getString("failure_message"));
 
     }

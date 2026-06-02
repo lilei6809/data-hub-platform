@@ -4,6 +4,7 @@ import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningSta
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +32,12 @@ public interface TenantIamProvisioningStateRepository {
 
     // 可选（Admin 管理 API 使用，如查询某个租户当前状态）：
     Optional<TenantIamProvisioningState> findByTenantId(TenantId tenantId);
+
+
+    // 场景:  retryScheduler 需要声明一批可重试记录的认领权
+    List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy);
+
+    void claim(String tenantId, String claimedBy, Instant timestamp);
+
+    int reclaimStale(Duration staleThreshold);
 }

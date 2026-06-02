@@ -39,6 +39,8 @@ public class TenantIamProvisioningStateDomainMapper {
                 domain.getNextRetryAt(),
                 domain.getCreatedAt(),
                 domain.getUpdatedAt(),
+                domain.getClaimedBy(),
+                domain.getClaimedAt(),
                 domain.getFailureMessage()
         );
     }

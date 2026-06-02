@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -25,6 +26,8 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
     private final List<TenantIamProvisioningStep> ensureSteps;
 
     private final ProvisioningStateTransactor transactor;
+
+    private final String instanceId = System.getenv().getOrDefault("INSTANCE_ID", "unknown-" + UUID.randomUUID().toString().substring(0, 8));
 
     public TenantIamProvisioningService(TenantIamProvisioningStateRepository repository,
                                         List<TenantIamProvisioningStep> ensureSteps,
@@ -81,7 +84,10 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         // TODO: RetryScheduler 还未配置
         currentState.markInProgress(Instant.now());
         // 立刻持久化
-        repository.save(currentState); // database version = 1
+        repository.save(currentState);
+        Instant now  = Instant.now();
+        repository.claim(id.value(), instanceId, now);
+        currentState.acceptClaim(instanceId, Instant.now());
 
         // ********* 如果程序此时崩溃, 数据库中有 tenant_abc 的 IN_PROGRESS
         // 消息队列中 tenant_abc 的消费未提交, 仍然在 broker

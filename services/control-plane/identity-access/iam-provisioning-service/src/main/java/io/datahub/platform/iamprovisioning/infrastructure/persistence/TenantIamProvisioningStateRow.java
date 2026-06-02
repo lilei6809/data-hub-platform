@@ -23,6 +23,9 @@ public record TenantIamProvisioningStateRow(
         Instant createdAt,
         Instant updatedAt,
 
+        String claimedBy,
+        Instant claimedAt,
+
         String failureMessage
 ) {
     

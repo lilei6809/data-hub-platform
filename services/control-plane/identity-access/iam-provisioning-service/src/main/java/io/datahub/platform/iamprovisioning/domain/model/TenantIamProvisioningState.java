@@ -44,6 +44,10 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
     private Instant createdAt;
     private Instant updatedAt;
 
+    // claim 机制, 防止无主的 IN_PROGRESS
+    private String claimedBy;
+    private Instant claimedAt;
+
     private long version;
 
     // 分布式追踪
@@ -65,10 +69,15 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         return new TenantIamProvisioningState(tenantId, correlationId, now);
     }
 
+    public void acceptClaim(String instanceId, Instant claimedAt){
+        this.claimedAt = Objects.requireNonNull(claimedAt);
+        this.claimedBy = instanceId;
+    }
+
 
     // Application Service 调用这个方法，但它不知道内部如何校验
     // 它只是表达意图："我希望开始执行了"
-    public void markInProgress(Instant now){
+    public void markInProgress(Instant now) {
         // 校验规则住在领域对象里：PENDING 和 AWAITING_RETRY 才能转 IN_PROGRESS
         // 这保证了任何调用方都无法绕过这条规则
         if (overallStatus != IamProvisioningStatus.IAM_PENDING
@@ -82,6 +91,9 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.overallStatus = IamProvisioningStatus.IAM_IN_PROGRESS;
         this.lastAttemptAt = now;
         this.updatedAt = now;
+
+//        this.claimedBy = instanceId;
+//        this.claimedAt = now;
 
     }
 
@@ -103,6 +115,10 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.provisioningFailureCode = null;
         this.failureMessage = null;
         this.nextRetryAt = null;
+
+        // claim 清空
+        this.claimedAt = null;
+        this.claimedBy = null;
 
         // 注册待发布的事件
         registerEvent(TenantIamProvisionedEvent.of(
@@ -133,6 +149,10 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.updatedAt = now;
         this.failedAt = now;
 
+        // claim 清空
+        this.claimedAt = null;
+        this.claimedBy = null;
+
         // 清理 nextRetryAt
         this.nextRetryAt = null;
 
@@ -162,6 +182,10 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.updatedAt = markTime;
         this.provisioningFailureCode = code;
         this.failureMessage = message;
+
+        // claim 清空
+        this.claimedAt = null;
+        this.claimedBy = null;
 
         if (isRetryExhausted()) {
             // 如果重试耗尽, 标记为 fail
@@ -308,7 +332,8 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.adminUserCreated = row.adminUserCreated();
         this.defaultRolesAssigned = row.defaultRolesAssigned();
         this.adminUserMembershipCreated = row.adminUserMembershipCreated();
-
+        this.claimedBy = row.claimedBy();
+        this.claimedAt = row.claimedAt();
         this.failureMessage = row.failureMessage();
 
     }
