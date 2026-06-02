@@ -94,6 +94,7 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
 
         this.overallStatus = IamProvisioningStatus.IAM_COMPLETED;
 
+        // retry 清零
         this.retryCount = 0;
         this.updatedAt = now;
         this.provisionedAt = now;
@@ -103,6 +104,7 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.failureMessage = null;
         this.nextRetryAt = null;
 
+        // 注册待发布的事件
         registerEvent(TenantIamProvisionedEvent.of(
                 tenantId,
                 eventContext.tier(),
@@ -131,10 +133,14 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.updatedAt = now;
         this.failedAt = now;
 
+        // 清理 nextRetryAt
+        this.nextRetryAt = null;
+
         this.overallStatus = IamProvisioningStatus.IAM_FAILED;
         this.provisioningFailureCode = code;
         this.failureMessage = message;
 
+        // 注册待发布的失败事件
         registerEvent(TenantIamProvisioningFailedEvent.of(
                 tenantId,
                 eventContext.tier(),
@@ -158,13 +164,18 @@ public class TenantIamProvisioningState extends AbstractAggregateRoot{
         this.failureMessage = message;
 
         if (isRetryExhausted()) {
+            // 如果重试耗尽, 标记为 fail
             markFailed(markTime, code, message, eventContext);
         } else {
+
+            // 状态: IN_PROGRESS -> IAM_AWAITING_RETRY
             this.overallStatus = IamProvisioningStatus.IAM_AWAITING_RETRY;
 
             // TODO: retryScheduler.scheduleRetry(tenantId, state.nextRetryAt());
             this.nextRetryAt = markTime.plus(nextRetryDelay(), ChronoUnit.SECONDS);
 
+
+            // 注册失败事件: FOR AUDIT BC
             registerEvent(TenantIamProvisioningFailedEvent.of(
                     tenantId,
                     eventContext.tier(),

@@ -38,7 +38,7 @@ import java.util.Map;
  * </ul>
  */
 @Slf4j
-public class RealKeycloakAdminPort implements KeycloakAdminPort {
+public class RealKeycloakAdminPortAdapter implements KeycloakAdminPort {
 
     // 操作名称常量：用于异常构造和日志，便于排查"哪个操作失败了"
     private static final String OP_ENSURE_ORG = "ensureOrganization";
@@ -54,7 +54,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
     // 因此 @Value/@Autowired 字段注入均不生效。
     private final String realm;
 
-    public RealKeycloakAdminPort(Keycloak keycloak, String realm) {
+    public RealKeycloakAdminPortAdapter(Keycloak keycloak, String realm) {
         this.keycloak = keycloak;
         this.realm = realm;
     }
@@ -68,7 +68,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
      *
      * <h4>执行流程</h4>
      * <pre>
-     * 1. 调用 Keycloak 创建 Organization
+     * 1. 调用 Keycloak 创建 Organization:  adapter 层抛出技术异常, service 层将技术异常翻译为领域异常
      *    ├── 201 Created  → 从 Location header 提取 ID，直接返回
      *    ├── 409 Conflict → Organization 已存在，进入"查询 + 校正"分支
      *    ├── 401/403      → Service Account 凭证问题，抛不可重试异常
@@ -85,6 +85,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
     public OrganizationId ensureOrganization(TenantId tenantId, OrganizationAttributes attributes) {
         OrganizationRepresentation rep = buildOrgRepresentation(tenantId, attributes);
 
+        // notion: https://www.notion.so/ensureOrganization-373cb22c43358007832df83ef8de8f90?source=copy_link
         try {
             // try-with-resources 确保 Response 资源被关闭，避免连接泄漏
             try (Response response = keycloak.realm(realm).organizations().create(rep)) {
@@ -112,6 +113,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
 
                 } else if (status == 401 || status == 403) {
                     // Service Account 凭证失效或权限不足，重试无意义，需运维介入
+                    // 这一层算是 root cause, 所以 cause 为 null
                     throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION, "HTTP " + status, null);
 
                 } else if (status >= 400 && status < 500) {
@@ -132,12 +134,13 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
             }
         } catch (KeycloakOperationException e) {
             // 领域异常直接透传，不重复包装
+            // 这个地方 catch 到的就是 inner try 中抛出的 keycloak 的异常
+            // 故意 catch 是为了与其他的异常的处理方法区分开
             throw e;
         }
 
         catch (Exception e) {
-
-
+            // 如果是 ProcessingException: 拆开看看, root cause 是不是权限异常
             if (hasAuthFailureInCause(e)){
                 throw new KeycloakAuthenticationException(tenantId, KeycloakOperation.ENSURE_ORGANIZATION,
                         "Token acquisition failed", e);
@@ -297,7 +300,7 @@ public class RealKeycloakAdminPort implements KeycloakAdminPort {
      */
     private String firstAttrValue(Map<String, List<String>> attrs, String key) {
         List<String> values = attrs.get(key);
-        return (values != null && !values.isEmpty()) ? values.get(0) : null;
+        return (values != null && !values.isEmpty()) ? values.getFirst() : null;
     }
 
 

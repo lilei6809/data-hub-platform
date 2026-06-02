@@ -80,6 +80,16 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         // 状态推进到 IN_PROGRESS, 表示"我认领了这个任务"
         // TODO: RetryScheduler 还未配置
         currentState.markInProgress(Instant.now());
+        // 立刻持久化
+        repository.save(currentState); // database version = 1
+
+        // ********* 如果程序此时崩溃, 数据库中有 tenant_abc 的 IN_PROGRESS
+        // 消息队列中 tenant_abc 的消费未提交, 仍然在 broker
+        // instance 重新启动, 准备消费 tenant_abc, 数据库中有记录 IN_PROGRESS, consumer ack
+        // 但是 RetryScheduler 只会扫描 IAM_AWAITING_RETRY, 不会扫描 IN_PROGRESS(可能别的线程在处理)
+        // 所以 IN_PROGRESS 就会变得无人认领
+        // 所以需要认领和 reclaim 的机制
+
         log.atInfo()
                 .addKeyValue("event", "tenant_iam_provisioning_state_changed")
                 .addKeyValue("tenantId", id)
@@ -88,8 +98,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                 .addKeyValue("retryCount", currentState.getRetryCount())
                 .log("Tenant IAM provisioning moved to in-progress");
 
-        // 立刻持久化
-        repository.save(currentState); // database version = 1
+
 
         // 为什么立刻 save？如果这之后进程崩溃，
         // RetryScheduler 重新拉起时，状态已是 InProgress，
@@ -114,6 +123,8 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                         .log("Tenant IAM provisioning step started");
 
                 context = step.ensure(desired, context);
+
+                // 我们不知道当前 具体是哪一个 step, 但是 Step 自身知道自己是哪一个 step
                 currentState.markStepCompleted(step.checkpoint(), Instant.now());
 
                 // 立刻持久化
@@ -152,6 +163,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         }
 
         catch (IamProvisioningException e) {
+            // service 层不知道具体的技术异常是什么, 只知道领域业务异常, 以及异常是否可重试
             if (e.retryable()){
                 currentState.markAwaitRetry(Instant.now(), e.failureCode(), e.getMessage(), eventContext);
                 log.atWarn()

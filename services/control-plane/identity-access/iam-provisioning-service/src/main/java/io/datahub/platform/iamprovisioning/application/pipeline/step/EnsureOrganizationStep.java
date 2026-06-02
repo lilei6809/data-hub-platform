@@ -46,6 +46,7 @@ public class EnsureOrganizationStep implements TenantIamProvisioningStep {
             // 当前 layer 的异常翻译是必要的
             // 因为 adapter 层翻译的是 Keycloak SDK / HTTP / 409 / 404 / 5xx
             //    -> KeycloakOperationException
+            // step 是 service 层, 负责将技术异常翻译为业务异常
             throw new IamProvisioningException(
                     IamProvisioningStep.ENSURE_ORGANIZATION,
                     ex.getFailureCode(),

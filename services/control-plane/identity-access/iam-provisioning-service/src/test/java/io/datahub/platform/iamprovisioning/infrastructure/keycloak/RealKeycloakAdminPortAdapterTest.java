@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class RealKeycloakAdminPortTest {
+class RealKeycloakAdminPortAdapterTest {
 
     private static final String REALM = "cdp-auth-pool";
 
@@ -59,7 +59,7 @@ class RealKeycloakAdminPortTest {
     private OrganizationsResource organizationsResource;
     private RolesResource rolesResource;
     private UsersResource usersResource;
-    private RealKeycloakAdminPort port;
+    private RealKeycloakAdminPortAdapter port;
 
     @BeforeEach
     void setUp() {
@@ -74,7 +74,7 @@ class RealKeycloakAdminPortTest {
         when(realmResource.roles()).thenReturn(rolesResource);
         when(realmResource.users()).thenReturn(usersResource);
 
-        port = new RealKeycloakAdminPort(keycloak, REALM);
+        port = new RealKeycloakAdminPortAdapter(keycloak, REALM);
     }
 
     @Test

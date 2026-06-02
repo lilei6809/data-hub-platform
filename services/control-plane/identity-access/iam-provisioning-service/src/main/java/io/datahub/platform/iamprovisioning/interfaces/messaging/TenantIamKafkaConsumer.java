@@ -88,6 +88,7 @@ public class TenantIamKafkaConsumer {
             IamProvisioningStatus status = existing.get().getOverallStatus();
 
             // 查决策表:COMPLETED / FAILED / IN_PROGRESS 都是"不放行"
+            // 只有 PENDING 的当前 instance 才有权处理
             if (isShortCircuit(status)){
                 // 必须打结构化日志:tenantId + correlationId + currentStatus + action
                 log.atInfo()

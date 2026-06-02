@@ -5,7 +5,7 @@ import io.datahub.platform.iamprovisioning.application.port.out.keycloak.Keycloa
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
-import io.datahub.platform.iamprovisioning.infrastructure.keycloak.RealKeycloakAdminPort;
+import io.datahub.platform.iamprovisioning.infrastructure.keycloak.RealKeycloakAdminPortAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -232,6 +232,6 @@ class RealKeycloakAdminAdapterContractIT extends KeycloakAdminPortContractTest {
                 .clientSecret("local-cdp-cdp-provisioning-service-secret")
                 .build();
 
-        return new RealKeycloakAdminPort(keycloak, "cdp-auth-pool");
+        return new RealKeycloakAdminPortAdapter(keycloak, "cdp-auth-pool");
     }
 }

@@ -54,9 +54,10 @@ public class ProvisioningStateTransactor {
         ).toList();
 
 
-        // Step 2: 持久化聚合状态, 先确保上面没有问题
+        // Step 2: 持久化聚合状态, 先确保上面没有问题, 再持久化
+        // a. 持久化 state
         iamProvisioningStateRepository.save(state);
-
+        // b. 持久化待发布的 events. 由 schedule 任务进行扫描发布
          if (outBoxEvents.size() > 0) {
              outboxRepository.appendAll(outBoxEvents);
          }
