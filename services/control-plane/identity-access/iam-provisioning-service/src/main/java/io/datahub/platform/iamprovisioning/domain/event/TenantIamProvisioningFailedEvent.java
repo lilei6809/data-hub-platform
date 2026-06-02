@@ -21,4 +21,9 @@ public record TenantIamProvisioningFailedEvent(
     ){
         return new TenantIamProvisioningFailedEvent(tenantId, tier, failureCode, retryable, correlationId, occurredAt);
     }
+
+    @Override
+    public Instant occurredAt(){
+        return occurredAt;
+    }
 }

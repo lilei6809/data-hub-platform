@@ -1,8 +1,7 @@
 package io.datahub.platform.iamprovisioning.domain.model;
 
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
-import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
-import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
+import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -36,7 +35,8 @@ class TenantIamProvisioningStateTest {
         Instant failedAt = Instant.parse("2026-05-25T00:00:02Z");
 
         state.markInProgress(startedAt);
-        state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE, "connection timeout");
+        state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE, "connection timeout",
+                newEventContext());
 
         assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_AWAITING_RETRY);
         assertThat(state.getRetryCount()).isEqualTo(1);
@@ -55,7 +55,7 @@ class TenantIamProvisioningStateTest {
             state.markAwaitRetry(
                     Instant.parse("2026-05-25T00:01:0" + attempt + "Z"),
                     IamProvisioningFailureCode.KEYCLOAK_API_ERROR,
-                    "api error " + attempt
+                    "api error " + attempt, newEventContext()
             );
         }
 
@@ -80,13 +80,13 @@ class TenantIamProvisioningStateTest {
         state.markAwaitRetry(
                 Instant.parse("2026-05-25T00:00:02Z"),
                 IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE,
-                "connection timeout"
+                "connection timeout", newEventContext()
         );
         state.markInProgress(Instant.parse("2026-05-25T00:00:03Z"));
         state.markFailed(
                 Instant.parse("2026-05-25T00:00:04Z"),
                 IamProvisioningFailureCode.UNKNOWN_ERROR,
-                "terminal failure"
+                "terminal failure", newEventContext()
         );
 
         assertThat(state.getTenantId()).isEqualTo(tenantId);
@@ -103,7 +103,10 @@ class TenantIamProvisioningStateTest {
             Instant failedAt = Instant.parse("2026-05-25T00:01:0" + attempt + "Z");
 
             state.markInProgress(startedAt);
-            state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_API_ERROR, "api error " + attempt);
+            state.markAwaitRetry(failedAt,
+                    IamProvisioningFailureCode.KEYCLOAK_API_ERROR,
+                    "api error " + attempt,
+                    newEventContext());
 
             assertThat(state.getRetryCount()).isEqualTo(attempt);
             if (previousAttemptAt != null) {
@@ -113,6 +116,14 @@ class TenantIamProvisioningStateTest {
         }
     }
 
+    private ProvisioningEventContext newEventContext() {
+        return new ProvisioningEventContext(
+                Tier.of("BASIC"),
+                Email.of("abcnfd@abchyd.com"),
+                CorrelationId.of("xxxxx")
+        );
+    }
+
     @Test
     void should_moveToFailedAndRecordFailure_when_nonRetryableAttemptFails() {
         TenantIamProvisioningState state = newState();
@@ -120,10 +131,10 @@ class TenantIamProvisioningStateTest {
         Instant failedAt = Instant.parse("2026-05-25T00:00:02Z");
 
         state.markInProgress(startedAt);
-        state.markFailed(failedAt, IamProvisioningFailureCode.ADMIN_USER_EXISTS, "admin user already exists");
+        state.markFailed(failedAt, IamProvisioningFailureCode.ADMIN_USER_EXISTS, "admin user already exists", newEventContext());
 
         assertThat(state.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_FAILED);
-        assertThat(state.getRetryCount()).isEqualTo(1);
+        assertThat(state.getRetryCount()).isEqualTo(0);
         assertThat(state.getLastAttemptAt()).isEqualTo(failedAt);
         assertThat(state.getUpdatedAt()).isEqualTo(failedAt);
         assertThat(state.getProvisioningFailureCode()).isEqualTo(IamProvisioningFailureCode.ADMIN_USER_EXISTS);
@@ -138,7 +149,7 @@ class TenantIamProvisioningStateTest {
                 .isThrownBy(() -> state.markFailed(
                         Instant.parse("2026-05-25T00:00:01Z"),
                         IamProvisioningFailureCode.UNKNOWN_ERROR,
-                        "unknown"
+                        "unknown", newEventContext()
                 ))
                 .withMessageContaining("PENDING")
                 .withMessageContaining("FAILED");
@@ -152,7 +163,7 @@ class TenantIamProvisioningStateTest {
         state.markFailed(
                 Instant.parse("2026-05-25T00:00:02Z"),
                 IamProvisioningFailureCode.UNKNOWN_ERROR,
-                "secret=temporary-password-123"
+                "secret=temporary-password-123", newEventContext()
         );
 
         assertThat(state.toString())

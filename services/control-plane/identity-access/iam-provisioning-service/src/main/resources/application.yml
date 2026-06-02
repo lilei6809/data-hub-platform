@@ -24,7 +24,7 @@ spring:
 
   kafka:
     producer: # DLT 路由需要 Producer
-      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}"
+      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}"
       # 序列化：生产环境推荐 JSON 或 Avro + Schema Registry
       # JSON 适合 MVP 阶段，Avro 适合需要强 Schema 演化的大规模系统
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -40,7 +40,7 @@ spring:
         retry.backoff.ms: 100
 
         # 超时配置（这是真正控制"放弃"的关键）
-        delivery.timeout.ms: 60000   # 1分钟：从 send() 到成功确认的总时间上限
+        delivery.timeout.ms: 300000   # 5分钟：从 send() 到成功确认的总时间上限
         request.timeout.ms: 15000     # 单次 Broker 响应等待时间
         # 批处理：提升吞吐（对 IAM onboarding 场景影响不大，但是好习惯）
         linger.ms: 5          # 等待 5ms 攒批，平衡延迟与吞吐
@@ -55,7 +55,7 @@ spring:
         # 避免敏感信息进日志
         # 在 Spring Kafka 层额外配置
     consumer:
-      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}"
+      bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}"
       group-id: iam-provisioning-service
       auto-offset-reset: earliest
       enable-auto-commit: false        # 禁止自动提交，使用手动 Ack
@@ -73,9 +73,9 @@ spring:
 
         # Consumer 两次 poll 之间的最大时间间隔
         # = max.poll.records × 单条消息最大处理时间 × 安全系数
-        # 10条 × 10秒/条 × 2 = 200秒，再加缓冲
+        # 10条 × 10秒/条 × 2 = 2000秒，再加缓冲
         # 对于 IAM Provisioning 场景：Keycloak 调用可能需要 1-5 秒，加上网络超时重试，单条最坏情况可能达到 10 秒
-        max.poll.interval.ms: 200000
+        max.poll.interval.ms: 2000000
 
         # Heartbeat 间隔（必须 < session.timeout.ms / 3）
         heartbeat.interval.ms: 3000

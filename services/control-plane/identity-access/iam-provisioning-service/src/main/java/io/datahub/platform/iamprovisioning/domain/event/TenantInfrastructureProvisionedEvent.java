@@ -65,6 +65,11 @@ public record TenantInfrastructureProvisionedEvent(
                 tenantId, tenantName, tier, adminEmail, correlationId, occurredAt);
     }
 
+    @Override
+    public Instant occurredAt(){
+        return occurredAt;
+    }
+
 
 
 }

@@ -1,4 +1,4 @@
-package io.datahub.platform.iamprovisioning.application.port.out;
+package io.datahub.platform.iamprovisioning.application.port.out.repository;
 
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;

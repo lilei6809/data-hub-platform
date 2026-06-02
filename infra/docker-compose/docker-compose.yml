@@ -99,9 +99,12 @@ services:
     ports:
       - "${KAFKA_UI_PORT}:8080"
     environment:
+      KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     depends_on:
       - kafka
+    networks:
+      - data-hub
 
   keycloak:
     image: quay.io/keycloak/keycloak:${KEYCLOAK_IMAGE_TAG}

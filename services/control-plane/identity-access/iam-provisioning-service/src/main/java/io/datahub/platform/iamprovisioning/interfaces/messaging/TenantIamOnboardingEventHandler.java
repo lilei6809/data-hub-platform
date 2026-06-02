@@ -2,6 +2,7 @@ package io.datahub.platform.iamprovisioning.interfaces.messaging;
 
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
+import io.datahub.platform.iamprovisioning.interfaces.messaging.dto.TenantInfrastructureProvisionedEventDto;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  *        │
  *        ▼
  * TenantIamOnboardingEventHandler  ← interfaces/messaging（本类，薄适配器）
+ *          ACL: dto -> domain event
  *        │ useCase.handle(event)
  *        ▼
  * HandleTenantIamOnboardingEventUseCase  ← application/port/in（Driving Port）
@@ -34,11 +36,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TenantIamOnboardingEventHandler {
+    
+    private final TenantInfrastructureProvisionedEventTranslator translator;
 
     // port.in
     private final HandleTenantIamOnboardingEventUseCase useCase;
 
     public TenantIamOnboardingEventHandler(HandleTenantIamOnboardingEventUseCase useCase) {
+        this.translator = new  TenantInfrastructureProvisionedEventTranslator();
         this.useCase = useCase;
     }
 
@@ -47,10 +52,11 @@ public class TenantIamOnboardingEventHandler {
      *
      * <p>异常不在此处吞掉，向上传播给调用方（Kafka Consumer / 测试）自行处理重试或死信队列。</p>
      *
-     * @param event 来自上游 BC 的基础设施就绪事件，不得为 null
+     * @param eventDto 来自上游 BC 的基础设施就绪事件，不得为 null
      */
-    @KafkaListener(topics = "tenant.infrastructure.provisioned")
-    public void handle(TenantInfrastructureProvisionedEvent event) {
+    @KafkaListener(topics = "cdp.infrastructure.tenant.provisioned")
+    public void handle(TenantInfrastructureProvisionedEventDto eventDto) {
+        TenantInfrastructureProvisionedEvent event = translator.translate(eventDto);
         useCase.handle(event);
     }
 }

@@ -1,6 +1,6 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepositoryContractTest;
 
 class InMemoryTenantIamProvisioningStateRepositoryTest extends TenantIamProvisioningStateRepositoryContractTest {

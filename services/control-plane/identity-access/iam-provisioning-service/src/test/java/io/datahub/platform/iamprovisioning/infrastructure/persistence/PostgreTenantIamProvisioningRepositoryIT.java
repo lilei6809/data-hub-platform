@@ -1,11 +1,14 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
+import io.datahub.platform.iamprovisioning.domain.valueobject.ProvisioningEventContext;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningCheckpoint;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
+import io.datahub.platform.iamprovisioning.domain.valueobject.Email;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
+import io.datahub.platform.iamprovisioning.domain.valueobject.Tier;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.TenantIamProvisioningStateRowMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +19,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -305,7 +307,7 @@ class PostgreTenantIamProvisioningRepositoryIT {
     }
 
     @Test
-    @DisplayName("save: 测试乐观锁")
+    @DisplayName("save:")
     void save_detects_optimistic_lock_conflict() {
         TenantId tenantId = uniqueTenantId();
 
@@ -332,8 +334,9 @@ class PostgreTenantIamProvisioningRepositoryIT {
     @Test
     void full_provisioning_lifecycle_persisted_correctly() {
         TenantId tenantId = uniqueTenantId();
+        CorrelationId correlationId = CorrelationId.newCorrelationId();
         TenantIamProvisioningState state =
-                repository.findOrInitById(tenantId, CorrelationId.newCorrelationId());
+                repository.findOrInitById(tenantId, correlationId);
 
         // PENDING → IN_PROGRESS
         state.markInProgress(Instant.now());
@@ -351,7 +354,10 @@ class PostgreTenantIamProvisioningRepositoryIT {
         state = repository.findByTenantId(tenantId).orElseThrow();
 
         // IN_PROGRESS → COMPLETED
-        state.markCompleted(Instant.now());
+        state.markCompleted(Instant.now(), new ProvisioningEventContext(
+                Tier.of("BASIC"),
+                Email.of("admin@example.com"), correlationId
+        ));
         repository.save(state);
 
         // 从数据库重新加载，验证所有字段

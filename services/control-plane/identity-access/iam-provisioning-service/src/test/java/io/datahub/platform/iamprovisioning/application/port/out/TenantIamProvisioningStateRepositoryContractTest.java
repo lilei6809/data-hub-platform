@@ -1,10 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.port.out;
 
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
+import io.datahub.platform.iamprovisioning.domain.valueobject.ProvisioningEventContext;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -161,7 +163,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
     private TenantIamProvisioningState awaitingRetryState(TenantId tenantId, String correlationId, Instant failedAt) {
         TenantIamProvisioningState state = newState(tenantId, correlationId);
         state.markInProgress(failedAt.minusSeconds(1));
-        state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE, "keycloak unavailable");
+        state.markAwaitRetry(failedAt, IamProvisioningFailureCode.KEYCLOAK_UNAVAILABLE, "keycloak unavailable", new ProvisioningEventContext(null, null, null));
         return state;
     }
 
@@ -171,7 +173,7 @@ public abstract class TenantIamProvisioningStateRepositoryContractTest {
         state.markFailed(
                 Instant.parse("2026-05-25T00:00:02Z"),
                 IamProvisioningFailureCode.UNKNOWN_ERROR,
-                "terminal failure"
+                "terminal failure", new ProvisioningEventContext(null, null, null)
         );
         return state;
     }

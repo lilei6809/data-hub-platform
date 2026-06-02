@@ -1,10 +1,12 @@
 package io.datahub.platform.iamprovisioning.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureAdminUserStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureOrganizationMembershipStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureOrganizationStep;
 import io.datahub.platform.iamprovisioning.application.pipeline.step.EnsureTenantAdminRoleStep;
+import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakAuthenticationException;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.exception.KeycloakTransientException;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
@@ -15,6 +17,7 @@ import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
 import io.datahub.platform.iamprovisioning.infrastructure.messaging.InMemoryEventPublisher;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryOutboxRepository;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningStateRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +39,10 @@ class TenantIamProvisioningServiceTest {
     private EnsureAdminUserStep ensureAdminUserStep;
     private EnsureTenantAdminRoleStep ensureTenantAdminRoleStep;
     private EnsureOrganizationMembershipStep ensureOrganizationMembershipStep;
-    private InMemoryEventPublisher eventPublisher;
+    private ProvisioningStateTransactor transactor;
+    private InMemoryOutboxRepository  inMemoryOutboxRepository;
+    private ObjectMapper objectMapper;
+    private KafkaTopicProperties kafkaTopicProperties;
 
     @BeforeEach
     void setUp() {
@@ -46,12 +52,21 @@ class TenantIamProvisioningServiceTest {
         ensureAdminUserStep = new EnsureAdminUserStep(port);
         ensureTenantAdminRoleStep = new EnsureTenantAdminRoleStep(port);
         ensureOrganizationMembershipStep = new EnsureOrganizationMembershipStep(port);
-        eventPublisher = new InMemoryEventPublisher();
+        inMemoryOutboxRepository =  new InMemoryOutboxRepository();
+        objectMapper = new ObjectMapper();
+        kafkaTopicProperties = new KafkaTopicProperties();
+        kafkaTopicProperties.setTenantIamProvisioned("test.cdp.iam.provisioned");
+        kafkaTopicProperties.setTenantIamProvisionFailed("test.cdp.iam.provision-failed");
+        transactor = new ProvisioningStateTransactor(
+                repository,
+                inMemoryOutboxRepository,
+                objectMapper ,
+                kafkaTopicProperties);
 
         service = new TenantIamProvisioningService(repository,
                 List.of(
                 ensureOrganizationStep, ensureAdminUserStep, ensureTenantAdminRoleStep, ensureOrganizationMembershipStep),
-                eventPublisher);
+                transactor);
     }
 
 
@@ -77,7 +92,7 @@ class TenantIamProvisioningServiceTest {
         ConcurrentHashMap<OrganizationId, Set<UserId>> memberships = port.membershipsSnapshot();
 
         TenantIamProvisioningState persistedState = repository.findByTenantId(tenantId)
-                .orElseThrow();
+                .orElseThrow(); // 为什么状态是 IN_PROGRESS
 
         assertThat(persistedState.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_COMPLETED);
         assertThat(persistedState.isKeycloakOrganizationCreated()).isTrue();
@@ -259,7 +274,7 @@ class TenantIamProvisioningServiceTest {
 
         assertThat(persistedState.getOverallStatus()).isEqualTo(IamProvisioningStatus.IAM_FAILED);
         assertThat(persistedState.getProvisioningFailureCode()).isEqualTo(IamProvisioningFailureCode.KEYCLOAK_AUTH_FAILED);
-        assertThat(persistedState.getRetryCount()).isEqualTo(1);
+        assertThat(persistedState.getRetryCount()).isEqualTo(0);
         assertThat(persistedState.getNextRetryAt()).isNull();
         assertThat(persistedState.isKeycloakOrganizationCreated()).isTrue();
         assertThat(persistedState.isAdminUserCreated()).isTrue();

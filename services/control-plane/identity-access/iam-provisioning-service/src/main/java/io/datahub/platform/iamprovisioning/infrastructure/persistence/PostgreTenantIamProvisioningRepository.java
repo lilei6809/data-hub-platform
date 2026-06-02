@@ -2,7 +2,7 @@ package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 
 import io.datahub.platform.iamprovisioning.application.exception.ProvisioningStateNotFoundException;
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
@@ -115,6 +115,9 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
                 throw new ProvisioningStateNotFoundException(tenantIamProvisioningState.getTenantId());
             }
         }
+
+        // DB version 已递增，回写内存对象，保证后续 save 的 WHERE version = ? 能匹配
+        tenantIamProvisioningState.markPersisted(row.version() + 1);
 
     }
 

@@ -1,11 +1,10 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningStatus;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
-import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;

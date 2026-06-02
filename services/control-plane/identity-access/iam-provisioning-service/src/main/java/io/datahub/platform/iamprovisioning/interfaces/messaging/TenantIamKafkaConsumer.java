@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.exception.DomainValidationException;
@@ -33,10 +33,10 @@ public class TenantIamKafkaConsumer {
     private final KafkaTopicProperties kafkaTopicProperties;
     private final TenantIamProvisioningStateRepository repository;
 
-    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, TenantInfrastructureProvisionedEventTranslator translator, KafkaTemplate<String, String> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties, TenantIamProvisioningStateRepository repository) {
+    public TenantIamKafkaConsumer(HandleTenantIamOnboardingEventUseCase useCase, ObjectMapper objectMapper, KafkaTemplate<String, String> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties, TenantIamProvisioningStateRepository repository) {
         this.useCase = useCase;
         this.objectMapper = objectMapper;
-        this.translator = translator;
+        this.translator = new TenantInfrastructureProvisionedEventTranslator();
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaTopicProperties = kafkaTopicProperties;
         this.repository = repository;
@@ -110,6 +110,8 @@ public class TenantIamKafkaConsumer {
             useCase.handle(event);
 
             // 成功：状态 IAM_COMPLETED，成功事件已发布
+            // ******** 如果 useCase.handle(event) 中途中断, 会导致未提交
+            // 所以每次 debug 时, 一开启 debug, 就会重新消费之前没有提交的消息
             ack.acknowledge();
         } catch (IamProvisioningException e){
             // retryable=true：状态 AWAITING_RETRY，RetryScheduler 接管

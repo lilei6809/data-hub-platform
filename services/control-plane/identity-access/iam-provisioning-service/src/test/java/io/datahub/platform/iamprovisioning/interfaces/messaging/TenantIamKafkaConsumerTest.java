@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datahub.platform.iamprovisioning.application.exception.IamProvisioningException;
 import io.datahub.platform.iamprovisioning.application.pipeline.IamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.HandleTenantIamOnboardingEventUseCase;
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.config.kafka.properties.KafkaTopicProperties;
 import io.datahub.platform.iamprovisioning.domain.event.TenantInfrastructureProvisionedEvent;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
@@ -65,7 +65,6 @@ class TenantIamKafkaConsumerTest {
 
         consumer = new TenantIamKafkaConsumer(useCase,
                 objectMapper,
-                new TenantInfrastructureProvisionedEventTranslator(),
                 kafkaTemplate,
                 kafkaTopicProperties,
                 repository);

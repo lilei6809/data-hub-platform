@@ -4,11 +4,8 @@ import io.datahub.platform.iamprovisioning.application.exception.IamProvisioning
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.ProvisionTenantIamUseCase;
-import io.datahub.platform.iamprovisioning.application.port.out.EventPublisher;
-import io.datahub.platform.iamprovisioning.application.port.out.TenantIamProvisioningStateRepository;
-import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisionedEvent;
-import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFailedEvent;
-import io.datahub.platform.iamprovisioning.domain.exception.EventPublishException;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
+import io.datahub.platform.iamprovisioning.domain.valueobject.ProvisioningEventContext;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamDesiredState;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
@@ -27,14 +24,15 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
     private final TenantIamProvisioningStateRepository repository;
     private final List<TenantIamProvisioningStep> ensureSteps;
 
-    private final EventPublisher eventPublisher;
+    private final ProvisioningStateTransactor transactor;
 
     public TenantIamProvisioningService(TenantIamProvisioningStateRepository repository,
                                         List<TenantIamProvisioningStep> ensureSteps,
-                                        EventPublisher eventPublisher) {
+                                        ProvisioningStateTransactor transactor) {
         this.repository = repository;
         this.ensureSteps = ensureSteps;
-        this.eventPublisher = eventPublisher;
+        this.transactor = transactor;
+
     }
 
     /**
@@ -91,7 +89,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                 .log("Tenant IAM provisioning moved to in-progress");
 
         // 立刻持久化
-        repository.save(currentState);
+        repository.save(currentState); // database version = 1
 
         // 为什么立刻 save？如果这之后进程崩溃，
         // RetryScheduler 重新拉起时，状态已是 InProgress，
@@ -100,6 +98,11 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
         // === 阶段 2：执行 Steps（远程操作，不在事务内） ===
         // 初始化 context
         StepExecutionContext context = StepExecutionContext.init(id, correlationId);
+        ProvisioningEventContext eventContext = ProvisioningEventContext.of(
+                desired.tier(),
+                desired.adminUser().email(),
+                correlationId
+        );;
         try {
             for (TenantIamProvisioningStep step : ensureSteps) {
                 log.atInfo()
@@ -129,19 +132,11 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
 
             // === 阶段 3：所有 Steps 成功，推进终态 ===
-            currentState.markCompleted(Instant.now());
-            repository.save(currentState);
+            currentState.markCompleted(Instant.now(), eventContext);
 
-            //TODO: outbox pattern
-            eventPublisher.publish(
-                    TenantIamProvisionedEvent.of(
-                            currentState.getTenantId(),
-                            desired.tier(),
-                            desired.adminUser().email(),
-                            correlationId,
-                            currentState.getProvisionedAt()
-                    )
-            );
+            transactor.saveIamProvisionStateAndAppendEvents(currentState);
+
+
 
             log.atInfo()
                     .addKeyValue("event", "tenant_iam_provisioning_completed")
@@ -158,7 +153,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
         catch (IamProvisioningException e) {
             if (e.retryable()){
-                currentState.markAwaitRetry(Instant.now(), e.failureCode(), e.getMessage());
+                currentState.markAwaitRetry(Instant.now(), e.failureCode(), e.getMessage(), eventContext);
                 log.atWarn()
                         .addKeyValue("event", "tenant_iam_provisioning_awaiting_retry")
                         .addKeyValue("tenantId", id)
@@ -171,7 +166,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
                         .addKeyValue("nextRetryAt", currentState.getNextRetryAt())
                         .log("Tenant IAM provisioning failed with retryable error");
             } else  {
-                currentState.markFailed(Instant.now(), e.failureCode(), e.getMessage());
+                currentState.markFailed(Instant.now(), e.failureCode(), e.getMessage(), eventContext);
                 log.atError()
                         .addKeyValue("event", "tenant_iam_provisioning_failed")
                         .addKeyValue("tenantId", id)
@@ -185,31 +180,17 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
             }
 
-            repository.save(currentState);
 
-            // lastAttemptAt 在 markAwaitRetry 和 markFailed 中均被设置，
-            // 因此无论是可重试还是不可重试失败，它都不为 null，作为事件时间戳安全可用。
-            // （failedAt 仅在 markFailed 时设置，对可重试路径为 null，不适合此处使用。）
-            TenantIamProvisioningFailedEvent failedEvent = TenantIamProvisioningFailedEvent.of(
-              currentState.getTenantId(),
-              desired.tier(),
-              e.failureCode(),
-              e.retryable(),
-              correlationId,
-              currentState.getLastAttemptAt()
-            );
-
-            // 先发布事件，再抛出异常。
-            // 如果顺序颠倒（先抛出），调用方 catch 后可能不再执行发布，导致下游永远感知不到失败。
-            eventPublisher.publish(failedEvent);
+            transactor.saveIamProvisionStateAndAppendEvents(currentState);
 
             // 向上重新抛出，让调用方（Kafka Consumer / 测试）知道失败了，
             // 以便触发消息重试或死信队列
             throw e;
         } catch (RuntimeException e) {
 
-            currentState.markFailed(Instant.now(), IamProvisioningFailureCode.UNKNOWN_ERROR, e.getMessage());
-            repository.save(currentState);
+            currentState.markFailed(Instant.now(), IamProvisioningFailureCode.UNKNOWN_ERROR, e.getMessage(), eventContext);
+
+            transactor.saveIamProvisionStateAndAppendEvents(currentState);
             log.atError()
                     .addKeyValue("event", "tenant_iam_provisioning_failed")
                     .addKeyValue("tenantId", id)

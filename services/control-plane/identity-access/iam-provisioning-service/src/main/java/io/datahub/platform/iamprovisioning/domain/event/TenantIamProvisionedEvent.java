@@ -21,4 +21,9 @@ public record TenantIamProvisionedEvent(
     ){
         return new TenantIamProvisionedEvent(tenantId, tier, adminEmail, correlationId, occurredAt);
     }
+
+    @Override
+    public Instant occurredAt(){
+        return occurredAt;
+    }
 }

@@ -1,5 +1,8 @@
 package io.datahub.platform.iamprovisioning.domain.model;
 
+import io.datahub.platform.iamprovisioning.domain.valueobject.ProvisioningEventContext;
+import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisionedEvent;
+import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFailedEvent;
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
@@ -13,7 +16,7 @@ import java.util.Objects;
 
 @Slf4j
 @Getter
-public class TenantIamProvisioningState {
+public class TenantIamProvisioningState extends AbstractAggregateRoot{
 
     private final TenantId tenantId;
 
@@ -82,7 +85,7 @@ public class TenantIamProvisioningState {
 
     }
 
-    public void markCompleted(Instant now){
+    public void markCompleted(Instant now, ProvisioningEventContext eventContext){
         if ((!(keycloakOrganizationCreated && defaultRolesAssigned && adminUserCreated && adminUserMembershipCreated) )
         || (overallStatus != IamProvisioningStatus.IAM_IN_PROGRESS)) {
             throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_COMPLETED,
@@ -100,6 +103,14 @@ public class TenantIamProvisioningState {
         this.failureMessage = null;
         this.nextRetryAt = null;
 
+        registerEvent(TenantIamProvisionedEvent.of(
+                tenantId,
+                eventContext.tier(),
+                eventContext.adminEmail(),
+                eventContext.correlationId(),
+                now
+        ));
+
     }
 
     public boolean isRetryExhausted(){
@@ -107,7 +118,7 @@ public class TenantIamProvisioningState {
     }
 
     // 当前执行尝试失败，并且不再自动重试
-    public void markFailed(Instant now, IamProvisioningFailureCode code, String message){
+    public void markFailed(Instant now, IamProvisioningFailureCode code, String message, ProvisioningEventContext eventContext){
 
         // markFailed 表达"这次执行失败，并且不再自动重试"。
         // 因此它必须发生在一次正在执行的尝试中，而不是等待重试或已完成之后。
@@ -115,7 +126,7 @@ public class TenantIamProvisioningState {
             throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_FAILED, "");
         }
 
-        this.retryCount++;
+
         this.lastAttemptAt = now;
         this.updatedAt = now;
         this.failedAt = now;
@@ -123,10 +134,19 @@ public class TenantIamProvisioningState {
         this.overallStatus = IamProvisioningStatus.IAM_FAILED;
         this.provisioningFailureCode = code;
         this.failureMessage = message;
+
+        registerEvent(TenantIamProvisioningFailedEvent.of(
+                tenantId,
+                eventContext.tier(),
+                code,
+                false,
+                eventContext.correlationId(),
+                now
+        ));
     }
 
     // “当前尝试失败，但可重试”，会记录失败详情；达到最大重试次数后直接进入 FAILED
-    public void markAwaitRetry(Instant markTime, IamProvisioningFailureCode code, String message){
+    public void markAwaitRetry(Instant markTime, IamProvisioningFailureCode code, String message, ProvisioningEventContext eventContext){
         if (this.overallStatus != IamProvisioningStatus.IAM_IN_PROGRESS){
             throw new InvalidIamProvisioningStateTransitionException(overallStatus, IamProvisioningStatus.IAM_AWAITING_RETRY, "");
         }
@@ -138,12 +158,21 @@ public class TenantIamProvisioningState {
         this.failureMessage = message;
 
         if (isRetryExhausted()) {
-            this.overallStatus = IamProvisioningStatus.IAM_FAILED;
+            markFailed(markTime, code, message, eventContext);
         } else {
             this.overallStatus = IamProvisioningStatus.IAM_AWAITING_RETRY;
 
             // TODO: retryScheduler.scheduleRetry(tenantId, state.nextRetryAt());
             this.nextRetryAt = markTime.plus(nextRetryDelay(), ChronoUnit.SECONDS);
+
+            registerEvent(TenantIamProvisioningFailedEvent.of(
+                    tenantId,
+                    eventContext.tier(),
+                    code,
+                    true,
+                    eventContext.correlationId(),
+                    markTime
+            ));
         }
     }
 
