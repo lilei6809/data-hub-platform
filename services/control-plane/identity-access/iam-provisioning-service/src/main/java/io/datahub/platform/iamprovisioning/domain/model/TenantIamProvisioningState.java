@@ -6,7 +6,7 @@ import io.datahub.platform.iamprovisioning.domain.event.TenantIamProvisioningFai
 import io.datahub.platform.iamprovisioning.domain.exception.InvalidIamProvisioningStateTransitionException;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.TenantIamProvisioningStateRow;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.TenantIamProvisioningStateRow;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

@@ -35,7 +35,7 @@ public interface TenantIamProvisioningStateRepository {
 
 
     // 场景:  retryScheduler 需要声明一批可重试记录的认领权
-    List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy);
+    List<TenantIamProvisioningState> claimBatchReadyForRetry(int limit, String claimedBy, Instant timestamp);
 
     void claim(String tenantId, String claimedBy, Instant timestamp);
 

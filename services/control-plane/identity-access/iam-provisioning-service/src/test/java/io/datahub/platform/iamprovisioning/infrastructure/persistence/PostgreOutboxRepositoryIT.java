@@ -3,6 +3,7 @@ package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventDomainMapper;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventRowMapper;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

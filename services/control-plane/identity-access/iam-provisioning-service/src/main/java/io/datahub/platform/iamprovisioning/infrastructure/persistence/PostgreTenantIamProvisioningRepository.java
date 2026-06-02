@@ -2,13 +2,13 @@ package io.datahub.platform.iamprovisioning.infrastructure.persistence;
 
 import io.datahub.platform.iamprovisioning.application.exception.ProvisioningStateNotFoundException;
 import io.datahub.platform.iamprovisioning.application.exception.TenantIamProvisioningStateConcurrencyException;
-import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
 import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.TenantIamProvisioningStateDomainMapper;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.TenantIamProvisioningStateRowMapper;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.TenantIamProvisioningStateRow;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -162,14 +162,15 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
                 .map(domainMapper::toDomain);
     }
 
+    @Transactional
     @Override
-    public List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy) {
+    public List<TenantIamProvisioningState> claimBatchReadyForRetry(int limit, String claimedBy, Instant timestamp) {
 
         // step1: 确认一批待重试的记录
         List<TenantIamProvisioningStateRow> rows = jdbcTemplate.query(
                 """
                         SELECT * FROM tenant_iam_provisioning_state
-                        WHERE iam_status = 'IAM_AWAITING_RETRY' AND next_retry_at IS NOT NULL
+                        WHERE iam_status = 'IAM_AWAITING_RETRY' AND next_retry_at <= now()
                         ORDER BY next_retry_at ASC
                         LIMIT ?
                         FOR UPDATE SKIP LOCKED
@@ -183,9 +184,15 @@ public class PostgreTenantIamProvisioningRepository implements TenantIamProvisio
         for (String id : ids) {
             jdbcTemplate.update("""
                         UPDATE tenant_iam_provisioning_state
-                        SET iam_status = 'IAM_IN_PROGRESS', claimed_at = now(), claimed_by = ?
-                        WHERE tenant_id = ?
-            """, claimedBy, id);
+                        SET iam_status = 'IAM_IN_PROGRESS',
+                            last_attempt_at = ?,
+                            updated_at = ?,
+                            next_retry_at = NULL,
+                            claimed_at = ?,
+                            claimed_by = ?,
+                            version = version + 1
+                        WHERE tenant_id = ? AND iam_status = 'IAM_AWAITING_RETRY'
+            """, toTimestamp(timestamp), toTimestamp(timestamp), toTimestamp(timestamp), claimedBy, id);
         }
 
         // rows 没更新, 我重新查一遍, 拿新的结果

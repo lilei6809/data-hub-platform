@@ -77,7 +77,7 @@ public class InMemoryTenantIamProvisioningStateRepository implements TenantIamPr
     }
 
     @Override
-    public List<TenantIamProvisioningState> claimBatch(int limit, String claimedBy) {
+    public List<TenantIamProvisioningState> claimBatchReadyForRetry(int limit, String claimedBy, Instant timestamp) {
         return List.of();
     }
 

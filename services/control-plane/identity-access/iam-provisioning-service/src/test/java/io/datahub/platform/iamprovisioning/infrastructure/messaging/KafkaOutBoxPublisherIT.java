@@ -1,7 +1,7 @@
 package io.datahub.platform.iamprovisioning.infrastructure.messaging;
 
 import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.OutboxEventRow;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.PostgreOutboxRepository;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventDomainMapper;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventRowMapper;

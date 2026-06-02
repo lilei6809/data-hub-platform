@@ -1,7 +1,7 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper;
 
 import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.OutboxEventRow;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -19,7 +19,7 @@ class OutboxEventDomainMapperTest {
 
         OutboxEventRow row = mapper.toRow(event);
 
-        assertThat(row.eventId()).isEqualTo(event.eventId().toString());
+        assertThat(row.eventId()).isEqualTo(event.eventId());
         assertThat(row.aggregateType()).isEqualTo(event.aggregateType());
         assertThat(row.aggregateId()).isEqualTo(event.aggregateId());
         assertThat(row.eventType()).isEqualTo(event.eventType());
@@ -44,7 +44,7 @@ class OutboxEventDomainMapperTest {
     void should_rehydrateDomainEventFromRow() {
         UUID eventId = UUID.fromString("3c9ebf9e-2fc4-4978-b4cf-3577b8b998db");
         OutboxEventRow row = new OutboxEventRow(
-                eventId.toString(),
+                eventId,
                 "TenantIamProvisioningState",
                 "tenant-abc",
                 "TenantIamProvisionedEvent",

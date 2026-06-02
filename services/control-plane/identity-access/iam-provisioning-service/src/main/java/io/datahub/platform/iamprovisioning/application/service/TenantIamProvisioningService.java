@@ -4,6 +4,7 @@ import io.datahub.platform.iamprovisioning.application.exception.IamProvisioning
 import io.datahub.platform.iamprovisioning.application.pipeline.StepExecutionContext;
 import io.datahub.platform.iamprovisioning.application.pipeline.TenantIamProvisioningStep;
 import io.datahub.platform.iamprovisioning.application.port.in.ProvisionTenantIamUseCase;
+import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningInputSnapshotRepository;
 import io.datahub.platform.iamprovisioning.application.port.out.repository.TenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.domain.valueobject.ProvisioningEventContext;
 import io.datahub.platform.iamprovisioning.domain.model.IamProvisioningFailureCode;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
     private final TenantIamProvisioningStateRepository repository;
+    private final TenantIamProvisioningInputSnapshotRepository snapshotRepository;
     private final List<TenantIamProvisioningStep> ensureSteps;
 
     private final ProvisioningStateTransactor transactor;
@@ -30,9 +32,11 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
     private final String instanceId = System.getenv().getOrDefault("INSTANCE_ID", "unknown-" + UUID.randomUUID().toString().substring(0, 8));
 
     public TenantIamProvisioningService(TenantIamProvisioningStateRepository repository,
+                                        TenantIamProvisioningInputSnapshotRepository snapshotRepository,
                                         List<TenantIamProvisioningStep> ensureSteps,
                                         ProvisioningStateTransactor transactor) {
         this.repository = repository;
+        this.snapshotRepository = snapshotRepository;
         this.ensureSteps = ensureSteps;
         this.transactor = transactor;
 
@@ -45,6 +49,10 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
      */
     @Override
     public void provisionTenantIam(TenantIamDesiredState desired, CorrelationId correlationId) {
+
+        // 保存 TenantIamDesiredState 快照, 供重试时重建
+        snapshotRepository.saveIfAbsent(desired, correlationId);
+
         TenantId id = desired.tenantId();
 
         // === 阶段 1：加载或初始化状态（本地操作，轻量） ===
@@ -69,7 +77,7 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
             return;
         }
 
-        if (currentState.isInProgress()){
+        if (currentState.isInProgress()) {
             log.atInfo()
                     .addKeyValue("event", "tenant_iam_provisioning_task_processed_by_others")
                     .addKeyValue("tenantId", id)
@@ -112,12 +120,54 @@ public class TenantIamProvisioningService implements ProvisionTenantIamUseCase {
 
         // === 阶段 2：执行 Steps（远程操作，不在事务内） ===
         // 初始化 context
+        pipeline(currentState, desired, correlationId);
+    }
+
+    @Override
+    public void provisionTenantIamForRetry(TenantIamDesiredState desired, CorrelationId correlationId) {
+        // 现在可以确定, 当前 state 正在 retry, 同一个 instance 认领和处理
+        // 状态明确就是 IN_PROGRESS
+
+        TenantId id = desired.tenantId();
+        TenantIamProvisioningState currentState = repository.findOrInitById(id, correlationId);
+
+        if (currentState.isCompleted()) {
+            log.atInfo()
+                    .addKeyValue("event", "tenant_iam_retry_skipped_completed")
+                    .addKeyValue("tenantId", id)
+                    .addKeyValue("correlationId", correlationId)
+                    .log("Tenant IAM retry skipped because provisioning is already completed");
+            return;
+        }
+
+        //TODO: 注入 HOSTNAME 后, 需要判断 状态是 PROGRESS 且 是相同的 claimedBy 才允许 pipeline
+        if (!currentState.isInProgress()) {
+            log.atWarn()
+                    .addKeyValue("event", "tenant_iam_retry_invalid_state")
+                    .addKeyValue("tenantId", id)
+                    .addKeyValue("correlationId", correlationId)
+                    .addKeyValue("status", currentState.getOverallStatus())
+                    .log("Tenant IAM retry skipped because state was not claimed as in-progress");
+            return;
+        }
+
+
+        pipeline(currentState, desired, correlationId);
+
+    }
+
+    public void pipeline(TenantIamProvisioningState currentState, TenantIamDesiredState desired, CorrelationId correlationId){
+        TenantId id = desired.tenantId();
+
+
+        // 初始化 context
         StepExecutionContext context = StepExecutionContext.init(id, correlationId);
         ProvisioningEventContext eventContext = ProvisioningEventContext.of(
                 desired.tier(),
                 desired.adminUser().email(),
                 correlationId
-        );;
+        );
+
         try {
             for (TenantIamProvisioningStep step : ensureSteps) {
                 log.atInfo()

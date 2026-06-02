@@ -22,6 +22,7 @@ import io.datahub.platform.iamprovisioning.domain.valueobject.*;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakAdminPort;
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryOutboxRepository;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningInputSnapshotRepositoryAdapter;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningStateRepository;
 import io.datahub.platform.iamprovisioning.interfaces.messaging.dto.TenantInfrastructureProvisionedEventDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +86,7 @@ class TenantIamOnboardingEventHandlerTest {
 
         TenantIamProvisioningService service = new TenantIamProvisioningService(
                 stateRepository,
+                new InMemoryTenantIamProvisioningInputSnapshotRepositoryAdapter(),
                 List.of(
                         new EnsureOrganizationStep(fakeKeycloak),
                         new EnsureAdminUserStep(fakeKeycloak),

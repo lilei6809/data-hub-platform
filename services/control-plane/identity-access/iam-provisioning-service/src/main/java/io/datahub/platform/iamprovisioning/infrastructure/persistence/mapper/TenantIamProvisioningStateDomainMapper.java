@@ -3,8 +3,7 @@ package io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper;
 import io.datahub.platform.iamprovisioning.domain.model.TenantIamProvisioningState;
 import io.datahub.platform.iamprovisioning.domain.valueobject.CorrelationId;
 import io.datahub.platform.iamprovisioning.domain.valueobject.TenantId;
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.TenantIamProvisioningStateRow;
-import org.springframework.stereotype.Component;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.TenantIamProvisioningStateRow;
 
 // Mapper，负责在 Domain Model 和 Row 之间双向转换
 public class TenantIamProvisioningStateDomainMapper {

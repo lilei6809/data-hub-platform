@@ -1,9 +1,7 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper;
 
 import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBoxEvent;
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.OutboxEventRow;
-
-import java.util.UUID;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 
 public class OutboxEventDomainMapper {
 

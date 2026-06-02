@@ -18,6 +18,7 @@ import io.datahub.platform.iamprovisioning.infrastructure.keycloak.FakeKeycloakA
 import io.datahub.platform.iamprovisioning.infrastructure.keycloak.KeycloakOperation;
 import io.datahub.platform.iamprovisioning.infrastructure.messaging.InMemoryEventPublisher;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryOutboxRepository;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningInputSnapshotRepositoryAdapter;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.InMemoryTenantIamProvisioningStateRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +42,7 @@ class TenantIamProvisioningServiceTest {
     private EnsureOrganizationMembershipStep ensureOrganizationMembershipStep;
     private ProvisioningStateTransactor transactor;
     private InMemoryOutboxRepository  inMemoryOutboxRepository;
+    private InMemoryTenantIamProvisioningInputSnapshotRepositoryAdapter snapshotRepository;
     private ObjectMapper objectMapper;
     private KafkaTopicProperties kafkaTopicProperties;
 
@@ -48,6 +50,7 @@ class TenantIamProvisioningServiceTest {
     void setUp() {
         port = new FakeKeycloakAdminPort();
         repository = new InMemoryTenantIamProvisioningStateRepository();
+        snapshotRepository = new InMemoryTenantIamProvisioningInputSnapshotRepositoryAdapter();
         ensureOrganizationStep = new EnsureOrganizationStep(port);
         ensureAdminUserStep = new EnsureAdminUserStep(port);
         ensureTenantAdminRoleStep = new EnsureTenantAdminRoleStep(port);
@@ -64,6 +67,7 @@ class TenantIamProvisioningServiceTest {
                 kafkaTopicProperties);
 
         service = new TenantIamProvisioningService(repository,
+                snapshotRepository,
                 List.of(
                 ensureOrganizationStep, ensureAdminUserStep, ensureTenantAdminRoleStep, ensureOrganizationMembershipStep),
                 transactor);

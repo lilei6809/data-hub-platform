@@ -1,6 +1,6 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper;
 
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.OutboxEventRow;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
@@ -26,7 +26,7 @@ class OutboxEventRowMapperTest {
         Instant publishedAt = Instant.parse("2026-06-01T00:00:02Z");
         Instant claimedAt = Instant.parse("2026-06-01T00:00:03Z");
 
-        when(resultSet.getString("event_id")).thenReturn(eventId.toString());
+        when(resultSet.getObject("event_id", UUID.class)).thenReturn(eventId);
         when(resultSet.getString("aggregate_type")).thenReturn("TenantIamProvisioningState");
         when(resultSet.getString("aggregate_id")).thenReturn("tenant-abc");
         when(resultSet.getString("event_type")).thenReturn("TenantIamProvisionedEvent");
@@ -48,7 +48,7 @@ class OutboxEventRowMapperTest {
 
         OutboxEventRow row = mapper.mapRow(resultSet, 0);
 
-        assertThat(row.eventId()).isEqualTo(eventId.toString());
+        assertThat(row.eventId()).isEqualTo(eventId);
         assertThat(row.aggregateType()).isEqualTo("TenantIamProvisioningState");
         assertThat(row.aggregateId()).isEqualTo("tenant-abc");
         assertThat(row.eventType()).isEqualTo("TenantIamProvisionedEvent");
@@ -73,7 +73,8 @@ class OutboxEventRowMapperTest {
     void should_mapNullableTimestampsToNull() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
 
-        when(resultSet.getString("event_id")).thenReturn("3c9ebf9e-2fc4-4978-b4cf-3577b8b998db");
+        when(resultSet.getObject("event_id", UUID.class))
+                .thenReturn(UUID.fromString("3c9ebf9e-2fc4-4978-b4cf-3577b8b998db"));
         when(resultSet.getString("aggregate_type")).thenReturn("TenantIamProvisioningState");
         when(resultSet.getString("aggregate_id")).thenReturn("tenant-abc");
         when(resultSet.getString("event_type")).thenReturn("TenantIamProvisionedEvent");

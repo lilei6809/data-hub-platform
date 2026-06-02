@@ -4,6 +4,7 @@ import io.datahub.platform.iamprovisioning.application.port.out.repository.OutBo
 import io.datahub.platform.iamprovisioning.application.port.out.repository.OutboxRepository;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventDomainMapper;
 import io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper.OutboxEventRowMapper;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.OutboxEventRow;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 

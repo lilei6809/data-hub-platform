@@ -1,4 +1,4 @@
-package io.datahub.platform.iamprovisioning.infrastructure.persistence;
+package io.datahub.platform.iamprovisioning.infrastructure.persistence.model;
 
 import java.time.Instant;
 import java.util.UUID;

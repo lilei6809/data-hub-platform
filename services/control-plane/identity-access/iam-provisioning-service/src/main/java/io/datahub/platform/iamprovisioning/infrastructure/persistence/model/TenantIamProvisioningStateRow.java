@@ -1,4 +1,4 @@
-package io.datahub.platform.iamprovisioning.infrastructure.persistence;
+package io.datahub.platform.iamprovisioning.infrastructure.persistence.model;
 
 // 纯数据容器 — 只是数据库行的 Java 映射，没有任何行为
 

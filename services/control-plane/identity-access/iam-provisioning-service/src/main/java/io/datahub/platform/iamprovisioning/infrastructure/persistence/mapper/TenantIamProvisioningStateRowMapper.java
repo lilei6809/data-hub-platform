@@ -1,6 +1,6 @@
 package io.datahub.platform.iamprovisioning.infrastructure.persistence.mapper;
 
-import io.datahub.platform.iamprovisioning.infrastructure.persistence.TenantIamProvisioningStateRow;
+import io.datahub.platform.iamprovisioning.infrastructure.persistence.model.TenantIamProvisioningStateRow;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.lang.Nullable;
 
