@@ -115,6 +115,7 @@ public class ProvisioningStateTransactor {
             throw new IllegalStateException(
                     "Failed to serialize domain event: " + domainEvent.getClass(), e);
         }
-        return "";
+
+        throw new IllegalStateException("Unknown domain event type: " + domainEvent.getClass().getSimpleName());
     }
 }

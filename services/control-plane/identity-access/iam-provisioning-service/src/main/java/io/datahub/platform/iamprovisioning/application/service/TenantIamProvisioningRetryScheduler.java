@@ -72,7 +72,8 @@ public class TenantIamProvisioningRetryScheduler {
                 );
 
                 transactor.saveIamProvisionStateAndAppendEvents(state);
-                return;
+
+                continue;
             }
 
             TenantIamProvisioningInputSnapshot snapshot = optional.get();
