@@ -83,6 +83,14 @@ public class TenantIamKafkaConsumer {
         // 入站事件去重
         Optional<TenantIamProvisioningState> existing = repository.findByTenantId(event.tenantId());
 
+        // 为什么一定要去重
+        // 如果 Kafka 中断, 那一条 A 记录处理完, consumer 就没有办法提交,  记录只能标记重试
+        // 当 Kafka 恢复, consumer 会消费上一条没有提交的记录 A
+        // 但是记录 A 已经处理完毕, 只是需要 consumer ack
+
+        // 并发情况下, 如果 consumerA 因为某些原因消费慢了, 但是状态已经 Completed 且持久化
+        // 但是触发 rebalance, consumerB 继续消费记录 A, 如果不去重, 就会导致重复消费
+
         // 重复记录
         if (existing.isPresent()) {
             IamProvisioningStatus status = existing.get().getOverallStatus();
